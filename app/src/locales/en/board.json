@@ -1,0 +1,50 @@
+{
+  "cardActions": {
+    "run": "Run",
+    "openTerminal": "Open terminal in worktree",
+    "approve": "Move to done",
+    "approveTooltip": "Move to done",
+    "renameTooltip": "Change title",
+    "deleteTooltip": "Delete"
+  },
+  "deleteCard": {
+    "titleWithName": "Delete \"{{name}}\"?",
+    "description": "This item and its history will be permanently removed."
+  },
+  "empty": {
+    "title": "No conversations yet",
+    "description": "Start a new conversation to delegate work to an agent.",
+    "newMission": "New mission"
+  },
+  "search": {
+    "placeholder": "Search missions",
+    "clear": "Clear search",
+    "clearCta": "Clear search",
+    "searchingText": "Searching mission text",
+    "searchingTitle": "Searching mission text",
+    "searchingDescription": "Looking through older messages now.",
+    "emptyTitle": "No matching missions",
+    "emptyDescription": "Try a different search or clear the current one.",
+    "historyErrorTitle": "Couldn't search every mission",
+    "historyErrorDescription": "Some older mission text could not be loaded."
+  },
+  "toasts": {
+    "attached": "Attached: {{names}}"
+  },
+  "attachmentMessage": {
+    "count_one": "1 file attached",
+    "count_other": "{{count}} files attached"
+  },
+  "chatEmpty": {
+    "heading": "What can I help with?",
+    "subheading": "Tap a skill to get started, or just type what you need below.",
+    "seeMore_one": "See {{count}} more skill",
+    "seeMore_other": "See {{count}} more skills"
+  },
+  "composerSkill": {
+    "browse": "Skills"
+  },
+  "selectedSkill": {
+    "cancel": "Close"
+  }
+}

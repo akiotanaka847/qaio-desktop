@@ -1,0 +1,34 @@
+[package]
+name = "qaio-engine-core"
+version = "0.4.8"
+edition = "2021"
+description = "Runtime container for Qaio Engine — owns DB, event sinks, paths, and domain logic shared by HTTP routes and CLI tools"
+license = "MIT"
+repository = "https://github.com/getqaio/qaio"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+uuid = { workspace = true }
+chrono = { workspace = true }
+thiserror = "1"
+qaio-db = { workspace = true }
+qaio-terminal-manager = { workspace = true }
+qaio-ui-events = { workspace = true }
+qaio-agent-files = { workspace = true }
+qaio-skills = { workspace = true, features = ["remote"] }
+qaio-engine-protocol = { workspace = true }
+qaio-agents-conversations = { workspace = true }
+qaio-cli-bundle = { workspace = true }
+qaio-claude-installer = { workspace = true }
+dirs-next = "2"
+dirs = "5"
+reqwest = { version = "0.12", features = ["json", "rustls-tls"], default-features = false }
+async-trait = { workspace = true }
+cron = "0.12"
+chrono-tz = "0.9"
+
+[dev-dependencies]
+tempfile = "3"

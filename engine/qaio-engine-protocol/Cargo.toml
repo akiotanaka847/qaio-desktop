@@ -1,0 +1,15 @@
+[package]
+name = "qaio-engine-protocol"
+version = "0.4.8"
+edition = "2021"
+description = "Wire types for Qaio Engine — REST DTOs, WS envelope, error codes, version const"
+license = "MIT"
+repository = "https://github.com/getqaio/qaio"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+uuid = { workspace = true }
+chrono = { workspace = true }
+qaio-ui-events = { workspace = true }
+qaio-terminal-manager = { workspace = true }

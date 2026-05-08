@@ -1,0 +1,6 @@
+packages:
+  - "ui/*"
+  - "app"
+  - "mobile"
+  - "qaio-relay"
+  - "examples/*"

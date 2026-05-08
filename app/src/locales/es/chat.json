@@ -1,0 +1,76 @@
+{
+  "composer": {
+    "placeholder": "Pregunta lo que quieras..."
+  },
+  "queue": {
+    "title": "En cola",
+    "remove": "Quitar mensaje en cola",
+    "attachmentsOnly": "Archivos adjuntos",
+    "attached": "Adjunto: {{names}}"
+  },
+  "attachmentMessage": {
+    "count_one": "1 archivo adjunto",
+    "count_other": "{{count}} archivos adjuntos"
+  },
+  "empty": {
+    "title": "Empieza una conversación",
+    "description": "Escribe un mensaje para hablar con tu asistente."
+  },
+  "errors": {
+    "sessionStart": "No se pudo iniciar la sesión: {{error}}"
+  },
+  "toolRuntimeError": {
+    "retryPrompt": "Intenta de nuevo."
+  },
+  "attachmentIssues": {
+    "title": "Algunos archivos no se adjuntaron",
+    "description": "Qaio conservó tu mensaje y los archivos que sí puede usar.",
+    "close": "Entendido",
+    "reasons": {
+      "blockedType": "Este tipo de archivo no se puede usar aquí.",
+      "blockedTypeWithExtension": "Los archivos .{{extension}} no se pueden usar aquí.",
+      "tooLarge": "Este archivo supera {{maxSize}}."
+    }
+  },
+  "composio": {
+    "integration": "Integración de app",
+    "alreadyConnected": "Ya está conectado",
+    "connected": "Conectado",
+    "connect": "Conectar",
+    "verify": "Ya me conecté",
+    "verifying": "Comprobando...",
+    "notVerified": "Aún no podemos verificar, intenta de nuevo",
+    "verifiedToast": "{{name}} está conectado"
+  },
+  "composioSignin": {
+    "appName": "Proveedor de integraciones",
+    "description": "Inicia sesión para que tu asistente use tus apps. Proveedor por defecto: Composio.",
+    "alreadySignedIn": "Ya iniciaste sesión en tu proveedor de integraciones",
+    "signedIn": "Conectado",
+    "signIn": "Iniciar sesión"
+  },
+  "modelSelector": {
+    "selectModel": "Elige un modelo",
+    "model": "Modelo",
+    "notConnected": "Sin conexión"
+  },
+  "reasoning": {
+    "thinking": "Pensando...",
+    "thoughtFor": "Pensó durante {{count}} segundos",
+    "thoughtForFew": "Pensó durante unos segundos"
+  },
+  "process": {
+    "active": "Misión en curso...",
+    "complete": "Registro de misión"
+  },
+  "summary": {
+    "updatesMade": "Actualizaciones hechas",
+    "newFiles_one": "1 archivo nuevo",
+    "newFiles_other": "{{count}} archivos nuevos",
+    "instructionsUpdated": "Instrucciones actualizadas",
+    "skillsUpdated": "Skills actualizados",
+    "learningsUpdated": "Aprendizajes actualizados"
+  },
+  "filesUpdated_one": "1 archivo actualizado",
+  "filesUpdated_other": "{{count}} archivos actualizados"
+}

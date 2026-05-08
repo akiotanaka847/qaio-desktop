@@ -1,0 +1,92 @@
+{
+  "welcome": {
+    "title": "Bem-vindo ao Qaio",
+    "tagline": "Realize o impossível.",
+    "getStarted": "Começar"
+  },
+  "name": {
+    "title": "Dê um nome ao seu espaço de trabalho",
+    "description": "Espaços de trabalho mantêm seus agentes organizados: um pessoal, um do trabalho, etc.",
+    "placeholder": "ex. Pessoal, Trabalho, Acme Corp"
+  },
+  "provider": {
+    "title": "Conecte sua IA",
+    "description": "O Qaio usa <emph>sua própria</emph> assinatura. Nunca vemos suas credenciais.",
+    "finishPage": "Começar",
+    "finishDialog": "Criar espaço de trabalho"
+  },
+  "tutorial": {
+    "brand": "Qaio",
+    "counter": "Missão {{current}} de {{total}}",
+    "eyebrow": "Missão {{number}}",
+    "upNext": "A seguir",
+    "welcome": {
+      "title": "Bem-vindo ao Qaio",
+      "tagline": "O Qaio é onde você constrói Agentes que funcionam com as mesmas ferramentas que você usa para trabalhar.",
+      "stepsTitle": "O tutorial vai guiar você para criar seu primeiro agente:",
+      "steps": {
+        "meet": "Conheça seu assistente",
+        "brain": "Conecte um provedor de IA para ele pensar",
+        "tools": "Dê as suas próprias ferramentas",
+        "try": "Teste uma missão real com seu assistente"
+      },
+      "start": "Começar tutorial",
+      "skip": "Pular tutorial"
+    },
+    "toolkits": {
+      "gmail": "Gmail",
+      "googlecalendar": "Google Calendar",
+      "googlesheets": "Google Sheets"
+    },
+    "defaults": {
+      "workspaceName": "Pessoal",
+      "assistantName": "Assistente pessoal",
+      "focus": "Me ajude a ficar organizado, preparar meu dia, redigir mensagens, proteger tempo de foco e acompanhar pendências.",
+      "approvalRule": "Pergunte antes de enviar mensagens, criar eventos de calendário ou mudar algo nos apps conectados.",
+      "firstWorkflow": "Configure meu primeiro fluxo útil do dia"
+    },
+    "missions": {
+      "meet": {
+        "title": "Conheça seu assistente",
+        "body": "Dê um nome e uma cor para seu assistente. Você pode mudar depois.",
+        "begin": "Começar treinamento"
+      },
+      "brain": {
+        "title": "Dê um cérebro",
+        "body": "Seu assistente precisa de um provedor de IA para pensar e escrever. O Qaio usa sua própria assinatura.",
+        "continue": "Criar meu assistente",
+        "creating": "Criando",
+        "continueHint": "O Qaio vai criar seu assistente e abrir a próxima missão."
+      },
+      "tools": {
+        "title": "Dê as suas próprias ferramentas",
+        "body": "O Qaio se conecta ao Gmail, Calendar e mais de 1000 apps através do seu provedor de integrações. Por padrão usamos o Composio. Entre uma vez para seu assistente poder trabalhar com seus apps reais.",
+        "cardTitle": "Provedor de integrações",
+        "cardBody": "Entre para seu assistente usar seus apps. Provedor padrão: Composio.",
+        "cardSignedInBody": "Seu assistente já pode usar seus apps",
+        "signIn": "Entrar",
+        "signedInPill": "Conectado",
+        "continue": "Continuar",
+        "continueHint": "Seu assistente vai pedir cada app na primeira vez que precisar."
+      },
+      "try": {
+        "title": "Teste uma missão real",
+        "body": "Chat real com seu assistente. Clique na missão para começar. Seu assistente vai pedir Gmail, Calendar ou Sheets aqui mesmo se precisar.",
+        "tipTitle": "Esse é o chat real",
+        "tipBody": "O mesmo chat que você vai usar depois do tutorial. Clique na missão para começar e responda naturalmente. Pedidos de conexão aparecem como cartões que seu assistente posta no chat.",
+        "workingTitle": "Trabalhando nisso",
+        "workingBody": "Responda no chat como você faria normalmente. O tutorial vai seguir automaticamente quando seu assistente terminar.",
+        "doneTitle": "Você conseguiu. Primeira missão concluída.",
+        "doneBody": "Seu assistente acabou de fazer trabalho real com seus apps reais. Faça um tour rápido do Qaio e pronto.",
+        "placeholder": "Responda ao seu assistente...",
+        "skill": {
+          "title": "Planeja meu próximo dia de trabalho",
+          "description": "Lê sua agenda e Gmail em paralelo, cruza para achar coisas que você ia perder e escreve um plano estruturado num Google Sheet."
+        },
+        "chip": "Planeja meu próximo dia de trabalho",
+        "composerHint": "Clique para começar a missão.",
+        "continueChip": "Fazer o tour"
+      }
+    }
+  }
+}

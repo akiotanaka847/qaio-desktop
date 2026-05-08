@@ -1,0 +1,73 @@
+{
+  "title": "Configurações",
+  "nav": {
+    "account": "Conta",
+    "phone": "Conectar celular",
+    "workspace": "Espaço de trabalho",
+    "provider": "Provedor de IA",
+    "timezone": "Fuso horário",
+    "language": "Idioma",
+    "appearance": "Aparência",
+    "danger": "Zona de perigo"
+  },
+  "account": {
+    "title": "Conta",
+    "signOut": "Sair",
+    "fallbackName": "Sessão iniciada"
+  },
+  "workspace": {
+    "title": "Espaço de trabalho",
+    "nameLabel": "Nome"
+  },
+  "provider": {
+    "title": "Provedor de IA",
+    "description": "O Qaio usa <emph>sua própria</emph> assinatura. Nunca vemos suas credenciais."
+  },
+  "connectPhone": {
+    "title": "Conectar celular",
+    "description": "Escaneie este código para usar o Qaio no seu iPhone. O mesmo código continua funcionando enquanto este Mac estiver ligado e o Qaio estiver aberto.",
+    "loading": "Preparando a conexão com seu celular…",
+    "connectingStatus": "Conectando ao serviço do celular. Costuma levar alguns segundos.",
+    "keepMacAwake": "Mantenha este Mac aberto enquanto você usa o Qaio no celular.",
+    "alwaysOnHint": "Para acesso 24/7, <emph>Always On</emph> roda o Qaio nos nossos servidores.",
+    "errors": {
+      "noInternet": "O Qaio precisa de internet na primeira vez que você abre o app. Conecte-se e reabra o Qaio para habilitar o pareamento do celular.",
+      "generic": "Não foi possível gerar um código de pareamento. Tente novamente."
+    },
+    "reset": {
+      "title": "Desconectar todos os celulares",
+      "description": "Redefine o QR e sai de todos os celulares conectados a este Mac.",
+      "button": "Desconectar todos os celulares",
+      "confirmTitle": "Desconectar todos os celulares?",
+      "confirmDescription": "Isso redefine o QR e sai de todos os celulares conectados a este Mac. Escaneie o novo QR para conectar de novo.",
+      "confirmLabel": "Desconectar",
+      "toast": "Acesso pelo celular redefinido"
+    }
+  },
+  "timezone": {
+    "title": "Fuso horário",
+    "description": "Usado quando suas rotinas disparam, 9h significa 9h neste fuso.",
+    "label": "Fuso IANA",
+    "placeholder": "ex. America/Sao_Paulo",
+    "useDetected": "Usar o detectado ({{zone}})"
+  },
+  "appearance": {
+    "title": "Aparência",
+    "light": "Claro",
+    "dark": "Escuro"
+  },
+  "dangerZone": {
+    "title": "Zona de perigo",
+    "description": "Exclui este espaço de trabalho e todos os seus agentes de forma permanente.",
+    "deleteButton": "Excluir espaço de trabalho",
+    "createAnotherFirst": "Crie outro espaço de trabalho antes de excluir este.",
+    "confirmTitle": "Excluir \"{{name}}\"?",
+    "confirmDescription": "Isso exclui este espaço de trabalho e todos os seus agentes de forma permanente. Não dá para desfazer.",
+    "confirmLabel": "Excluir"
+  },
+  "toasts": {
+    "workspaceRenamed": "Espaço de trabalho renomeado",
+    "providerSwitched": "Mudou para {{provider}} ({{model}})",
+    "timezoneSet": "Fuso horário definido como {{zone}}"
+  }
+}

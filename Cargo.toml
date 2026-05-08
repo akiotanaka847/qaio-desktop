@@ -1,0 +1,51 @@
+[workspace]
+resolver = "2"
+members = [
+    "engine/qaio-terminal-manager",
+    "engine/qaio-db",
+    "app/qaio-tauri",
+    "engine/qaio-events",
+    "engine/qaio-scheduler",
+    "engine/qaio-skills",
+    "engine/qaio-tunnel",
+    "engine/qaio-agent-files",
+    "engine/qaio-ui-events",
+    "engine/qaio-agents-conversations",
+    "engine/qaio-file-watcher",
+    "engine/qaio-composio",
+    "engine/qaio-cli-bundle",
+    "engine/qaio-claude-installer",
+    "engine/qaio-engine-core",
+    "engine/qaio-engine-protocol",
+    "engine/qaio-engine-server",
+    "app/src-tauri",
+]
+
+[workspace.dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["full"] }
+uuid = { version = "1", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+anyhow = "1"
+async-trait = "0.1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+tracing-appender = "0.2"
+qaio-terminal-manager = { version = "0.4.8", path = "engine/qaio-terminal-manager" }
+qaio-db = { version = "0.4.8", path = "engine/qaio-db" }
+qaio-tauri = { version = "0.4.8", path = "app/qaio-tauri" }
+qaio-events = { version = "0.4.8", path = "engine/qaio-events" }
+qaio-scheduler = { version = "0.4.8", path = "engine/qaio-scheduler" }
+qaio-skills = { version = "0.4.8", path = "engine/qaio-skills" }
+qaio-tunnel = { version = "0.4.8", path = "engine/qaio-tunnel" }
+qaio-agent-files = { version = "0.4.8", path = "engine/qaio-agent-files" }
+qaio-ui-events = { version = "0.4.8", path = "engine/qaio-ui-events" }
+qaio-agents-conversations = { version = "0.4.8", path = "engine/qaio-agents-conversations" }
+qaio-file-watcher = { version = "0.4.8", path = "engine/qaio-file-watcher" }
+qaio-composio = { version = "0.4.8", path = "engine/qaio-composio" }
+qaio-cli-bundle = { version = "0.4.8", path = "engine/qaio-cli-bundle" }
+qaio-claude-installer = { version = "0.4.8", path = "engine/qaio-claude-installer" }
+qaio-engine-core = { version = "0.4.8", path = "engine/qaio-engine-core" }
+qaio-engine-protocol = { version = "0.4.8", path = "engine/qaio-engine-protocol" }
+qaio-engine-server = { version = "0.4.8", path = "engine/qaio-engine-server" }
