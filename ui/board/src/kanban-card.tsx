@@ -96,10 +96,11 @@ export function KanbanCard({
       <div
         onClick={(e) => { e.stopPropagation(); onSelect() }}
         className={cn(
-          "group/card relative rounded-xl bg-background p-3 cursor-pointer transition-all duration-200",
+          "group/card relative rounded-xl bg-card p-3 cursor-pointer transition-all duration-200",
           isRunning
-            ? "card-running-glow shadow-[0_2px_12px_rgba(59,130,246,0.12)]"
-            : "border border-black/[0.04] shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:shadow-[0_2px_6px_rgba(0,0,0,0.08)]",
+            ? "card-running-glow shadow-[0_2px_16px_rgba(76,175,125,0.15)]"
+            : "border border-border/60 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(27,42,74,0.08)] hover:border-border",
+          isNeedsApproval && "approval-gate",
         )}
       >
         {/* Top row: agent info + action buttons */}
@@ -200,7 +201,7 @@ export function KanbanCard({
               {item.tags?.map((tag) => (
                 <span
                   key={tag}
-                  className="inline-flex h-[18px] items-center rounded-full bg-secondary px-2 text-[10px] font-medium text-muted-foreground"
+                  className="inline-flex h-[18px] items-center rounded-full bg-accent/10 px-2 text-[10px] font-semibold text-accent-foreground"
                 >
                   {tag}
                 </span>

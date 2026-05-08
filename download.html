@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Download Qaio — Your AI Operations Team</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --navy: #1B2A4A;
+    --green: #4CAF7D;
+    --green-dark: #3D9E6E;
+    --bg: #fafbfc;
+    --card: #ffffff;
+    --text: #0d0d0d;
+    --muted: #6b7280;
+    --border: rgba(0,0,0,0.06);
+  }
+
+  body {
+    font-family: -apple-system, "SF Pro Display", "SF Pro Text", BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* --- Nav --- */
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 40px;
+    border-bottom: 1px solid var(--border);
+    background: var(--card);
+    backdrop-filter: blur(12px);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: var(--text);
+  }
+  .nav-brand svg { width: 28px; height: 28px; }
+  .nav-brand span { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; }
+  .nav-links { display: flex; gap: 28px; }
+  .nav-links a {
+    font-size: 14px;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+
+  /* --- Hero --- */
+  .hero {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 80px 24px 60px;
+    gap: 32px;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 100px;
+    background: rgba(76,175,125,0.08);
+    color: var(--green-dark);
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .hero-badge .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+  .hero h1 {
+    font-size: clamp(36px, 5vw, 56px);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    max-width: 680px;
+  }
+  .hero h1 .accent { color: var(--green); }
+  .hero p {
+    font-size: 18px;
+    color: var(--muted);
+    max-width: 520px;
+    line-height: 1.6;
+  }
+
+  /* --- Download Cards --- */
+  .downloads {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .dl-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 28px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    text-decoration: none;
+    color: var(--text);
+    transition: all 0.25s ease;
+    min-width: 260px;
+  }
+  .dl-card:hover {
+    border-color: var(--green);
+    box-shadow: 0 8px 24px rgba(76,175,125,0.12);
+    transform: translateY(-2px);
+  }
+  .dl-card .icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    background: var(--navy);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .dl-card .icon svg { width: 22px; height: 22px; fill: white; }
+  .dl-card .info { display: flex; flex-direction: column; gap: 2px; }
+  .dl-card .info .platform { font-size: 15px; font-weight: 600; }
+  .dl-card .info .detail { font-size: 12px; color: var(--muted); }
+
+  .dl-card.primary {
+    background: var(--navy);
+    color: white;
+    border-color: var(--navy);
+  }
+  .dl-card.primary .icon { background: rgba(255,255,255,0.12); }
+  .dl-card.primary .info .detail { color: rgba(255,255,255,0.6); }
+  .dl-card.primary:hover {
+    box-shadow: 0 8px 24px rgba(27,42,74,0.25);
+    border-color: var(--navy);
+  }
+
+  .version-tag {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  /* --- Features strip --- */
+  .features {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 0 24px 20px;
+  }
+  .feat {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .feat .check {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: rgba(76,175,125,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .feat .check svg { width: 10px; height: 10px; stroke: var(--green); }
+
+  /* --- Requirements --- */
+  .requirements {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+    text-align: center;
+  }
+  .requirements h3 {
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+  .req-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .req-item {
+    padding: 14px 18px;
+    border-radius: 10px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    text-align: left;
+  }
+  .req-item .label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .req-item .value { font-size: 14px; font-weight: 500; }
+
+  /* --- Footer --- */
+  footer {
+    text-align: center;
+    padding: 24px;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--muted);
+  }
+  footer a { color: var(--green-dark); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  /* --- Auto-detect --- */
+  .auto-detect {
+    display: none;
+    font-size: 13px;
+    color: var(--green-dark);
+    font-weight: 500;
+  }
+
+  @media (max-width: 640px) {
+    nav { padding: 12px 20px; }
+    .hero { padding: 48px 20px 40px; }
+    .downloads { flex-direction: column; align-items: center; }
+    .dl-card { width: 100%; max-width: 320px; }
+    .req-grid { grid-template-columns: 1fr; }
+    .features { gap: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="nav-brand">
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="48" fill="#1B2A4A"/>
+      <circle cx="50" cy="28" r="14" fill="none" stroke="#4CAF7D" stroke-width="5"/>
+      <path d="M30 78 C30 55 70 55 70 78" fill="none" stroke="#4CAF7D" stroke-width="5" stroke-linecap="round"/>
+      <circle cx="50" cy="28" r="3" fill="#4CAF7D"/>
+    </svg>
+    <span>Qaio</span>
+  </a>
+  <div class="nav-links">
+    <a href="https://github.com/akiotanaka847/qaio-desktop">GitHub</a>
+    <a href="#requirements">Requirements</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-badge">
+    <span class="dot"></span>
+    v0.4.8
+  </div>
+
+  <h1>Your <span class="accent">AI team</span>,<br>running locally.</h1>
+  <p>Qaio gives you a team of AI agents that plan, execute, and review work across your real apps &mdash; Calendar, Gmail, Sheets, and more. All from your desktop.</p>
+
+  <div class="downloads">
+    <!-- macOS -->
+    <a href="Qaio_0.4.8_mac.dmg" download class="dl-card primary" id="dl-mac">
+      <div class="icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+      </div>
+      <div class="info">
+        <span class="platform">Download for macOS</span>
+        <span class="detail">Apple Silicon &middot; 19 MB &middot; .dmg</span>
+      </div>
+    </a>
+
+    <!-- Windows -->
+    <a href="#" class="dl-card" id="dl-win" onclick="event.preventDefault(); document.getElementById('win-modal').style.display='flex'">
+      <div class="icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 12V6.5l8-1.1V12H3zm0 .5h8v6.6l-8-1.1V12.5zM11.5 5.3l9.5-1.3v8h-9.5V5.3zM21 12.5v8l-9.5-1.3V12.5H21z"/></svg>
+      </div>
+      <div class="info">
+        <span class="platform">Download for Windows</span>
+        <span class="detail">Windows 10+ &middot; Coming soon</span>
+      </div>
+    </a>
+  </div>
+
+  <p class="version-tag">v0.4.8 &middot; Open source &middot; Free</p>
+</section>
+
+<section class="features">
+  <div class="feat">
+    <span class="check"><svg viewBox="0 0 12 12" fill="none" stroke-width="2" stroke-linecap="round"><path d="M2 6l3 3 5-5"/></svg></span>
+    Multi-agent kanban board
+  </div>
+  <div class="feat">
+    <span class="check"><svg viewBox="0 0 12 12" fill="none" stroke-width="2" stroke-linecap="round"><path d="M2 6l3 3 5-5"/></svg></span>
+    Works with Claude, Gemini &amp; more
+  </div>
+  <div class="feat">
+    <span class="check"><svg viewBox="0 0 12 12" fill="none" stroke-width="2" stroke-linecap="round"><path d="M2 6l3 3 5-5"/></svg></span>
+    Connects to Google Workspace
+  </div>
+  <div class="feat">
+    <span class="check"><svg viewBox="0 0 12 12" fill="none" stroke-width="2" stroke-linecap="round"><path d="M2 6l3 3 5-5"/></svg></span>
+    Runs 100% on your machine
+  </div>
+</section>
+
+<section class="requirements" id="requirements">
+  <h3>System Requirements</h3>
+  <div class="req-grid">
+    <div class="req-item">
+      <div class="label">macOS</div>
+      <div class="value">macOS 12 Monterey or later</div>
+    </div>
+    <div class="req-item">
+      <div class="label">Windows</div>
+      <div class="value">Windows 10 (1803) or later</div>
+    </div>
+    <div class="req-item">
+      <div class="label">RAM</div>
+      <div class="value">8 GB minimum</div>
+    </div>
+    <div class="req-item">
+      <div class="label">Disk</div>
+      <div class="value">~500 MB free space</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  Built by <a href="https://qstrauss.com">QStrauss Consulting</a> &middot;
+  <a href="https://github.com/akiotanaka847/qaio-desktop">Source on GitHub</a>
+</footer>
+
+<!-- Windows coming soon modal -->
+<div id="win-modal" style="display:none; position:fixed; inset:0; z-index:100; background:rgba(0,0,0,0.4); backdrop-filter:blur(4px); align-items:center; justify-content:center;" onclick="if(event.target===this)this.style.display='none'">
+  <div style="background:white; border-radius:16px; padding:32px; max-width:400px; width:90%; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.15);">
+    <div style="width:56px; height:56px; border-radius:14px; background:#1B2A4A; display:flex; align-items:center; justify-content:center; margin:0 auto 16px;">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M3 12V6.5l8-1.1V12H3zm0 .5h8v6.6l-8-1.1V12.5zM11.5 5.3l9.5-1.3v8h-9.5V5.3zM21 12.5v8l-9.5-1.3V12.5H21z"/></svg>
+    </div>
+    <h2 style="font-size:20px; font-weight:700; margin-bottom:8px;">Windows build coming soon</h2>
+    <p style="font-size:14px; color:#6b7280; line-height:1.6; margin-bottom:20px;">We're working on the Windows installer. Leave your email and we'll notify you when it's ready.</p>
+    <form onsubmit="event.preventDefault(); this.innerHTML='<p style=color:#4CAF7D;font-weight:600;padding:12px>Thanks! We\'ll let you know.</p>'" style="display:flex; gap:8px;">
+      <input type="email" placeholder="your@email.com" required style="flex:1; padding:10px 14px; border-radius:10px; border:1px solid rgba(0,0,0,0.1); font-size:14px; outline:none;">
+      <button type="submit" style="padding:10px 20px; border-radius:10px; border:none; background:#1B2A4A; color:white; font-size:14px; font-weight:600; cursor:pointer;">Notify me</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Auto-detect platform and highlight the right card
+  (function() {
+    const ua = navigator.userAgent.toLowerCase();
+    const isMac = ua.includes('mac');
+    const isWin = ua.includes('win');
+    const mac = document.getElementById('dl-mac');
+    const win = document.getElementById('dl-win');
+    if (isWin) {
+      win.classList.add('primary');
+      mac.classList.remove('primary');
+    }
+  })();
+</script>
+
+</body>
+</html>
