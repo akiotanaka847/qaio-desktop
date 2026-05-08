@@ -345,18 +345,25 @@ export function TryMission({
               <p className="text-sm text-muted-foreground">
                 {t("setup:tutorial.missions.try.composerHint")}
               </p>
-              <button
-                type="button"
-                onClick={() =>
-                  void handlePick(t("setup:tutorial.missions.try.chip"))
-                }
-                disabled={pickedAny}
-                className={cn(
-                  "h-9 rounded-full border border-black/15 bg-background px-4 text-sm font-medium text-foreground transition-colors hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-50",
-                )}
-              >
-                {t("setup:tutorial.missions.try.chip")}
-              </button>
+              <div className="flex flex-wrap justify-center gap-2">
+                {[
+                  t("setup:tutorial.missions.try.quickChip1"),
+                  t("setup:tutorial.missions.try.quickChip2"),
+                  t("setup:tutorial.missions.try.chip"),
+                ].map((label) => (
+                  <button
+                    key={label}
+                    type="button"
+                    onClick={() => void handlePick(label)}
+                    disabled={pickedAny}
+                    className={cn(
+                      "h-9 rounded-full border border-border/60 bg-card px-4 text-sm font-medium text-foreground transition-colors hover:bg-accent hover:text-accent-foreground hover:border-accent disabled:cursor-not-allowed disabled:opacity-50",
+                    )}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
         </div>

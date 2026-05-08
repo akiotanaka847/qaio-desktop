@@ -91,8 +91,9 @@ export default function BoardTab({ agent, agentDef }: TabProps) {
   }, [agentModes]);
   const boardColumns = buildMissionBoardColumns(
     {
-      running: t("dashboard:columns.running"),
-      needsYou: t("dashboard:columns.needsYou"),
+      backlog: t("dashboard:columns.backlog", "Backlog"),
+      inProgress: t("dashboard:columns.inProgress", "In Progress"),
+      review: t("dashboard:columns.review", "Review"),
       done: t("dashboard:columns.done"),
       newMission: t("empty.newMission"),
     },
@@ -590,6 +591,8 @@ export default function BoardTab({ agent, agentDef }: TabProps) {
           actions={agentModes ? cardActions : undefined}
           panelActions={panelActions}
           cardAvatar={<AgentCardAvatar color={agent.color} />}
+          runningStatuses={["running", "planning", "implementing", "testing", "review_plan", "review_impl"]}
+          approveStatuses={["needs_plan_approval", "needs_impl_approval", "needs_you"]}
           thinkingIndicator={<QaioThinkingIndicator />}
           panelAgentName={agent.name}
           panelAvatar={

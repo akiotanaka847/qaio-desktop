@@ -64,8 +64,9 @@ export function Dashboard() {
   const openNewMission = useCallback(() => setAgentPickerOpen(true), [setAgentPickerOpen]);
   const MC_COLUMNS: KanbanColumnConfig[] = buildMissionBoardColumns(
     {
-      running: t("dashboard:columns.running"),
-      needsYou: t("dashboard:columns.needsYou"),
+      backlog: t("dashboard:columns.backlog", "Backlog"),
+      inProgress: t("dashboard:columns.inProgress", "In Progress"),
+      review: t("dashboard:columns.review", "Review"),
       done: t("dashboard:columns.done"),
       newMission: t("dashboard:empty.newMission"),
     },
@@ -322,6 +323,8 @@ export function Dashboard() {
               running={selectedItem?.status === "running"}
             />
           }
+          runningStatuses={["running", "planning", "implementing", "testing", "review_plan", "review_impl"]}
+          approveStatuses={["needs_plan_approval", "needs_impl_approval", "needs_you"]}
           thinkingIndicator={<QaioThinkingIndicator />}
           cardLabels={cardLabels}
           // Per-agent panel features pulled from the shared hook so

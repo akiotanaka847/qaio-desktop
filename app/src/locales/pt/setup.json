@@ -84,7 +84,9 @@
           "description": "Lê sua agenda e Gmail em paralelo, cruza para achar coisas que você ia perder e escreve um plano estruturado num Google Sheet."
         },
         "chip": "Planeja meu próximo dia de trabalho",
-        "composerHint": "Clique para começar a missão.",
+        "quickChip1": "O que você pode fazer?",
+        "quickChip2": "Me ajude a começar",
+        "composerHint": "Escolha uma pergunta para começar.",
         "continueChip": "Fazer o tour"
       }
     }

@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { LayoutDashboard, Blend, Settings } from "lucide-react";
+import { LayoutDashboard, Blend, Settings, BarChart3 } from "lucide-react";
 import { ConfirmDialog } from "@qaio-ai/core";
 import { AppSidebar, WorkspaceSwitcher } from "@qaio-ai/layout";
 import { useWorkspaceStore } from "../../stores/workspaces";
@@ -52,7 +52,7 @@ export function Sidebar({ children }: { children: ReactNode }) {
       void handleChangeColor(agentId, color);
     },
   });
-  const isTopLevel = viewMode === "dashboard" || viewMode === "connections" || viewMode === "settings";
+  const isTopLevel = viewMode === "dashboard" || viewMode === "analytics" || viewMode === "connections" || viewMode === "settings";
 
   const handleWorkspaceSwitch = async (wsId: string) => {
     if (wsId === currentWorkspace?.id) return;
@@ -125,6 +125,12 @@ export function Sidebar({ children }: { children: ReactNode }) {
             icon: <LayoutDashboard className="h-4 w-4" />,
             onClick: () => setViewMode("dashboard"),
             dataAttrs: { "data-tour-target": "nav-dashboard" },
+          },
+          {
+            id: "analytics",
+            label: t("shell:sidebar.analytics", "Analytics"),
+            icon: <BarChart3 className="h-4 w-4" />,
+            onClick: () => setViewMode("analytics"),
           },
           {
             id: "connections",

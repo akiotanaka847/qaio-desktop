@@ -38,13 +38,13 @@ export function KanbanColumn({
   cardLabels,
 }: KanbanColumnProps) {
   return (
-    <div className="min-w-[180px] flex-1 flex flex-col h-full min-h-0 rounded-xl bg-secondary">
+    <div className="min-w-[160px] flex-1 flex flex-col h-full min-h-0 rounded-xl bg-secondary/60 backdrop-blur-sm border border-border/50">
       {/* Column header */}
-      <div className="px-3 py-2.5 flex items-center justify-center relative shrink-0">
-        <div className="flex items-center gap-1.5">
-          <h3 className="text-sm font-medium text-foreground">{label}</h3>
+      <div className="px-3 py-2.5 flex items-center justify-center relative shrink-0 border-b border-border/30">
+        <div className="flex items-center gap-2">
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</h3>
           {items.length > 0 && (
-            <span className="text-xs text-muted-foreground/60 tabular-nums">
+            <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-accent/15 px-1.5 text-[10px] font-semibold text-accent-foreground tabular-nums">
               {items.length}
             </span>
           )}

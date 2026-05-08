@@ -46,8 +46,9 @@ export interface AIBoardProps {
   onHistoryLoaded?: (sessionKey: string, items: FeedItem[]) => void
   /** Called with the openNewPanel function so the parent can trigger it externally (e.g. from a header button). */
   onNewPanelOpenerReady?: (opener: NewPanelOpener) => void
-  /** Custom empty state for the chat panel when no messages exist. */
-  chatEmptyState?: ReactNode
+  /** Custom empty state for the chat panel when no messages exist.
+   *  Pass a function to receive the send callback for quick-action buttons. */
+  chatEmptyState?: ReactNode | ((send: (text: string) => void) => ReactNode)
   /** Custom thinking indicator for the chat panel. */
   thinkingIndicator?: ReactNode
   /** Avatar element shown on every kanban card (e.g. small agent icon). */
@@ -429,7 +430,11 @@ export function AIBoard({
           }
           queuedLabels={queuedLabels}
           placeholder={selectedItem ? "Send a follow-up..." : "What should the agent work on?"}
-          emptyState={activeFeed.length === 0 ? chatEmptyState : undefined}
+          emptyState={activeFeed.length === 0
+            ? (typeof chatEmptyState === "function"
+              ? chatEmptyState((text) => handleSend(text, []))
+              : chatEmptyState)
+            : undefined}
           thinkingIndicator={thinkingIndicator}
           value={drafts ? (drafts[activeDraftKey] ?? "") : undefined}
           onValueChange={onDraftChange ? (text: string) => onDraftChange(activeDraftKey, text) : undefined}
