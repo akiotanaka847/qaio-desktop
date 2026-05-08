@@ -445,8 +445,7 @@ export function useAgentChatPanel({
   const chatEmptyState = useMemo<AIBoardProps["chatEmptyState"]>(() => {
     if (!agent) return undefined;
     if (activeSkill) return null;
-    if (emptySkillShowcase.length === 0) return undefined;
-    return (
+    return (send: (text: string) => void) => (
       <div className="self-stretch w-full h-full overflow-y-auto">
         <div className="max-w-3xl mx-auto w-full px-6 pt-6 pb-4 flex flex-col gap-3">
           <div className="text-center mb-1">
@@ -456,6 +455,22 @@ export function useAgentChatPanel({
             <p className="text-sm text-muted-foreground mt-1">
               {t("chatEmpty.subheading")}
             </p>
+          </div>
+          {/* Quick-start suggestions */}
+          <div className="flex flex-wrap justify-center gap-2 mb-2">
+            {[
+              t("chatEmpty.suggestion1", "What can you do?"),
+              t("chatEmpty.suggestion2", "Help me get started"),
+            ].map((s) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => send(s)}
+                className="px-4 py-1.5 rounded-full text-xs font-medium border border-border/60 bg-card text-foreground hover:bg-accent hover:text-accent-foreground hover:border-accent transition-colors"
+              >
+                {s}
+              </button>
+            ))}
           </div>
           {emptySkillShowcase.map((s) => (
             <SkillCard

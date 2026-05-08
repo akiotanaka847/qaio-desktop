@@ -1,4 +1,4 @@
-/* Running card glow border — light traces around the edge */
+/* Running card glow border — QStrauss green traces around the edge */
 @property --glow-angle {
   syntax: "<angle>";
   initial-value: 0deg;
@@ -13,19 +13,47 @@
 
 .card-running-glow {
   --glow-angle: 0deg;
+  --glow-bg: var(--color-card, #ffffff);
   position: relative;
   background:
-    linear-gradient(white, white) padding-box,
+    linear-gradient(var(--glow-bg), var(--glow-bg)) padding-box,
     conic-gradient(
       from var(--glow-angle),
       transparent 60%,
-      rgba(59, 130, 246, 0.15) 68%,
-      #3b82f6 74%,
-      #818cf8 78%,
-      #f97316 82%,
-      #fbbf24 84%,
+      rgba(76, 175, 125, 0.12) 68%,
+      #4CAF7D 74%,
+      #3D9E6E 78%,
+      #1B2A4A 82%,
+      #4CAF7D 84%,
       transparent 88%
     ) border-box;
   border: 1.5px solid transparent;
   animation: glow-spin 2.5s linear infinite;
+}
+
+/* Pipeline stage indicator dot */
+@keyframes stage-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.stage-active-dot {
+  animation: stage-pulse 1.8s ease-in-out infinite;
+}
+
+/* Human approval gate shimmer */
+@keyframes approval-shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.approval-gate {
+  background: linear-gradient(
+    90deg,
+    rgba(76, 175, 125, 0.08) 0%,
+    rgba(76, 175, 125, 0.2) 50%,
+    rgba(76, 175, 125, 0.08) 100%
+  );
+  background-size: 200% 100%;
+  animation: approval-shimmer 3s ease-in-out infinite;
 }

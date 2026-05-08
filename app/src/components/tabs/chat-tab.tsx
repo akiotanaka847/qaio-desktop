@@ -302,6 +302,22 @@ export default function ChatTab({ agent }: TabProps) {
                 {t("empty.description")}
               </EmptyDescription>
             </EmptyHeader>
+            <div className="flex flex-wrap justify-center gap-2 mt-4">
+              {[
+                t("empty.suggestion1", "What can you do?"),
+                t("empty.suggestion2", "Help me get started"),
+                t("empty.suggestion3", "Show me examples"),
+              ].map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => messageQueue.sendOrQueue(s, [])}
+                  className="px-4 py-1.5 rounded-full text-xs font-medium border border-border/60 bg-card text-foreground hover:bg-accent hover:text-accent-foreground hover:border-accent transition-colors"
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
           </Empty>
         }
       />

@@ -84,7 +84,9 @@
           "description": "Read your Calendar and Gmail in parallel, cross-reference them for things you'd miss, and write a structured plan into a Google Sheet."
         },
         "chip": "Plan my next working day",
-        "composerHint": "Click to start the mission.",
+        "quickChip1": "What can you do?",
+        "quickChip2": "Help me get started",
+        "composerHint": "Pick a question to get started.",
         "continueChip": "Take the tour"
       }
     }
