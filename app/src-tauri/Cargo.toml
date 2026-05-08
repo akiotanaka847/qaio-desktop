@@ -1,0 +1,35 @@
+[package]
+name = "qaio-app"
+version = "0.4.8"
+edition = "2021"
+
+[lib]
+name = "qaio_app"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+# `devtools` = enables WKWebView inspector in debug AND release. In practice
+# only dev builds benefit — production ships to non-technical users — but
+# having it on across the board means Cmd+Opt+I works whenever someone
+# runs `pnpm tauri dev` or ships a dev build to a collaborator.
+tauri = { version = "2", features = ["devtools"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["full"] }
+dirs = "5"
+chrono = { version = "0.4", features = ["serde"] }
+qaio-tauri = { path = "../qaio-tauri" }
+tauri-plugin-notification = "2"
+tauri-plugin-updater = "2"
+tauri-plugin-deep-link = "2"
+tauri-plugin-sentry = "0.5"
+sentry = "0.42"
+keyring = { version = "3", features = ["apple-native", "windows-native"] }
+qaio-ui-events = { path = "../../engine/qaio-ui-events" }
+reqwest = { version = "0.12", features = ["json", "rustls-tls", "blocking"], default-features = false }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+tracing-appender = { workspace = true }

@@ -1,0 +1,21 @@
+[package]
+name = "qaio-tauri"
+version = "0.4.8"
+edition = "2021"
+description = "Thin Tauri adapter for the Qaio desktop app. Owns the event-sink bridge, tray UI, path helpers, and shared state. All domain logic lives in the engine crates."
+license = "MIT"
+repository = "https://github.com/getqaio/qaio"
+
+[dependencies]
+qaio-terminal-manager = { workspace = true }
+qaio-db = { workspace = true }
+qaio-events = { workspace = true }
+qaio-scheduler = { workspace = true }
+qaio-agent-files = { workspace = true }
+qaio-ui-events = { workspace = true }
+qaio-agents-conversations = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true }
+tauri = { version = "2", features = ["tray-icon"] }
+tracing = { workspace = true }

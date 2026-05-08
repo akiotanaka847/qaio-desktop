@@ -1,0 +1,73 @@
+{
+  "title": "Configuración",
+  "nav": {
+    "account": "Cuenta",
+    "phone": "Conectar celular",
+    "workspace": "Espacio de trabajo",
+    "provider": "Proveedor de IA",
+    "timezone": "Zona horaria",
+    "language": "Idioma",
+    "appearance": "Apariencia",
+    "danger": "Zona de peligro"
+  },
+  "account": {
+    "title": "Cuenta",
+    "signOut": "Cerrar sesión",
+    "fallbackName": "Sesión iniciada"
+  },
+  "workspace": {
+    "title": "Espacio de trabajo",
+    "nameLabel": "Nombre"
+  },
+  "provider": {
+    "title": "Proveedor de IA",
+    "description": "Qaio usa <emph>tu propia</emph> suscripción. Nunca vemos tus credenciales."
+  },
+  "connectPhone": {
+    "title": "Conectar celular",
+    "description": "Escanea este código para manejar Qaio desde tu iPhone. El mismo código sigue funcionando mientras este Mac esté encendido y Qaio esté abierto.",
+    "loading": "Preparando la conexión con tu celular…",
+    "connectingStatus": "Conectando con el servicio del celular. Suele tomar unos segundos.",
+    "keepMacAwake": "Mantén este Mac despierto mientras usas Qaio en tu celular.",
+    "alwaysOnHint": "Para acceso 24/7, <emph>Always On</emph> ejecuta Qaio en nuestros servidores.",
+    "errors": {
+      "noInternet": "Qaio necesita conexión a internet la primera vez que lo abres. Conéctate y reabre Qaio para habilitar el emparejamiento del celular.",
+      "generic": "No se pudo generar un código de emparejamiento. Inténtalo de nuevo."
+    },
+    "reset": {
+      "title": "Desconectar todos los celulares",
+      "description": "Restablece el QR y cierra la sesión de todos los celulares conectados a este Mac.",
+      "button": "Desconectar todos los celulares",
+      "confirmTitle": "¿Desconectar todos los celulares?",
+      "confirmDescription": "Esto restablece el QR y cierra la sesión de todos los celulares conectados a este Mac. Escanea el nuevo QR para conectarte otra vez.",
+      "confirmLabel": "Desconectar",
+      "toast": "Acceso desde el celular restablecido"
+    }
+  },
+  "timezone": {
+    "title": "Zona horaria",
+    "description": "Se usa cuando tus rutinas se disparan, 9:00 significa las 9:00 en esta zona.",
+    "label": "Zona IANA",
+    "placeholder": "p. ej. America/Bogota",
+    "useDetected": "Usar la detectada ({{zone}})"
+  },
+  "appearance": {
+    "title": "Apariencia",
+    "light": "Claro",
+    "dark": "Oscuro"
+  },
+  "dangerZone": {
+    "title": "Zona de peligro",
+    "description": "Elimina este espacio de trabajo y todos sus agentes de forma permanente.",
+    "deleteButton": "Eliminar espacio de trabajo",
+    "createAnotherFirst": "Crea otro espacio de trabajo antes de eliminar este.",
+    "confirmTitle": "¿Eliminar \"{{name}}\"?",
+    "confirmDescription": "Esto eliminará de forma permanente este espacio de trabajo y todos sus agentes. No se puede deshacer.",
+    "confirmLabel": "Eliminar"
+  },
+  "toasts": {
+    "workspaceRenamed": "Espacio de trabajo renombrado",
+    "providerSwitched": "Cambiaste a {{provider}} ({{model}})",
+    "timezoneSet": "Zona horaria establecida en {{zone}}"
+  }
+}

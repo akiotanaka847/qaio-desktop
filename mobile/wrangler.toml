@@ -1,0 +1,8 @@
+name = "qaio-companion"
+# Deploy: cd mobile && pnpm build && npx wrangler pages deploy dist --project-name qaio-companion
+# Custom domain: companion.getqaio.ai (set in Cloudflare dashboard)
+
+# Headers for PWA + caching
+# [site.headers]
+# "/*" = { "Cache-Control" = "public, max-age=3600" }
+# "/sw.js" = { "Cache-Control" = "no-cache" }

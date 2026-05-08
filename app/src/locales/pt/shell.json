@@ -1,0 +1,171 @@
+{
+  "sidebar": {
+    "missionControl": "Central de missões",
+    "integrations": "Integrações",
+    "settings": "Configurações",
+    "yourAgents": "Seus agentes",
+    "selectWorkspace": "Escolha um espaço de trabalho",
+    "addAgent": "Novo agente",
+    "agentMenu": "Menu do agente",
+    "color": "Cor",
+    "changeColor": "Alterar cor",
+    "colorLabels": {
+      "charcoal": "Carvão",
+      "forest": "Floresta",
+      "navy": "Azul-marinho",
+      "purple": "Roxo",
+      "crimson": "Carmesim",
+      "orange": "Laranja",
+      "golden": "Dourado"
+    },
+    "needsYouCount_one": "{{count}} assunto precisa de você",
+    "needsYouCount_other": "{{count}} assuntos precisam de você",
+    "runningCount_one": "{{count}} assunto em execução",
+    "runningCount_other": "{{count}} assuntos em execução"
+  },
+  "tabActions": {
+    "newMission": "Nova missão",
+    "startTour": "Me guie"
+  },
+  "agentDelete": {
+    "title": "Excluir o agente?",
+    "description": "Isso apaga o agente e todos os seus dados de forma permanente. Não dá para desfazer."
+  },
+  "workspaceDialog": {
+    "title": "Novo espaço de trabalho",
+    "tabNew": "Criar novo",
+    "tabGithub": "Importar do GitHub",
+    "githubDescription": "Importe um modelo de espaço de trabalho do GitHub. Isso cria um espaço com todos os agentes prontos para usar.",
+    "githubPlaceholder": "usuario/repo",
+    "githubImport": "Importar",
+    "githubImporting": "Importando espaço de trabalho e agentes..."
+  },
+  "uiTour": {
+    "counter": "Tour {{current}} de {{total}}",
+    "next": "Próximo",
+    "previous": "Voltar",
+    "skip": "Pular tour",
+    "done": "Entendi",
+    "steps": {
+      "assistant": {
+        "title": "Seus agentes",
+        "body": "Todos os agentes deste espaço ficam aqui. Troque entre eles com um clique."
+      },
+      "board": {
+        "title": "O espaço do agente",
+        "body": "É aqui que o agente selecionado trabalha. Tudo que você vê à direita é desse agente."
+      },
+      "newMission": {
+        "title": "Começar um novo chat",
+        "body": "Clique aqui para abrir uma conversa nova. Cada uma vira um cartão de missão."
+      },
+      "tabActivity": {
+        "title": "Atividade",
+        "body": "O painel de cada conversa com este agente. Rodando, precisando de você, prontas."
+      },
+      "tabRoutines": {
+        "title": "Rotinas",
+        "body": "Agende trabalho para rodar em segundo plano. Útil para resumos diários e tarefas recorrentes."
+      },
+      "tabFiles": {
+        "title": "Arquivos",
+        "body": "Documentos que seu assistente pode ler ou compartilhar com você. Solte qualquer coisa aqui para dar contexto."
+      },
+      "tabJobDescription": {
+        "title": "Descrição do Cargo",
+        "body": "As instruções permanentes do seu assistente. Edite quando quiser para mudar como ele se comporta."
+      },
+      "missionControl": {
+        "title": "Central de Missão",
+        "body": "Quando adicionar mais agentes, isso vira o painel único de todos. Um lugar só para ver tudo."
+      },
+      "integrations": {
+        "title": "Integrações",
+        "body": "Ferramentas que seus agentes podem usar, como Gmail e Calendar. As conexões ficam aqui, compartilhadas entre todos os seus agentes."
+      },
+      "appTour": {
+        "title": "Repita o tour",
+        "body": "Esqueceu como algo funciona? Clique aqui quando quiser para rodar o tour de novo."
+      },
+      "newAgent": {
+        "title": "Adicione outro agente",
+        "body": "Você pode criar outro agente aqui a qualquer momento, ou continuar com o que já tem."
+      },
+      "agentStore": {
+        "title": "Escolha por onde começar",
+        "body": "Escolha Começar do zero para um agente em branco, ou pegue um dos nossos na loja e ajuste do seu jeito."
+      },
+      "outro": {
+        "title": "Agora vai construir algo incrível",
+        "body": "Esse é o tour inteiro. O resto é com você, divirta-se.",
+        "confirm": "Vou fazer algo incrível"
+      }
+    }
+  },
+  "agentUpdate": {
+    "title": "Atualização do agente disponível",
+    "descriptionOne": "{{name}} tem uma nova versão disponível.",
+    "descriptionMany": "{{names}} têm novas versões disponíveis.",
+    "descriptionSuffix": "A atualização já foi baixada. Recarregue para aplicar.",
+    "reloadNow": "Recarregar agora"
+  },
+  "authReconnect": {
+    "heading": "Qaio, temos um problema",
+    "body": "Sua sessão no {{provider}} expirou. Entre de novo para manter seus agentes funcionando.",
+    "waiting": "Aguardando o login no navegador...",
+    "signInWith": "Entrar com {{provider}}"
+  },
+  "providerReconnect": {
+    "title": "Sessão expirada",
+    "body": "Sua conexão com o {{provider}} encerrou, isso acontece de vez em quando. Entre de novo e está tudo certo.",
+    "reconnect": "Reconectar ao {{provider}}",
+    "waiting": "Aguardando o login no navegador...",
+    "tryAgain": "Tentar de novo",
+    "launchError": "Não foi possível abrir o login. Tente de novo."
+  },
+  "toolRuntimeError": {
+    "title": "Algo travou",
+    "body": "Uma ferramenta local não iniciou corretamente. Tente de novo e reporte se continuar acontecendo.",
+    "report": "Reportar erro",
+    "reporting": "Enviando relatório...",
+    "reportSuccessTitle": "Relatório enviado",
+    "reportSuccessDescription": "Qaio recebeu os registros.",
+    "reportErrorTitle": "Não foi possível enviar o relatório",
+    "reportErrorDescription": "Tente de novo em instantes.",
+    "retryErrorTitle": "Não foi possível tentar de novo"
+  },
+  "updateChecker": {
+    "cardLabel": "Atualização do Qaio disponível",
+    "title": "Qaio, temos uma atualização!",
+    "availableDescription": "A versão {{version}} está pronta. Você está na v{{currentVersion}}.",
+    "downloading": "Baixando e instalando a atualização...",
+    "downloadingProgress": "Baixando e instalando... {{progress}}%",
+    "ready": "Atualização instalada. Reinicie o Qaio para concluir.",
+    "errorInstall": "O Qaio não conseguiu instalar a atualização. Tente de novo em instantes.",
+    "errorRelaunch": "A atualização foi instalada, mas o Qaio não conseguiu reiniciar sozinho. Reinicie manualmente ou tente de novo.",
+    "detailsHeading": "Novidades",
+    "noDetails": "Esta atualização inclui as correções e melhorias mais recentes.",
+    "primaryAction": "Atualizar e reiniciar",
+    "installingAction": "Instalando atualização...",
+    "relaunchAction": "Reiniciar Qaio",
+    "retryAction": "Tentar de novo"
+  },
+  "store": {
+    "searchPlaceholder": "Buscar na loja...",
+    "noResults": "Nenhum agente corresponde à sua busca"
+  },
+  "naming": {
+    "dialogTitle": "Dê um nome ao seu agente",
+    "newAgentFallback": "Novo agente",
+    "tagline": "Escolha uma cor e dê um nome ao seu agente",
+    "namePlaceholder": "ex. Projeto Alpha",
+    "linkExistingProject": "Vincular projeto existente",
+    "createAgent": "Criar agente"
+  },
+  "newAgent": {
+    "dialogTitle": "Novo agente"
+  },
+  "engineGate": {
+    "starting": "Iniciando o motor do Qaio…"
+  }
+}

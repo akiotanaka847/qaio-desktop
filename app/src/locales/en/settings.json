@@ -1,0 +1,73 @@
+{
+  "title": "Settings",
+  "nav": {
+    "account": "Account",
+    "phone": "Connect phone",
+    "workspace": "Workspace",
+    "provider": "AI provider",
+    "timezone": "Timezone",
+    "language": "Language",
+    "appearance": "Appearance",
+    "danger": "Danger zone"
+  },
+  "account": {
+    "title": "Account",
+    "signOut": "Sign out",
+    "fallbackName": "Signed in"
+  },
+  "workspace": {
+    "title": "Workspace",
+    "nameLabel": "Name"
+  },
+  "provider": {
+    "title": "AI provider",
+    "description": "Qaio uses <emph>your own</emph> subscription. We never see your credentials."
+  },
+  "connectPhone": {
+    "title": "Connect phone",
+    "description": "Scan this code to manage Qaio from your iPhone. The same code keeps working as long as this Mac is on and Qaio is open.",
+    "loading": "Getting ready to connect your phone…",
+    "connectingStatus": "Connecting to the phone service. This usually takes a few seconds.",
+    "keepMacAwake": "Keep this Mac awake while you use Qaio on your phone.",
+    "alwaysOnHint": "For 24/7 access, <emph>Always On</emph> runs Qaio on our servers.",
+    "errors": {
+      "noInternet": "Qaio needs an internet connection the first time you open the app. Please connect and reopen Qaio to enable phone pairing.",
+      "generic": "Couldn't prepare a pairing code. Please try again."
+    },
+    "reset": {
+      "title": "Disconnect all phones",
+      "description": "Resets the QR and signs out every phone currently connected to this Mac.",
+      "button": "Disconnect all phones",
+      "confirmTitle": "Disconnect all phones?",
+      "confirmDescription": "This resets the QR and signs out every phone currently connected to this Mac. Scan the new QR to connect again.",
+      "confirmLabel": "Disconnect",
+      "toast": "Phone access reset"
+    }
+  },
+  "timezone": {
+    "title": "Timezone",
+    "description": "Used when your routines fire, 9am means 9am in this zone.",
+    "label": "IANA zone",
+    "placeholder": "e.g. America/Bogota",
+    "useDetected": "Use detected ({{zone}})"
+  },
+  "appearance": {
+    "title": "Appearance",
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "dangerZone": {
+    "title": "Danger zone",
+    "description": "Permanently delete this workspace and all its agents.",
+    "deleteButton": "Delete workspace",
+    "createAnotherFirst": "Create another workspace first before deleting this one.",
+    "confirmTitle": "Delete \"{{name}}\"?",
+    "confirmDescription": "This will permanently delete this workspace and all its agents. This cannot be undone.",
+    "confirmLabel": "Delete"
+  },
+  "toasts": {
+    "workspaceRenamed": "Workspace renamed",
+    "providerSwitched": "Switched to {{provider}} ({{model}})",
+    "timezoneSet": "Timezone set to {{zone}}"
+  }
+}

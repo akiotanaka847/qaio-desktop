@@ -1,0 +1,203 @@
+# Agent Manifest
+
+Agent definitions = what AI agent looks like. Which tabs. What prompt. What files seeded. Primary dev surface of platform.
+
+## Three tiers
+
+1. **JSON-only** — `qaio.json` + `CLAUDE.md`. Defines tabs, prompt, colors, icon. Uses built-in tab components.
+2. **Custom React** — `qaio.json` + `bundle.js`. Custom components. Import `@qaio-ai/*` as peer deps.
+3. **Workspace template** — `workspace.json` + `agents/` folder. Bundles multiple agents from one GitHub repo.
+
+## Manifest shape
+```ts
+interface AgentManifest {
+  id: string;
+  name: string;
+  description: string;
+  version?: string;
+  icon?: string;           // Lucide icon name
+  color?: string;          // brand override
+  category?: AgentCategory;
+  author?: string;
+  tags?: string[];
+  tabs: AgentTab[];
+  defaultTab?: string;
+  claudeMd?: string;       // CLAUDE.md template content
+  systemPrompt?: string;
+  agentSeeds?: Record<string, string>;
+  features?: string[];     // Rust feature flags needed
+}
+
+interface AgentTab {
+  id: string;
+  label: string;
+  builtIn?: "chat" | "board" | "skills" | "files" | "connections" | "context" | "routines" | "channels" | "events" | "learnings";
+  customComponent?: string;
+  badge?: "activity" | "none";
+}
+```
+
+## Locations
+- **Built-in:** `app/src/agents/builtin/` — `personalAssistantAgent`
+  (default agent for new workspaces) + `blankAgent` (start-from-scratch).
+  The richer catalog lives in Qaio Store under `store/agents/*`.
+- **Installed:** `~/.qaio/agents/{id}/qaio.json` — installed from bundled Qaio Store or downloaded from GitHub.
+- **Override rule:** installed definition with same id as builtin → overrides builtin (dedup in `app/src/stores/agent-configs.ts`).
+
+## Store install flow
+
+Qaio-owned Store agents are release-bundled:
+
+```
+store/
+  catalog.json
+    agents/<agent-id>/
+      qaio.json
+      CLAUDE.md
+      icon.png
+      .agents/skills/<skill>/SKILL.md
+```
+
+`GET /v1/store/catalog` reads this bundled catalog when available.
+`POST /v1/store/installs` with `repo: "qaio-store/<agent-id>"`
+copies the package to `~/.qaio/agents/<agent-id>/` and writes
+`.source.json` with `source: "qaio-store"`, `version`, and
+`content_hash`. Creating a workspace agent from that installed
+definition copies packaged `.agents/skills/*` into the user's agent
+root so chat Skills are available immediately.
+
+Store agents must not use custom Overview dashboards or manifest
+`useCases` for starter workflows. If a workflow should be visible to
+users, package it as a real skill under `.agents/skills/*/SKILL.md`.
+Store-packaged skills must not include legacy `inputs` or
+`prompt_template` frontmatter. The chat Skill picker selects the
+workflow, then the regular composer stays visible for free-form context.
+Store manifests must also not seed `.qaio/activity.json` or
+`.qaio/activity/activity.json`; fresh Store agents start with an empty
+board and the app points users at New Mission. The engine ignores stale
+activity seeds during create, and Store update sync clears the known
+default intro card from existing Store agents only when it is the sole
+board item.
+
+Update checks compare installed `.source.json` to the bundled catalog
+and refresh installed definitions when a newer app release carries a
+newer package. The desktop catalog reloads after updates so existing
+workspace agents pick up new tabs/defaults from the refreshed manifest.
+
+After a bundled package update, Qaio copies newly-added packaged
+Skills into existing workspace agents with the same `config_id`.
+Existing Skill bodies are not overwritten; user edits win. Matching
+Skill frontmatter is refreshed from the bundled package so descriptions,
+integrations, images, category, and featured state can update with a release.
+
+## GitHub import flow
+Engine route remains for developer/manual import. A caller posts an
+`owner/repo` URL and Qaio downloads `qaio.json`, `CLAUDE.md`,
+`icon.png`, `bundle.js` → `~/.qaio/agents/{id}/`. The desktop
+New Agent modal is Store-only for non-technical users.
+
+## Agent creation
+Seeds agent CLAUDE.md from manifest `claudeMd` field or manifest's `CLAUDE.md` file. Fallback: generic template.
+
+## Default Personal assistant + tutorial
+
+Every newly-created workspace gets a `Personal assistant` instance from the
+built-in `personal-assistant` config. Users do not create it manually.
+First-run onboarding is a minimal guided setup, not a static tour or dense HUD:
+
+1. Welcome screen shows the Qaio logo and two cards: start tutorial or skip.
+2. Tutorial card goes straight to creating the Personal assistant.
+3. User connects OpenAI or Claude Code, the agent's brain.
+4. User picks one real mission.
+5. User connects Composio apps, the agent's hands.
+6. Qaio writes one Skill and one Routine, then starts real work when apps
+   are ready.
+7. Normal UI opens with a command-center coach explaining parallel missions,
+   multiple agents, library installs, and Routines.
+
+Skipping onboarding still creates the default Personal assistant, but skips the tutorial Skill/Routine/run artifacts.
+
+## Workspace templates
+
+Bundle multiple agents in one GitHub repo. Import → create workspace w/ all agents ready.
+
+```
+my-workspace/
+  workspace.json
+  agents/
+    agent-one/
+      qaio.json
+      CLAUDE.md
+    agent-two/
+      qaio.json
+      CLAUDE.md
+```
+
+**workspace.json:**
+```json
+{
+  "name": "Workspace Name",
+  "description": "Optional.",
+  "agents": ["agent-one", "agent-two"]
+}
+```
+
+**Import:** "New Workspace > Import from GitHub". Paste `owner/repo`. Qaio downloads workspace.json, installs all agent defs, creates workspace, creates agent instances w/ CLAUDE.md + seed files. All agents chat-ready immediately.
+
+Engine route: `POST /v1/store/workspaces/install-from-github`. Rust impl: `qaio_engine_core::store::install_workspace_from_github`. Server wiring: `engine/qaio-engine-server/src/routes/store.rs`.
+
+## Sidebar structure
+
+```
++-----------------------------+
+| [WorkspaceSwitcher] [Settings] |
+|-----------------------------|
+| > Dashboard                 |  all agents overview
+| > Connections               |  workspace-wide integrations
+|-----------------------------|
+| Your AI Agents              |
+|   > Research Agent    [2]   |  sorted by lastOpenedAt
+|   > Project Manager         |
+|   + New Agent               |  row-style action, opens Store picker
++-----------------------------+
+```
+
+Agent rows show a count chip for `needs_you` activity items. If any
+activity item is `running`, the row avatar uses the same comet glow as
+running board cards. The row `...` menu replaces the count chip on hover
+and keyboard focus. It keeps the count chip hidden while open. The first-level
+menu shows Rename, Change color, Delete; Change color opens the color picker
+submenu.
+
+## Workspace
+- Storage: `~/.qaio/workspaces/workspaces.json` (index) + one dir per workspace `~/.qaio/workspaces/{Name}/`. `QAIO_DOCS` env var overrides the root.
+- First launch: welcome screen, create first workspace
+- Engine routes: `GET /v1/workspaces`, `POST /v1/workspaces`, `POST /v1/workspaces/:id/rename`, `DELETE /v1/workspaces/:id`, `PATCH /v1/workspaces/:id/provider` (`engine/qaio-engine-server/src/routes/workspaces.rs`). Frontend reaches them via `@qaio-ai/engine-client` — no Tauri commands in the path.
+- Store: `useWorkspaceStore` — `loadWorkspaces()`, `setCurrent()`, `create()`, `rename()`, `delete()`
+
+## Prompt assembly
+The final system prompt is `<product_prompt>\n\n---\n\n<agent_context>`, built in two layers:
+
+**Product layer (owned by the embedding app, not the engine).**
+Lives in `app/src-tauri/src/qaio_prompt/` for the Qaio desktop app. Covers the app-context dictionary, concise user voice, the silent interaction loop (classify request, check info, check integrations, decide approval, execute, consider memory), Skills/memory guidance, Routines guidance, and Composio guidance. Passed to the engine at boot via env vars `QAIO_APP_SYSTEM_PROMPT` + `QAIO_APP_ONBOARDING_PROMPT` — the engine keeps them as opaque strings. Callers can also override per-session via the `systemPrompt` field on `startSession`.
+
+**Agent-context layer (engine-owned).**
+Built in `engine/qaio-engine-core/src/agents/prompt.rs::build_agent_context`:
+1. **Working directory block** — hard rules scoping file I/O to `<agent-root>`.
+2. Mode file `.qaio/prompts/modes/<mode>.md` (optional, user-editable).
+3. Learnings snapshot — `.qaio/learnings/learnings.json`, text fields only, rendered as bounded background context. IDs/timestamps stay storage/UI-only.
+4. Skills index — `.agents/skills/` via `qaio_skills::build_skills_index`.
+5. Integrations block — based on `.qaio/integrations.json` if present.
+
+`CLAUDE.md` is read by the CLI (claude/codex) itself at startup, not injected by the engine.
+
+Users cannot edit the product prompt — it's compiled into the app binary. Per-agent surfaces that ARE user-editable: `CLAUDE.md` (job description), `.agents/skills/` (skills), `.qaio/learnings/learnings.json` (learnings), `.qaio/prompts/modes/*.md` (mode overrides).
+
+## Board / Activity tab
+`@qaio-ai/board::AIBoard` = `KanbanBoard` + `KanbanDetailPanel` + `ChatPanel`. Each card = activity from `.qaio/activity/activity.json`. Click → opens chat w/ conversation history. App `board-tab.tsx` ~140 lines, thin store wrapper.
+
+`AIBoard` props: `items, feedItems (keyed by sessionKey), isLoading, onCreateConversation, onSendMessage, onLoadHistory, onDelete, onApprove, onSelect, selectedId`.
+
+Status transitions: session completes → `useSessionEvents` (listens to the WS `*` firehose) → activity status flipped to `needs_you` via the engine update route. The emitted `ActivityChanged` event auto-invalidates TanStack Query → board refreshes.
+
+Columns can have `onAdd` callback → renders "+" button for creating activities from board.

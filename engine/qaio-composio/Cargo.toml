@@ -1,0 +1,24 @@
+[package]
+name = "qaio-composio"
+version = "0.4.8"
+edition = "2021"
+description = "Composio integration — CLI install/lifecycle, OAuth, app catalog (transport-neutral)"
+license = "MIT"
+repository = "https://github.com/getqaio/qaio"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+uuid = { workspace = true }
+reqwest = { version = "0.12", features = ["json"] }
+base64 = "0.22"
+sha2 = "0.10"
+qaio-ui-events = { workspace = true }
+qaio-db = { workspace = true }
+qaio-cli-bundle = { workspace = true }
+# Cross-platform home-directory resolution (used by install.rs to locate
+# `~/.composio/composio[.exe]` on macOS/Linux and `%USERPROFILE%\.composio\…`
+# on Windows).
+dirs = "5"

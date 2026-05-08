@@ -1,0 +1,47 @@
+[package]
+name = "qaio-engine-server"
+version = "0.4.8"
+edition = "2021"
+description = "Qaio Engine HTTP+WS server — axum binary speaking the Qaio wire protocol"
+license = "MIT"
+repository = "https://github.com/getqaio/qaio"
+
+[[bin]]
+name = "qaio-engine"
+path = "src/main.rs"
+
+[dependencies]
+axum = { version = "0.7", features = ["ws", "macros"] }
+tokio = { workspace = true }
+tower = "0.5"
+tower-http = { version = "0.6", features = ["trace", "cors"] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+uuid = { workspace = true }
+chrono = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+sha2 = "0.10"
+base64 = "0.22"
+rand = "0.8"
+futures-util = "0.3"
+qaio-engine-protocol = { version = "0.4.0", path = "../qaio-engine-protocol" }
+qaio-engine-core = { version = "0.4.0", path = "../qaio-engine-core" }
+qaio-composio = { workspace = true }
+qaio-claude-installer = { workspace = true }
+qaio-cli-bundle = { workspace = true }
+qaio-tunnel = { workspace = true }
+qaio-db = { workspace = true }
+async-trait = { workspace = true }
+qaio-skills = { workspace = true, features = ["remote"] }
+qaio-ui-events = { workspace = true }
+qaio-terminal-manager = { workspace = true }
+qaio-file-watcher = { workspace = true }
+anyhow = { workspace = true }
+
+[dev-dependencies]
+reqwest = { version = "0.12", features = ["json"] }
+tokio-tungstenite = "0.24"
+tempfile = "3"
+urlencoding = "2"
+base64 = "0.22"
