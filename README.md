@@ -200,7 +200,7 @@ Full walkthrough + architecture diagram + custom-frontend gotchas in
 - **[For Startups](https://getqaio.ai/startups/)** — build AI-native products on Qaio
 - **[Vision essay](https://getqaio.ai/vision/)** — Ship the impossible
 - **[Learn guide](https://getqaio.ai/learn/)** — five chapters on building agents
-- **[Join the waiting list](https://forms.gle/ac24qrKSufYvfudt8)** — get notified when the app ships
+
 
 ---
 
