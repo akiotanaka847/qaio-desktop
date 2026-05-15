@@ -18,7 +18,7 @@
 #       *.mjs
 #     cli-deps.json                  # pinned URLs + checksums for runtime
 #                                    # downloads (claude-code) — read by the
-#                                    # houston-claude-installer crate.
+#                                    # qaio-claude-installer crate.
 #
 # Output layout — Windows x64 .msi:
 #
@@ -412,7 +412,7 @@ stage_codex_windows() {
   echo "  Installed: $out_path ($(du -sh "$out_path" | cut -f1))"
 }
 
-# Build composio for Windows from the Houston-maintained fork. Upstream
+# Build composio for Windows from the Qaio-maintained fork. Upstream
 # ComposioHQ/composio does not yet publish a Windows artifact — see the
 # `$build_comment` in cli-deps.json for the full reasoning. The build is
 # reproducible: every input (repo URL, commit SHA, package path, Bun

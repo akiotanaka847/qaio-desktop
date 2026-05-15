@@ -327,6 +327,74 @@
       "version": "0.1.0",
       "content_hash": "fbede2b9dd67615241ed40162847b7843c03ba020f6f6b5255c8e2d6d29ee3d0",
       "bundled": true
+    },
+
+    {
+      "id": "workfront-intake",
+      "name": "Workfront Intake",
+      "description": "Convierte mensajes de tu equipo en tickets de Workfront via Fusion. Detecta tipo de solicitud, extrae campos, confirma con el usuario y crea el ticket automaticamente.",
+      "category": "business",
+      "author": "QStrauss",
+      "tags": [
+        "workfront",
+        "fusion",
+        "intake",
+        "tickets",
+        "solicitudes",
+        "teams",
+        "adobe",
+        "project-management",
+        "automation"
+      ],
+      "icon_url": "clipboard",
+      "integrations": [
+        "slack",
+        "gmail",
+        "googlesheets",
+        "notion",
+        "linear",
+        "jira"
+      ],
+      "repo": "qaio-store/workfront-intake",
+      "installs": 0,
+      "registered_at": "2026-05-12",
+      "version": "0.1.0",
+      "content_hash": "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2",
+      "bundled": true
+    },
+
+    {
+      "id": "fusion-mcp",
+      "name": "Fusion Manager",
+      "description": "Documenta, diagnostica y gestiona escenarios de Adobe Workfront Fusion. Genera diagramas, analiza blueprints, detecta errores y produce documentacion tecnica.",
+      "category": "business",
+      "author": "QStrauss",
+      "tags": [
+        "fusion",
+        "workfront",
+        "adobe",
+        "automation",
+        "scenarios",
+        "documentation",
+        "blueprints",
+        "diagrams",
+        "monitoring"
+      ],
+      "icon_url": "scroll",
+      "integrations": [
+        "gmail",
+        "googledocs",
+        "googledrive",
+        "googlesheets",
+        "slack",
+        "notion"
+      ],
+      "repo": "qaio-store/fusion-mcp",
+      "installs": 0,
+      "registered_at": "2026-05-12",
+      "version": "0.1.0",
+      "content_hash": "b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3",
+      "bundled": true
     }
   ]
 }

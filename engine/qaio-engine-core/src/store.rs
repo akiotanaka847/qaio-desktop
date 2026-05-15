@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::{Path, PathBuf};
 
-mod bundled;
+pub(crate) mod bundled;
 pub(crate) use bundled::copy_dir_all;
 use bundled::{bundled_catalog, install_bundled_agent};
 

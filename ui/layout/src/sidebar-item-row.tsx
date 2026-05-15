@@ -60,7 +60,7 @@ export function SidebarItemRow({
     <div
       className={cn(
         sidebarItemRowClasses.root,
-        isActive ? "bg-accent" : "hover:bg-accent/50",
+        isActive ? "bg-sidebar-accent" : "hover:bg-sidebar-accent/50",
       )}
     >
       {isEditing ? (
@@ -81,7 +81,7 @@ export function SidebarItemRow({
           onKeyDown={(e) => onKeyDown(e, item.id)}
           className={cn(
             sidebarItemRowClasses.selectButton,
-            isActive ? "text-foreground" : "text-accent-foreground",
+            isActive ? "text-sidebar-accent-foreground" : "text-sidebar-foreground",
           )}
         >
           {item.icon && (

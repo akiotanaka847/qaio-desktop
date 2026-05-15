@@ -46,8 +46,7 @@
     "targets": ["app", "dmg", "msi"],
     "externalBin": ["binaries/qaio-engine"],
     "resources": {
-      "resources/bin": "bin",
-      "../../store": "store"
+      "resources/store/": "store/"
     },
     "macOS": {
       "signingIdentity": "-",

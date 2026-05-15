@@ -7,7 +7,7 @@ import {
 
 test("decodes attachment marker without exposing prompt body", () => {
   const body =
-    '<!--houston:attachments {"message":"Read this","files":[{"name":"brief.pdf","path":"/tmp/brief.pdf"}]}-->\n\nRead this\n\n[User attached these files. Read them with the Read tool if needed:\n- /tmp/brief.pdf]';
+    '<!--qaio:attachments {"message":"Read this","files":[{"name":"brief.pdf","path":"/tmp/brief.pdf"}]}-->\n\nRead this\n\n[User attached these files. Read them with the Read tool if needed:\n- /tmp/brief.pdf]';
 
   assert.deepEqual(decodeAttachmentMessage(body), {
     message: "Read this",
@@ -25,7 +25,7 @@ test("normalizes names from paths when marker omits file name", () => {
 test("ignores invalid attachment marker payloads", () => {
   assert.equal(decodeAttachmentMessage("hello"), null);
   assert.equal(
-    decodeAttachmentMessage('<!--houston:attachments {"message":"x","files":[]}-->'),
+    decodeAttachmentMessage('<!--qaio:attachments {"message":"x","files":[]}-->'),
     null,
   );
 });

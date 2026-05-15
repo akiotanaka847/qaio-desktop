@@ -1,6 +1,6 @@
 // Fetched at build time. Eleventy 3.x supports async data files.
 // Falls back to an empty list if GitHub is unreachable so builds never break.
-const REPO = "gethouston/houston";
+const REPO = "getqaio/qaio";
 const PER_PAGE = 30;
 
 export default async function () {
@@ -8,7 +8,7 @@ export default async function () {
     const headers = {
       Accept: "application/vnd.github+json",
       "X-GitHub-Api-Version": "2022-11-28",
-      "User-Agent": "houston-website-build",
+      "User-Agent": "qaio-website-build",
     };
     if (process.env.GITHUB_TOKEN) {
       headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;

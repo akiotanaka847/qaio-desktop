@@ -151,7 +151,7 @@ export function AppSidebar({
         {/* Section label */}
         {sectionLabel && (
           <div className="px-3 pt-3 pb-1">
-            <div className="text-xs font-medium text-muted-foreground">
+            <div className="text-xs font-medium text-sidebar-foreground/50">
               {sectionLabel}
             </div>
           </div>

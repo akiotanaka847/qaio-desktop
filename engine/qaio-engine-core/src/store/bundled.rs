@@ -282,6 +282,21 @@ fn cmp_versions(a: &str, b: &str) -> std::cmp::Ordering {
     std::cmp::Ordering::Equal
 }
 
+/// Read `QSTRAUSS.md` from the first bundled store agent that has it.
+/// Used as fallback when creating agents not from the store.
+pub fn bundled_qstrauss_md() -> Option<String> {
+    let root = bundled_store_root()?;
+    let agents_dir = root.join("agents");
+    let entries = fs::read_dir(&agents_dir).ok()?;
+    for entry in entries.flatten() {
+        let path = entry.path().join("QSTRAUSS.md");
+        if let Ok(content) = fs::read_to_string(&path) {
+            return Some(content);
+        }
+    }
+    None
+}
+
 pub(super) fn bundled_catalog() -> CoreResult<Option<Vec<StoreListing>>> {
     let Some(root) = bundled_store_root() else {
         return Ok(None);
@@ -300,6 +315,15 @@ fn bundled_store_root() -> Option<PathBuf> {
         let path = PathBuf::from(dir);
         if path.join("catalog.json").exists() {
             return Some(path);
+        }
+    }
+
+    if let Ok(exe) = std::env::current_exe() {
+        if let Some(macos_dir) = exe.parent() {
+            let resources = macos_dir.join("../Resources/store");
+            if resources.join("catalog.json").exists() {
+                return Some(resources);
+            }
         }
     }
 
@@ -453,6 +477,21 @@ pub(super) fn sync_bundled_agent_instances(
             }
             if clear_seeded_intro_activity(&folder)? {
                 instance_changed = true;
+            }
+
+            // 2b. Sync QSTRAUSS.md — always overwrite with the latest
+            //     bundled version so company knowledge stays current.
+            let bundled_qstrauss = agent_dir.join("QSTRAUSS.md");
+            if bundled_qstrauss.exists() {
+                let target_qstrauss = folder.join("QSTRAUSS.md");
+                let bundled_content = fs::read_to_string(&bundled_qstrauss)?;
+                let needs_write = fs::read_to_string(&target_qstrauss)
+                    .map(|existing| existing != bundled_content)
+                    .unwrap_or(true);
+                if needs_write {
+                    fs::write(&target_qstrauss, &bundled_content)?;
+                    instance_changed = true;
+                }
             }
 
             // 3. Stamp the marker so the next sync starts from this
