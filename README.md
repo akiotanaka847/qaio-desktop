@@ -7,16 +7,9 @@
 <p align="center">
   <strong>The open source platform for AI-native products.</strong><br>
   One desktop app. Pre-built AI agents that work from day one.<br>
-  Real tools. 1000+ integrations. Free forever.
+  Real tools. 1000+ integrations. Free.
 </p>
 
-<p align="center">
-  <a href="https://getqaio.ai">getqaio.ai</a> ·
-  <a href="https://getqaio.ai/vision/">Vision</a> ·
-  <a href="https://getqaio.ai/learn/">Learn</a> ·
-  <a href="https://getqaio.ai/startups/">For Startups</a> ·
-  <a href="https://forms.gle/ac24qrKSufYvfudt8">Join the waiting list</a>
-</p>
 
 <p align="center">
   <a href="https://github.com/getqaio/qaio/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-0d0d0d" alt="MIT License"></a>
@@ -194,15 +187,6 @@ Full walkthrough + architecture diagram + custom-frontend gotchas in
 
 ---
 
-## Resources
-
-- **[getqaio.ai](https://getqaio.ai)** — landing page
-- **[For Startups](https://getqaio.ai/startups/)** — build AI-native products on Qaio
-- **[Vision essay](https://getqaio.ai/vision/)** — Ship the impossible
-- **[Learn guide](https://getqaio.ai/learn/)** — five chapters on building agents
-
-
----
 
 ## Contributing
 
