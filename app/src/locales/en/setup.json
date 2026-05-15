@@ -56,7 +56,7 @@
         "body": "Your assistant needs an AI provider to think and write. Qaio uses your own subscription.",
         "continue": "Create my assistant",
         "creating": "Creating",
-        "continueHint": "Qaio will create your assistant and open the next mission."
+        "continueHint": "Qaio will create your assistant and you're ready to go."
       },
       "tools": {
         "title": "Give it your own tools",

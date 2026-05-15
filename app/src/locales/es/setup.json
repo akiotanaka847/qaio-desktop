@@ -56,7 +56,7 @@
         "body": "Tu asistente necesita un proveedor de IA para pensar y escribir. Qaio usa tu propia suscripción.",
         "continue": "Crear mi asistente",
         "creating": "Creando",
-        "continueHint": "Qaio creará tu asistente y abrirá la siguiente misión."
+        "continueHint": "Qaio creará tu asistente y estarás listo."
       },
       "tools": {
         "title": "Dale tus propias herramientas",

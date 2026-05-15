@@ -56,7 +56,7 @@
         "body": "Seu assistente precisa de um provedor de IA para pensar e escrever. O Qaio usa sua própria assinatura.",
         "continue": "Criar meu assistente",
         "creating": "Criando",
-        "continueHint": "O Qaio vai criar seu assistente e abrir a próxima missão."
+        "continueHint": "O Qaio vai criar seu assistente e você está pronto."
       },
       "tools": {
         "title": "Dê as suas próprias ferramentas",

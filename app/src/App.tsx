@@ -1,6 +1,6 @@
 import "./styles/globals.css";
 import type { Toast } from "@qaio-ai/core";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 import { tauriSystem, tauriWorkspaces } from "./lib/tauri";
@@ -22,6 +22,11 @@ import { WorkspaceShell } from "./components/shell/workspace-shell";
 import {
   createPersonalAssistantForWorkspace,
 } from "./components/onboarding/create-personal-assistant";
+import { SetupTutorial } from "./components/onboarding/setup-tutorial";
+import {
+  buildAssistantInstructions,
+  defaultAssistantSetup,
+} from "./components/onboarding/personal-assistant-artifacts";
 import { shouldAllowNativeContextMenu } from "./lib/context-menu";
 
 export default function App() {
@@ -101,8 +106,6 @@ export default function App() {
   const agentLoading = useAgentStore((s) => s.loading);
   const toasts = useUIStore((s) => s.toasts);
   const dismissToast = useUIStore((s) => s.dismissToast);
-  const [autoSetupDone, setAutoSetupDone] = useState(false);
-  const autoSetupRef = useRef(false);
 
   const mappedToasts: Toast[] = toasts.map((t) => ({
     id: t.id,
@@ -111,33 +114,41 @@ export default function App() {
     action: t.action,
   }));
 
-  useEffect(() => {
-    if (wsLoading || agentLoading) return;
-    if (workspaces.length > 0) return;
-    if (autoSetupRef.current) return;
-    autoSetupRef.current = true;
+  const needsSetup = !wsLoading && !agentLoading && workspaces.length === 0;
 
-    (async () => {
-      const wsName = t("setup:tutorial.defaults.workspaceName");
-      const asstName = t("setup:tutorial.defaults.assistantName");
-      const ws = await tauriWorkspaces.create(wsName, "anthropic", "sonnet");
-      analytics.track("workspace_created", { provider: "anthropic", source: "auto-setup" });
-      const agent = await createPersonalAssistantForWorkspace(ws.id, {
-        name: asstName,
-        instructions: `# ${asstName}\n\nYou are my Personal assistant in Qaio.`,
-        color: "navy",
-        provider: "anthropic",
-        model: "sonnet",
-      });
-      await useWorkspaceStore.getState().loadWorkspaces();
-      useWorkspaceStore.getState().setCurrent(ws);
-      await useAgentStore.getState().loadAgents(ws.id);
-      const refreshed =
-        useAgentStore.getState().agents.find((a) => a.id === agent.id) ?? agent;
-      useAgentStore.getState().setCurrent(refreshed);
-      setAutoSetupDone(true);
-    })();
-  }, [wsLoading, agentLoading, workspaces.length, t]);
+  const handleSetupComplete = async (opts: {
+    name: string;
+    color: string;
+    provider: string;
+    model: string;
+  }) => {
+    const setup = defaultAssistantSetup({
+      workspaceName: t("setup:tutorial.defaults.workspaceName"),
+      assistantName: opts.name,
+      focus: t("setup:tutorial.defaults.focus"),
+      approvalRule: t("setup:tutorial.defaults.approvalRule"),
+    });
+    setup.color = opts.color;
+    const ws = await tauriWorkspaces.create(
+      setup.workspaceName.trim(),
+      opts.provider,
+      opts.model,
+    );
+    analytics.track("workspace_created", { provider: opts.provider, source: "setup-tutorial" });
+    const agent = await createPersonalAssistantForWorkspace(ws.id, {
+      name: setup.assistantName.trim(),
+      instructions: buildAssistantInstructions(setup, t("setup:tutorial.defaults.firstWorkflow")),
+      color: setup.color,
+      provider: opts.provider,
+      model: opts.model,
+    });
+    await useWorkspaceStore.getState().loadWorkspaces();
+    useWorkspaceStore.getState().setCurrent(ws);
+    await useAgentStore.getState().loadAgents(ws.id);
+    const refreshed =
+      useAgentStore.getState().agents.find((a) => a.id === agent.id) ?? agent;
+    useAgentStore.getState().setCurrent(refreshed);
+  };
 
   if (isAuthConfigured() && sessionLoading) {
     return (
@@ -150,12 +161,16 @@ export default function App() {
     return <SignInScreen />;
   }
 
-  if (agentLoading || wsLoading || (workspaces.length === 0 && !autoSetupDone)) {
+  if (agentLoading || wsLoading) {
     return (
       <div className="h-screen flex items-center justify-center bg-background text-foreground">
         <p className="text-muted-foreground text-sm">{t("shell:engineGate.starting")}</p>
       </div>
     );
+  }
+
+  if (needsSetup) {
+    return <SetupTutorial onComplete={handleSetupComplete} />;
   }
 
   return (
