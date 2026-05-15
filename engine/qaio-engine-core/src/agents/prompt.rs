@@ -175,6 +175,10 @@ pub fn build_agent_context(
         parts.push(learnings);
     }
 
+    if let Ok(content) = fs::read_to_string(dir.join("QSTRAUSS.md")) {
+        parts.push(content);
+    }
+
     let skills_dir = dir.join(".agents/skills");
     if let Ok(index) = qaio_skills::build_skills_index(&skills_dir) {
         if !index.is_empty() {

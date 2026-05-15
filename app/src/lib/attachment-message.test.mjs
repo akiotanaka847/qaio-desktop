@@ -21,9 +21,9 @@ test("attachment prompt includes display marker and hidden path block", () => {
   const prompt = buildAttachmentPrompt(
     "Summarize this",
     [file("brief.pdf")],
-    ["/Users/ja/.houston/cache/attachments/brief.pdf"],
+    ["/Users/ja/.qaio/cache/attachments/brief.pdf"],
   );
-  const match = prompt.match(/^<!--houston:attachments (\{.*\})-->/);
+  const match = prompt.match(/^<!--qaio:attachments (\{.*\})-->/);
 
   assert.ok(match);
   assert.deepEqual(JSON.parse(match[1]), {
@@ -31,12 +31,12 @@ test("attachment prompt includes display marker and hidden path block", () => {
     files: [
       {
         name: "brief.pdf",
-        path: "/Users/ja/.houston/cache/attachments/brief.pdf",
+        path: "/Users/ja/.qaio/cache/attachments/brief.pdf",
       },
     ],
   });
   assert.match(prompt, /\[User attached these files\. Read them with the Read tool if needed:/);
-  assert.match(prompt, /- \/Users\/ja\/\.houston\/cache\/attachments\/brief\.pdf/);
+  assert.match(prompt, /- \/Users\/ja\/\.qaio\/cache\/attachments\/brief\.pdf/);
 });
 
 test("attachment references fall back to file name from path", () => {

@@ -3,6 +3,7 @@ import { Input } from "@qaio-ai/core";
 import { Search } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { AgentDefinition, StoreListing } from "../../lib/types";
+import { builtinConfigs } from "../../agents/builtin";
 import { AgentCard, StoreAgentCard } from "./experience-card";
 
 interface StoreStepProps {
@@ -28,19 +29,27 @@ export function StoreStep({
     () => new Set(storeCatalog.map((listing) => listing.id)),
     [storeCatalog],
   );
+  const builtinIds = useMemo(
+    () => new Set(builtinConfigs.map((c) => c.id)),
+    [],
+  );
   const query = search.trim().toLowerCase();
 
   const filteredAgents = useMemo(
     () =>
       agents.filter((d) => {
-        if (d.source === "installed" && d.config.author === "Qaio") {
+        // Always show builtin presets (Personal assistant, Start from scratch)
+        if (builtinIds.has(d.config.id)) {
+          if (!query) return true;
+          return matchesAgent(d, query);
+        }
+        if (d.source === "installed" && storeIds.has(d.config.id)) {
           return false;
         }
-        if (storeIds.has(d.config.id)) return false;
         if (!query) return true;
         return matchesAgent(d, query);
       }),
-    [agents, query, storeIds],
+    [agents, query, storeIds, builtinIds],
   );
 
   const filteredStore = useMemo(

@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { buildTurnSummaryItems, groupTurnSummaryItems } from "./turn-summary-items.ts";
 
-const agentPath = "/Users/me/Houston/Agent";
+const agentPath = "/Users/me/Qaio/Agent";
 
 test("summarizes internal agent files as semantic updates", () => {
   const items = buildTurnSummaryItems(
@@ -19,7 +19,7 @@ test("summarizes internal agent files as semantic updates", () => {
       },
       {
         name: "Write",
-        input: { file_path: `${agentPath}/.houston/learnings/learnings.json` },
+        input: { file_path: `${agentPath}/.qaio/learnings/learnings.json` },
         result: { content: "ok", is_error: false },
       },
     ],

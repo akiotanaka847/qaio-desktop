@@ -5,7 +5,7 @@ VERSION="${1:?Usage: ./scripts/version.sh <version>}"
 
 echo "Bumping all packages to v$VERSION..."
 
-# NPM packages — only the ones that share the Houston version line.
+# NPM packages — only the ones that share the Qaio version line.
 # ui/agent, ui/agent-schemas, ui/engine-client, ui/sync-protocol are
 # versioned independently and are intentionally excluded.
 for pkg in core chat board layout skills events routines review; do
@@ -24,7 +24,7 @@ done
 # which sed would otherwise clobber and break cargo resolution.
 # Use perl instead of `1,/regex/s//new/` because BSD sed (macOS)
 # rejects the empty back-reference with "first RE may not be empty".
-for toml in engine/*/Cargo.toml app/houston-tauri/Cargo.toml app/src-tauri/Cargo.toml; do
+for toml in engine/*/Cargo.toml app/qaio-tauri/Cargo.toml app/src-tauri/Cargo.toml; do
   perl -i -pe 'BEGIN{$d=0} if(!$d && /^version = "[^"]+"$/){s/^version = "[^"]+"$/version = "'"$VERSION"'"/; $d=1}' "$toml"
 done
 

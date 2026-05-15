@@ -9,7 +9,7 @@ if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
   exit 1
 fi
 
-echo "Releasing Houston v$VERSION..."
+echo "Releasing Qaio v$VERSION..."
 
 # 1. Bump all versions
 ./scripts/version.sh "$VERSION"
@@ -22,7 +22,7 @@ git add -A
 git commit -m "release: v$VERSION"
 
 # 4. Tag
-git tag -a "v$VERSION" -m "Houston v$VERSION"
+git tag -a "v$VERSION" -m "Qaio v$VERSION"
 
 # 5. Push
 git push origin main --tags
@@ -35,17 +35,17 @@ done
 
 # 7. Publish Rust crates (in dependency order)
 echo "Publishing Rust crates..."
-for crate in houston-db houston-events houston-terminal-manager houston-scheduler houston-channels houston-memory houston-skills; do
+for crate in qaio-db qaio-events qaio-terminal-manager qaio-scheduler qaio-channels qaio-memory qaio-skills; do
   (cd "engine/$crate" && cargo publish)
   sleep 15  # crates.io rate limit
 done
-# houston-tauri lives in app/ (Tauri adapter, not part of Engine)
-(cd "app/houston-tauri" && cargo publish)
+# qaio-tauri lives in app/ (Tauri adapter, not part of Engine)
+(cd "app/qaio-tauri" && cargo publish)
 
 # 8. Create GitHub release
 echo "Creating GitHub release..."
 gh release create "v$VERSION" \
-  --title "Houston v$VERSION" \
+  --title "Qaio v$VERSION" \
   --generate-notes
 
-echo "Released Houston v$VERSION"
+echo "Released Qaio v$VERSION"

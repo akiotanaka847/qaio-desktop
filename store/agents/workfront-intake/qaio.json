@@ -1,0 +1,63 @@
+{
+  "id": "workfront-intake",
+  "name": "Workfront Intake",
+  "description": "Convierte mensajes de tu equipo en tickets de Workfront via Fusion. Detecta tipo de solicitud, extrae campos, confirma con el usuario y crea el ticket automaticamente. Funciona desde Teams, chat o cualquier canal.",
+  "icon": "ClipboardCheck",
+  "category": "business",
+  "author": "QStrauss",
+  "tags": [
+    "workfront",
+    "fusion",
+    "intake",
+    "tickets",
+    "solicitudes",
+    "teams",
+    "adobe",
+    "project-management",
+    "automation"
+  ],
+  "tabs": [
+    {
+      "id": "activity",
+      "label": "Activity",
+      "builtIn": "board",
+      "badge": "activity"
+    },
+    {
+      "id": "routines",
+      "label": "Routines",
+      "builtIn": "routines"
+    },
+    {
+      "id": "job-description",
+      "label": "Job Description",
+      "builtIn": "job-description"
+    },
+    {
+      "id": "files",
+      "label": "Files",
+      "builtIn": "files"
+    },
+    {
+      "id": "integrations",
+      "label": "Integrations",
+      "builtIn": "integrations"
+    }
+  ],
+  "defaultTab": "activity",
+  "agentSeeds": {
+    "outputs.json": "[]",
+    "config/request-types.json": "{\n  \"types\": [\n    {\"id\": \"bug\", \"label\": \"Bug\", \"priority\": \"high\", \"queue\": \"DEV\"},\n    {\"id\": \"feature\", \"label\": \"Feature Request\", \"priority\": \"medium\", \"queue\": \"DEV\"},\n    {\"id\": \"content\", \"label\": \"Content Update\", \"priority\": \"medium\", \"queue\": \"MKT\"},\n    {\"id\": \"access\", \"label\": \"Access Request\", \"priority\": \"low\", \"queue\": \"OPS\"},\n    {\"id\": \"general\", \"label\": \"General Request\", \"priority\": \"medium\", \"queue\": \"OPS\"}\n  ]\n}",
+    ".qaio/routines/routines.json": "[{\"id\": \"daily-intake-review\", \"name\": \"Daily intake review\", \"description\": \"Every morning: review pending requests, flag stale tickets, summarize yesterday's intake volume.\", \"prompt\": \"Review all pending intake requests. Summarize: how many came in yesterday, how many are still pending confirmation, any that are older than 24h without action. Flag stale items.\", \"schedule\": \"0 9 * * 1-5\", \"enabled\": true, \"suppress_when_silent\": true, \"created_at\": \"2026-05-12T00:00:00Z\", \"updated_at\": \"2026-05-12T00:00:00Z\"}]"
+  },
+  "version": "0.1.0",
+  "image": "clipboard",
+  "integrations": [
+    "slack",
+    "gmail",
+    "googlesheets",
+    "notion",
+    "linear",
+    "jira"
+  ]
+}

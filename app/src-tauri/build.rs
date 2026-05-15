@@ -15,16 +15,8 @@ fn main() {
         println!("cargo:warning=qaio-engine sidecar staging skipped: {e}");
     }
 
-    // Ensure the bundled-CLI staging directory exists. Tauri's `bundle.resources`
-    // points at `resources/bin` and its resource walker errors out if the
-    // directory is missing entirely (a real config error would still surface
-    // — empty walks are silent). CI populates this dir via
-    // `scripts/fetch-cli-deps.sh both` before invoking the bundler. Local
-    // `pnpm tauri dev` builds don't strictly need bundled CLIs (engine
-    // falls back to PATH lookup / `~/.composio` install), so we create
-    // an empty dir here to keep the config valid without forcing every
-    // developer to fetch ~700 MB of binaries on first checkout.
     ensure_resources_bin_dir();
+    stage_store();
 
     tauri_build::build()
 }
@@ -124,6 +116,39 @@ fn ensure_resources_bin_dir() {
     }
 }
 
+fn stage_store() {
+    let manifest = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    let src = manifest.join("..").join("..").join("store");
+    let dest = manifest.join("resources").join("store");
+
+    if !src.join("catalog.json").exists() {
+        println!("cargo:warning=store/catalog.json not found at {}, skipping store staging", src.display());
+        return;
+    }
+
+    println!("cargo:rerun-if-changed={}", src.join("catalog.json").display());
+
+    if let Err(e) = copy_dir_recursive(&src, &dest) {
+        println!("cargo:warning=store staging failed: {e}");
+    }
+}
+
+fn copy_dir_recursive(src: &std::path::Path, dest: &std::path::Path) -> Result<(), String> {
+    std::fs::create_dir_all(dest).map_err(|e| format!("mkdir {}: {e}", dest.display()))?;
+    let entries = std::fs::read_dir(src).map_err(|e| format!("readdir {}: {e}", src.display()))?;
+    for entry in entries {
+        let entry = entry.map_err(|e| format!("entry: {e}"))?;
+        let ty = entry.file_type().map_err(|e| format!("filetype: {e}"))?;
+        let dst = dest.join(entry.file_name());
+        if ty.is_dir() {
+            copy_dir_recursive(&entry.path(), &dst)?;
+        } else {
+            std::fs::copy(entry.path(), &dst).map_err(|e| format!("copy: {e}"))?;
+        }
+    }
+    Ok(())
+}
+
 fn stage_engine_sidecar() -> Result<(), String> {
     let manifest = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     let workspace = manifest
@@ -181,7 +206,20 @@ fn stage_engine_sidecar() -> Result<(), String> {
         format!("qaio-engine-{triple}")
     };
     let dest = dest_dir.join(&dest_name);
-    std::fs::copy(src, &dest).map_err(|e| format!("copy engine sidecar: {e}"))?;
+    // Only copy if content actually changed — otherwise the write updates the
+    // mtime, Tauri's file-watcher sees a change, triggers a rebuild, build.rs
+    // copies again → infinite loop.
+    let needs_copy = match (std::fs::metadata(src), std::fs::metadata(&dest)) {
+        (Ok(src_meta), Ok(dest_meta)) => src_meta.len() != dest_meta.len() || {
+            let src_bytes = std::fs::read(src).unwrap_or_default();
+            let dest_bytes = std::fs::read(&dest).unwrap_or_default();
+            src_bytes != dest_bytes
+        },
+        _ => true,
+    };
+    if needs_copy {
+        std::fs::copy(src, &dest).map_err(|e| format!("copy engine sidecar: {e}"))?;
+    }
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;

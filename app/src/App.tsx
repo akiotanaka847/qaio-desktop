@@ -1,9 +1,9 @@
 import "./styles/globals.css";
 import type { Toast } from "@qaio-ai/core";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { tauriSystem } from "./lib/tauri";
+import { tauriSystem, tauriWorkspaces } from "./lib/tauri";
 import { useQaioInit } from "./hooks/use-qaio-init";
 import { useSessionEvents } from "./hooks/use-session-events";
 import { useAgentInvalidation } from "./hooks/use-agent-invalidation";
@@ -18,8 +18,10 @@ import { isAuthConfigured } from "./lib/supabase";
 import { installDeepLinkListener } from "./lib/auth";
 import { useSession } from "./hooks/use-session";
 import { SignInScreen } from "./components/auth/sign-in-screen";
-import { PersonalAssistantOnboarding } from "./components/onboarding/personal-assistant-onboarding";
 import { WorkspaceShell } from "./components/shell/workspace-shell";
+import {
+  createPersonalAssistantForWorkspace,
+} from "./components/onboarding/create-personal-assistant";
 import { shouldAllowNativeContextMenu } from "./lib/context-menu";
 
 export default function App() {
@@ -93,13 +95,14 @@ export default function App() {
     return () => document.removeEventListener("contextmenu", handler);
   }, []);
 
-  const { t } = useTranslation("shell");
+  const { t } = useTranslation(["shell", "setup"]);
   const wsLoading = useWorkspaceStore((s) => s.loading);
   const workspaces = useWorkspaceStore((s) => s.workspaces);
   const agentLoading = useAgentStore((s) => s.loading);
   const toasts = useUIStore((s) => s.toasts);
   const dismissToast = useUIStore((s) => s.dismissToast);
-  const tutorialActive = useUIStore((s) => s.tutorialActive);
+  const [autoSetupDone, setAutoSetupDone] = useState(false);
+  const autoSetupRef = useRef(false);
 
   const mappedToasts: Toast[] = toasts.map((t) => ({
     id: t.id,
@@ -108,14 +111,38 @@ export default function App() {
     action: t.action,
   }));
 
-  // Auth gate: Supabase configured + session not yet resolved → splash.
-  // Already resolved to null → sign-in screen. `null` session on a
-  // transient Supabase blip (access token still valid in Keychain)
-  // is unlikely because getSession() reads locally, not remotely.
+  useEffect(() => {
+    if (wsLoading || agentLoading) return;
+    if (workspaces.length > 0) return;
+    if (autoSetupRef.current) return;
+    autoSetupRef.current = true;
+
+    (async () => {
+      const wsName = t("setup:tutorial.defaults.workspaceName");
+      const asstName = t("setup:tutorial.defaults.assistantName");
+      const ws = await tauriWorkspaces.create(wsName, "anthropic", "sonnet");
+      analytics.track("workspace_created", { provider: "anthropic", source: "auto-setup" });
+      const agent = await createPersonalAssistantForWorkspace(ws.id, {
+        name: asstName,
+        instructions: `# ${asstName}\n\nYou are my Personal assistant in Qaio.`,
+        color: "navy",
+        provider: "anthropic",
+        model: "sonnet",
+      });
+      await useWorkspaceStore.getState().loadWorkspaces();
+      useWorkspaceStore.getState().setCurrent(ws);
+      await useAgentStore.getState().loadAgents(ws.id);
+      const refreshed =
+        useAgentStore.getState().agents.find((a) => a.id === agent.id) ?? agent;
+      useAgentStore.getState().setCurrent(refreshed);
+      setAutoSetupDone(true);
+    })();
+  }, [wsLoading, agentLoading, workspaces.length, t]);
+
   if (isAuthConfigured() && sessionLoading) {
     return (
       <div className="h-screen flex items-center justify-center bg-background text-foreground">
-        <p className="text-muted-foreground text-sm">{t("engineGate.starting")}</p>
+        <p className="text-muted-foreground text-sm">{t("shell:engineGate.starting")}</p>
       </div>
     );
   }
@@ -123,35 +150,11 @@ export default function App() {
     return <SignInScreen />;
   }
 
-  // First-run tutorial. Held in front of the shell while the orchestrator is
-  // mid-flight, even after the workspace and agent have been created (M2+).
-  // Checked BEFORE the loading splash on purpose: when M2 (Brain) creates the
-  // workspace it triggers `loadWorkspaces()` which flips `wsLoading` to true.
-  // If the splash rendered here it would unmount the orchestrator, fire its
-  // cleanup, and clear `tutorialActive` — kicking the user out of the tutorial.
-  if (tutorialActive) {
-    return (
-      <PersonalAssistantOnboarding
-        toasts={mappedToasts}
-        onDismissToast={dismissToast}
-      />
-    );
-  }
-
-  if (agentLoading || wsLoading) {
+  if (agentLoading || wsLoading || (workspaces.length === 0 && !autoSetupDone)) {
     return (
       <div className="h-screen flex items-center justify-center bg-background text-foreground">
-        <p className="text-muted-foreground text-sm">{t("engineGate.starting")}</p>
+        <p className="text-muted-foreground text-sm">{t("shell:engineGate.starting")}</p>
       </div>
-    );
-  }
-
-  if (workspaces.length === 0) {
-    return (
-      <PersonalAssistantOnboarding
-        toasts={mappedToasts}
-        onDismissToast={dismissToast}
-      />
     );
   }
 

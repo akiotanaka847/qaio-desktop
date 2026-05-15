@@ -1,0 +1,63 @@
+{
+  "id": "fusion-mcp",
+  "name": "Fusion Manager",
+  "description": "Documenta, diagnostica y gestiona escenarios de Adobe Workfront Fusion. Genera diagramas de flujo, analiza blueprints, detecta errores y produce documentacion tecnica lista para compartir con tu equipo.",
+  "icon": "Workflow",
+  "category": "business",
+  "author": "QStrauss",
+  "tags": [
+    "fusion",
+    "workfront",
+    "adobe",
+    "automation",
+    "scenarios",
+    "documentation",
+    "blueprints",
+    "diagrams",
+    "monitoring"
+  ],
+  "tabs": [
+    {
+      "id": "activity",
+      "label": "Activity",
+      "builtIn": "board",
+      "badge": "activity"
+    },
+    {
+      "id": "routines",
+      "label": "Routines",
+      "builtIn": "routines"
+    },
+    {
+      "id": "job-description",
+      "label": "Job Description",
+      "builtIn": "job-description"
+    },
+    {
+      "id": "files",
+      "label": "Files",
+      "builtIn": "files"
+    },
+    {
+      "id": "integrations",
+      "label": "Integrations",
+      "builtIn": "integrations"
+    }
+  ],
+  "defaultTab": "activity",
+  "agentSeeds": {
+    "outputs.json": "[]",
+    "config/fusion-config.json": "{\n  \"base_url\": \"https://app.workfrontfusion.com/api/v2\",\n  \"team_id\": \"\",\n  \"token\": \"\"\n}",
+    ".qaio/routines/routines.json": "[{\"id\": \"weekly-scenario-health\", \"name\": \"Weekly scenario health check\", \"description\": \"Every Monday: review all active Fusion scenarios for errors, warnings, and performance issues.\", \"prompt\": \"Run a health check on all active Fusion scenarios. Check execution logs for the past 7 days. Flag: scenarios with error rate > 5%, scenarios that havent run in 7+ days, scenarios with average execution time > 60s. Summarize findings and recommend fixes.\", \"schedule\": \"0 9 * * 1\", \"enabled\": true, \"suppress_when_silent\": true, \"created_at\": \"2026-05-12T00:00:00Z\", \"updated_at\": \"2026-05-12T00:00:00Z\"}, {\"id\": \"monthly-docs-refresh\", \"name\": \"Monthly documentation refresh\", \"description\": \"1st of every month: regenerate documentation for all scenarios that changed since last refresh.\", \"prompt\": \"Check which Fusion scenarios have been modified since the last documentation run. For each changed scenario: regenerate the flow diagram, update the data mapping, refresh the blueprint analysis. Save updated docs to docs/{scenario-name}/.\", \"schedule\": \"0 10 1 * *\", \"enabled\": true, \"suppress_when_silent\": true, \"created_at\": \"2026-05-12T00:00:00Z\", \"updated_at\": \"2026-05-12T00:00:00Z\"}]"
+  },
+  "version": "0.1.0",
+  "image": "scroll",
+  "integrations": [
+    "gmail",
+    "googledocs",
+    "googledrive",
+    "googlesheets",
+    "slack",
+    "notion"
+  ]
+}

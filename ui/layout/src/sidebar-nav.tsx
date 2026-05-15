@@ -27,8 +27,8 @@ export function SidebarNavItem({
       className={cn(
         "w-full flex items-center gap-2 text-sm py-1.5 px-2.5 rounded-lg transition-colors",
         active
-          ? "bg-accent font-medium text-foreground"
-          : "text-foreground hover:bg-accent",
+          ? "bg-sidebar-accent font-medium text-sidebar-foreground"
+          : "text-sidebar-foreground hover:bg-sidebar-accent",
       )}
     >
       {icon}

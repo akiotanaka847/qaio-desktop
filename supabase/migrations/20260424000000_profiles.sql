@@ -1,8 +1,8 @@
--- profiles: mirror of auth.users with the subset of user data Houston
+-- profiles: mirror of auth.users with the subset of user data Qaio
 -- actually uses (display name, avatar). Auto-populated via trigger on
 -- auth.users insert. RLS keeps each user's row private to themselves.
 --
--- This is the minimum schema needed for the auth foundation; Houston
+-- This is the minimum schema needed for the auth foundation; Qaio
 -- Cloud tables (workspaces, sync state, team membership) will layer on
 -- top in later migrations.
 
