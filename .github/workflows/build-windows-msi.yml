@@ -41,11 +41,50 @@ jobs:
           key: ${{ runner.os }}-cargo-windows-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: ${{ runner.os }}-cargo-windows-
 
-      - name: Create empty resources/bin (skip bundled CLIs for now)
+      - name: Install Bun (pinned to cli-deps.json)
+        shell: pwsh
+        run: |
+          $bunVersion = (Get-Content cli-deps.json | ConvertFrom-Json).composio.build.'windows-x64'.bun_version
+          Write-Host "Installing Bun $bunVersion (direct GitHub release download)"
+          $bunDir = "$HOME\.bun\bin"
+          New-Item -ItemType Directory -Force -Path $bunDir | Out-Null
+          $url = "https://github.com/oven-sh/bun/releases/download/bun-v$bunVersion/bun-windows-x64.zip"
+          $zipPath = "$env:TEMP\bun-windows-x64.zip"
+          Invoke-WebRequest -Uri $url -OutFile $zipPath
+          Expand-Archive -Force -Path $zipPath -DestinationPath "$env:TEMP\bun-extract"
+          Copy-Item -Force "$env:TEMP\bun-extract\bun-windows-x64\bun.exe" "$bunDir\bun.exe"
+          Remove-Item -Recurse -Force "$env:TEMP\bun-extract", $zipPath
+          echo "$bunDir" | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
+          $actual = & "$bunDir\bun.exe" --version
+          if ($actual.Trim() -ne $bunVersion) {
+            Write-Error "Bun version mismatch after install: got '$actual', expected '$bunVersion'"
+            exit 1
+          }
+          Write-Host "Pinned Bun OK: $actual"
+
+      - name: Install jq + zstd (Chocolatey)
+        shell: pwsh
+        run: |
+          choco install -y jq zstandard --no-progress
+          jq --version
+          zstd --version
+
+      - name: Stage bundled CLI dependencies (codex, composio Windows)
         shell: bash
         run: |
-          mkdir -p app/src-tauri/resources/bin
-          echo '{}' > app/src-tauri/resources/bin/cli-deps.json
+          set -euo pipefail
+          ./scripts/fetch-cli-deps.sh windows-x64
+
+          echo "=== Staged bundle ==="
+          ls -lah app/src-tauri/resources/bin/
+          echo "=== Sizes ==="
+          du -sh app/src-tauri/resources/bin/*
+
+          test -f app/src-tauri/resources/bin/codex.exe
+          test -f app/src-tauri/resources/bin/composio-x86_64/composio.exe
+          test -f app/src-tauri/resources/bin/composio-x86_64/run-helpers-runtime.mjs
+          test -f app/src-tauri/resources/bin/composio-x86_64/acp-adapters/codex/win32-x64/codex-acp.exe
+          test -f app/src-tauri/resources/bin/cli-deps.json
 
       - name: Build qaio-engine sidecar
         shell: bash
@@ -62,27 +101,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
-
-      - name: Locate and upload MSI
-        shell: bash
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          MSI=$(find target -name "*.msi" -type f | head -1)
-          if [ -z "$MSI" ]; then
-            echo "::error::No MSI found"
-            find target -path "*/bundle/*" -type f | head -20
-            exit 1
-          fi
-          echo "Found: $MSI ($(du -sh "$MSI" | cut -f1))"
-
-          # Upload as release asset if v0.4.9 draft exists, otherwise as artifact
-          if gh release view v0.4.9 >/dev/null 2>&1; then
-            gh release upload v0.4.9 "$MSI" --clobber
-            echo "Uploaded to release v0.4.9"
-          else
-            echo "No release found, uploading as workflow artifact"
-          fi
 
       - name: Upload MSI as artifact
         uses: actions/upload-artifact@v4
