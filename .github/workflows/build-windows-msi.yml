@@ -41,6 +41,10 @@ jobs:
           key: ${{ runner.os }}-cargo-windows-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: ${{ runner.os }}-cargo-windows-
 
+      - name: Configure git for private repo access
+        shell: bash
+        run: git config --global url."https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/".insteadOf "https://github.com/"
+
       - name: Install Bun (pinned to cli-deps.json)
         shell: pwsh
         run: |
