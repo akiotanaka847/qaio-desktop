@@ -714,7 +714,7 @@ jobs:
   #   1. Stage CLI deps via `scripts/fetch-cli-deps.sh windows-x64`.
   #      Codex is downloaded + zstd-decompressed; composio is BUILT FROM
   #      SOURCE on this Windows runner using a pinned commit on the
-  #      getqaio/composio fork — see `cli-deps.json`'s
+  #      gethouston/composio fork — see `cli-deps.json`'s
   #      `composio.build."windows-x64"` block for the pin and the
   #      `$build_comment` for why upstream can't ship Windows yet.
   #   2. Build the qaio-engine sidecar for x86_64-pc-windows-msvc.
@@ -805,7 +805,7 @@ jobs:
           zstd --version
 
       # Stage bundled CLI binaries: codex.exe (downloaded + zstd) and
-      # composio-x86_64/composio.exe (built from getqaio/composio
+      # composio-x86_64/composio.exe (built from gethouston/composio
       # fork). The fetch script handles `pnpm install` + `tsdown` +
       # `bun build:binary:cross` for the composio fork; full build is
       # ~3-5 minutes on a warm runner.
