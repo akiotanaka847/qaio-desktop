@@ -57,11 +57,11 @@
       "darwin-arm64": "fba0a57788ea50335507b2a38eccc67ebc051272f8393284b239875c4fdff8ef",
       "darwin-x64": "94af160e5bb10be80218dd9377c79a72d5c5ab7e172a65da0607ec4ee4d019c6"
     },
-    "$build_comment": "Upstream ComposioHQ/composio does not yet publish Windows artifacts (issue #3057, closed: 'use WSL'). Until that ships, we build composio.exe from a fork at gethouston/composio that adds Windows targets to TARGET_MAP, win32 entries to RUN_CODEX_ACP_BINARY_TARGETS, and a Windows Credential Manager backend in cli-keyring. Builds are reproducible: pinned commit SHA, pinned Bun version, pinned bun_target. The `pnpm` package manager + Bun runtime installed on the build host must match the values in the fork's `package.json#packageManager` and `.bun-version` respectively.",
+    "$build_comment": "Upstream ComposioHQ/composio does not yet publish Windows artifacts (issue #3057, closed: 'use WSL'). Until that ships, we build composio.exe from our fork at akiotanaka847/composio that adds Windows targets to TARGET_MAP, win32 entries to RUN_CODEX_ACP_BINARY_TARGETS, and a Windows Credential Manager backend in cli-keyring. Builds are reproducible: pinned commit SHA, pinned Bun version, pinned bun_target. The `pnpm` package manager + Bun runtime installed on the build host must match the values in the fork's `package.json#packageManager` and `.bun-version` respectively.",
     "build": {
       "windows-x64": {
-        "source_repo": "https://github.com/gethouston/composio.git",
-        "source_ref": "houston-windows-support",
+        "source_repo": "https://github.com/akiotanaka847/composio.git",
+        "source_ref": "qaio-windows-support",
         "source_sha": "4608b1cd8b75b8533713f2c2ae1424d1fafb3e8a",
         "package_path": "ts/packages/cli",
         "bun_target": "bun-windows-x64-modern",
