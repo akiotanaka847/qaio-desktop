@@ -1,13 +1,12 @@
 mod format;
-mod linear;
-mod linear_graphql;
+mod github;
 #[cfg(test)]
-mod linear_tests;
+mod github_tests;
 
 use serde::Deserialize;
 
-const LINEAR_API_URL: &str = "https://api.linear.app/graphql";
-const DEFAULT_BUG_LABEL_NAME: &str = "User Bug";
+const GITHUB_API_URL: &str = "https://api.github.com";
+const DEFAULT_REPO: &str = "akiotanaka847/qaio-desktop";
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -28,53 +27,35 @@ pub(super) struct BugReportLogs {
     pub(super) frontend: String,
 }
 
-struct LinearBugReportConfig {
-    api_key: String,
-    team_id: String,
-    label_name: String,
+struct GitHubBugReportConfig {
+    token: String,
+    repo: String,
 }
 
 #[tauri::command(rename_all = "snake_case")]
 pub async fn report_bug(payload: BugReportPayload) -> Result<(), String> {
     let config = bug_report_config()?;
 
-    linear::send_bug_report_to(
-        LINEAR_API_URL,
-        &config.api_key,
-        &config.team_id,
-        &config.label_name,
-        &payload,
-    )
-    .await
+    github::create_github_issue(GITHUB_API_URL, &config.token, &config.repo, &payload).await
 }
 
-fn bug_report_config() -> Result<LinearBugReportConfig, String> {
-    let api_key = configured_value(
-        std::env::var("LINEAR_API_KEY").ok(),
-        option_env!("LINEAR_API_KEY"),
-    );
-    let team_id = configured_value(
-        std::env::var("LINEAR_TEAM_ID").ok(),
-        option_env!("LINEAR_TEAM_ID"),
+fn bug_report_config() -> Result<GitHubBugReportConfig, String> {
+    let token = configured_value(
+        std::env::var("QAIO_BUG_REPORT_TOKEN").ok(),
+        option_env!("QAIO_BUG_REPORT_TOKEN"),
     );
 
-    let label_name = configured_value(
-        std::env::var("LINEAR_BUG_LABEL_NAME").ok(),
-        option_env!("LINEAR_BUG_LABEL_NAME"),
+    let repo = configured_value(
+        std::env::var("QAIO_BUG_REPORT_REPO").ok(),
+        option_env!("QAIO_BUG_REPORT_REPO"),
     )
-    .unwrap_or_else(|| DEFAULT_BUG_LABEL_NAME.to_string());
+    .unwrap_or_else(|| DEFAULT_REPO.to_string());
 
-    match (api_key, team_id) {
-        (Some(api_key), Some(team_id)) => Ok(LinearBugReportConfig {
-            api_key,
-            team_id,
-            label_name,
-        }),
-        (None, None) => Err(
-            "Bug reporting not configured (missing LINEAR_API_KEY and LINEAR_TEAM_ID)".to_string(),
+    match token {
+        Some(token) => Ok(GitHubBugReportConfig { token, repo }),
+        None => Err(
+            "Bug reporting not configured (missing QAIO_BUG_REPORT_TOKEN)".to_string(),
         ),
-        (None, Some(_)) => Err("Bug reporting not configured (missing LINEAR_API_KEY)".to_string()),
-        (Some(_), None) => Err("Bug reporting not configured (missing LINEAR_TEAM_ID)".to_string()),
     }
 }
 
