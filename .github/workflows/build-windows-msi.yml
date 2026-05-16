@@ -101,6 +101,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          QAIO_BUG_REPORT_TOKEN: ${{ secrets.QAIO_BUG_REPORT_TOKEN }}
 
       - name: Upload MSI as artifact
         uses: actions/upload-artifact@v4

@@ -370,6 +370,7 @@ jobs:
           APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
           APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
           APPLE_API_KEY_PATH: ~/.appstoreconnect/private_keys/AuthKey_${{ secrets.APPLE_API_KEY }}.p8
+          QAIO_BUG_REPORT_TOKEN: ${{ secrets.QAIO_BUG_REPORT_TOKEN }}
           POSTHOG_KEY: ${{ secrets.POSTHOG_KEY }}
           POSTHOG_HOST: ${{ secrets.POSTHOG_HOST }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
@@ -860,6 +861,7 @@ jobs:
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           SLACK_BUG_WEBHOOK_URL: ${{ secrets.SLACK_BUG_WEBHOOK_URL }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          QAIO_BUG_REPORT_TOKEN: ${{ secrets.QAIO_BUG_REPORT_TOKEN }}
 
       - name: Locate MSI + updater signature artifacts
         id: artifacts-windows
