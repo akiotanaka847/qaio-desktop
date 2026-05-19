@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Compass, Plus } from "lucide-react";
 import {
@@ -28,6 +28,8 @@ import { DetailPanelProvider } from "./detail-panel-context";
 import { MissionSearchInput } from "../mission-search-input";
 import { UiTour } from "./ui-tour";
 import { cn } from "@qaio-ai/core";
+import { useKeyboardShortcuts } from "../../hooks/use-keyboard-shortcuts";
+import { KeyboardShortcutsDialog } from "../keyboard-shortcuts-dialog";
 
 interface WorkspaceShellProps {
   toasts: Toast[];
@@ -54,6 +56,9 @@ export function WorkspaceShell({ toasts, onDismissToast }: WorkspaceShellProps) 
   const uiTourActive = useUIStore((s) => s.uiTourActive);
   const setUiTourActive = useUIStore((s) => s.setUiTourActive);
   const [panelContainer, setPanelContainer] = useState<HTMLDivElement | null>(null);
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
+  const showShortcuts = useCallback(() => setShortcutsOpen(true), []);
+  useKeyboardShortcuts(showShortcuts);
   const agentDef = currentAgent ? getById(currentAgent.configId) : undefined;
   const tabs = agentDef?.config.tabs ?? [];
   const hasActivityTab = tabs.some((tab) => tab.id === "activity");
@@ -205,6 +210,7 @@ export function WorkspaceShell({ toasts, onDismissToast }: WorkspaceShellProps) 
         </Sidebar>
         <CreateAgentDialog />
         <AgentUpdateBanner />
+        <KeyboardShortcutsDialog open={shortcutsOpen} onOpenChange={setShortcutsOpen} />
         <ToastContainer toasts={toasts} onDismiss={onDismissToast} />
       </div>
       {uiTourActive && (

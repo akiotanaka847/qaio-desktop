@@ -167,5 +167,24 @@
   },
   "engineGate": {
     "starting": "Starting Qaio engine…"
+  },
+  "shortcuts": {
+    "title": "Keyboard shortcuts",
+    "categories": {
+      "navigation": "Navigation",
+      "actions": "Actions",
+      "general": "General"
+    },
+    "actions": {
+      "goDashboard": "Go to Mission Control",
+      "prevAgent": "Previous agent",
+      "nextAgent": "Next agent",
+      "goSettings": "Open settings",
+      "newMission": "New mission",
+      "newAgent": "New agent",
+      "search": "Focus search",
+      "showShortcuts": "Show keyboard shortcuts",
+      "closePanel": "Close panel or dialog"
+    }
   }
 }
