@@ -52,6 +52,8 @@ import type {
   RoutineRunUpdate,
   RoutineUpdate,
   RunShellRequest,
+  GenerateAgentRequest,
+  GenerateAgentResult,
   SaveSkillRequest,
   SessionCancelResponse,
   SessionStartRequest,
@@ -594,6 +596,10 @@ export class QaioClient {
       provider: opts.provider,
       model: opts.model,
     });
+  }
+
+  generateAgentConfig(req: GenerateAgentRequest): Promise<GenerateAgentResult> {
+    return this.request("POST", "/sessions/generate-agent", req);
   }
 
   // ---------- routine scheduler ----------

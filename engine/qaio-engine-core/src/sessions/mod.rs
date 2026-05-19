@@ -19,6 +19,7 @@
 
 mod control;
 pub mod file_changes;
+pub mod generate_agent;
 pub mod history;
 pub mod provider;
 pub mod summarize;

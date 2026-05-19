@@ -501,6 +501,19 @@ export interface SummarizeOptions {
   model?: string;
 }
 
+// ---------- Agent generation ----------
+
+export interface GenerateAgentRequest {
+  description: string;
+  provider?: string;
+  model?: string;
+}
+
+export interface GenerateAgentResult {
+  name: string;
+  claudeMd: string;
+}
+
 // ---------- Attachments ----------
 
 export interface AttachmentUploadRequest {
