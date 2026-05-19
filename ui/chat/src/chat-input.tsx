@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react";
+import { useCallback } from "react";
 import type { ReactNode } from "react";
 import type { AttachmentRejection, PrepareAttachments } from "./chat-panel-types";
 import type { PromptInputMessage } from "./ai-elements/prompt-input";
@@ -15,7 +15,8 @@ import {
 } from "./chat-input-attachments";
 import { QueuedMessageList } from "./queued-message-list";
 import type { QueuedChatMessage, QueuedMessageLabels } from "./queued-message-list";
-import { useControllable, mergeUniqueFiles } from "./use-file-drop-zone";
+import { useChatFiles } from "./use-chat-files";
+import { useControllable } from "./use-file-drop-zone";
 
 type InputStatus = "ready" | "streaming" | "submitted";
 
@@ -78,23 +79,19 @@ export function ChatInput({
   const isTextControlled = value !== undefined;
   const isFilesControlled = attachments !== undefined;
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const addFiles = useCallback(
-    (incoming: File[]) => {
-      const prepared = prepareAttachments
-        ? prepareAttachments(incoming, files)
-        : { accepted: incoming, rejected: [] };
-      if (prepared.rejected.length > 0) {
-        onAttachmentRejections?.(prepared.rejected);
-      }
-      const merged = mergeUniqueFiles(files, prepared.accepted);
-      if (merged.length < files.length + prepared.accepted.length) {
-        onNotice?.("File already in chat");
-      }
-      setFiles(merged);
-    },
-    [files, setFiles, onNotice, prepareAttachments, onAttachmentRejections],
-  );
+  const {
+    fileInputRef,
+    handlePaste,
+    handleFileChange,
+    openFilePicker,
+    removeFile,
+  } = useChatFiles({
+    files,
+    setFiles,
+    onNotice,
+    prepareAttachments,
+    onAttachmentRejections,
+  });
 
   const handleTextChange = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => setText(e.target.value),
@@ -116,35 +113,10 @@ export function ChatInput({
       const trimmed = message.text?.trim();
       if (!trimmed && files.length === 0 && !canSendEmpty) return;
       await onSend(trimmed ?? "", files);
-      // In uncontrolled mode, clear our own state. In controlled mode the
-      // parent is responsible for clearing.
       if (!isTextControlled) setText("");
       if (!isFilesControlled) setFiles([]);
     },
     [onSend, files, canSendEmpty, isTextControlled, isFilesControlled, setText, setFiles],
-  );
-
-  const handleFileChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (!e.target.files || e.target.files.length === 0) return;
-      addFiles(Array.from(e.target.files));
-      e.target.value = "";
-    },
-    [addFiles],
-  );
-
-  const openFilePicker = useCallback(() => {
-    const input = fileInputRef.current;
-    if (!input) return;
-    // Reset BEFORE click so the same file can be re-picked and so WKWebView
-    // doesn't hold onto stale state between invocations.
-    input.value = "";
-    input.click();
-  }, []);
-
-  const removeFile = useCallback(
-    (index: number) => setFiles(files.filter((_, i) => i !== index)),
-    [files, setFiles],
   );
 
   const hasContent = canSendEmpty || text.trim().length > 0 || files.length > 0;
@@ -178,6 +150,7 @@ export function ChatInput({
             <PromptInputTextarea
               onChange={handleTextChange}
               onKeyDown={handleKeyDown}
+              onPaste={handlePaste}
               value={text}
               placeholder={placeholder}
             />
