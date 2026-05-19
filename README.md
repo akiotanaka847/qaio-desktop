@@ -22,9 +22,6 @@
 
 **For everyone** — a free desktop app with AI agents that do real work. Bookkeeping, outreach, research, scheduling. Install agents from the store and start working. No terminal. No prompt engineering.
 
-**For founders** — the platform where you build AI-native products for your customers. Define your agents, Qaio handles the workspace, the chat, the board, the integrations. You bring the domain expertise. [Read more](https://getqaio.ai/startups/).
-
-> **Read the vision:** [Ship the impossible](https://getqaio.ai/vision/)
 
 ---
 
