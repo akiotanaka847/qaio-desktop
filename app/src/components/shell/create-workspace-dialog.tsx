@@ -13,6 +13,7 @@ import { useUIStore } from "../../stores/ui";
 import { tauriConfig } from "../../lib/tauri";
 import type { StoreListing } from "../../lib/types";
 import { getDefaultModel } from "../../lib/providers";
+import { AiWizardStep } from "./ai-wizard-step";
 import { StoreStep } from "./store-step";
 import { NamingStep } from "./naming-step";
 
@@ -27,13 +28,15 @@ export function CreateAgentDialog() {
   const createAgent = useAgentStore((s) => s.create);
   const currentWorkspace = useWorkspaceStore((s) => s.current);
 
-  const [step, setStep] = useState<1 | 2>(1);
+  type Step = "store" | "wizard" | "naming";
+  const [step, setStep] = useState<Step>("store");
   const [selectedConfigId, setSelectedConfigId] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [color, setColor] = useState<string | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [existingPath, setExistingPath] = useState<string | null>(null);
+  const [wizardClaudeMd, setWizardClaudeMd] = useState<string | null>(null);
   const wsProvider = currentWorkspace?.provider ?? "anthropic";
   const wsModel = currentWorkspace?.model ?? getDefaultModel(wsProvider);
   const [provider, setProvider] = useState(wsProvider);
@@ -41,13 +44,14 @@ export function CreateAgentDialog() {
 
   useEffect(() => {
     if (!open) {
-      setStep(1);
+      setStep("store");
       setSelectedConfigId(null);
       setName("");
       setColor(undefined);
       setError(null);
       setSearch("");
       setExistingPath(null);
+      setWizardClaudeMd(null);
       setProvider(wsProvider);
       setModel(wsModel);
     }
@@ -62,12 +66,13 @@ export function CreateAgentDialog() {
     const trimmed = name.trim();
     if (!trimmed || !selectedConfigId || !currentWorkspace) return;
     try {
+      const claudeMd = wizardClaudeMd ?? selectedDef?.config.claudeMd;
       const { agent } = await createAgent(
         currentWorkspace.id,
         trimmed,
         selectedConfigId,
         color,
-        selectedDef?.config.claudeMd,
+        claudeMd,
         selectedDef?.path,
         selectedDef?.config.agentSeeds,
         existingPath ?? undefined,
@@ -114,7 +119,7 @@ export function CreateAgentDialog() {
         onPointerDownOutside={(e) => { if (uiTourActive) e.preventDefault(); }}
         onEscapeKeyDown={(e) => { if (uiTourActive) e.preventDefault(); }}
       >
-        {step === 1 ? (
+        {step === "store" && (
           <>
             <DialogHeader className="shrink-0 px-6 pt-6 pb-3">
               <DialogTitle>{t("newAgent.dialogTitle")}</DialogTitle>
@@ -127,12 +132,25 @@ export function CreateAgentDialog() {
               storeCatalog={storeCatalog}
               onSelect={(id) => {
                 setSelectedConfigId(id);
-                setStep(2);
+                setStep("naming");
               }}
               onInstall={handleInstall}
+              onDescribeWithAi={() => setStep("wizard")}
             />
           </>
-        ) : (
+        )}
+        {step === "wizard" && (
+          <AiWizardStep
+            onBack={() => setStep("store")}
+            onGenerated={(generatedName, generatedClaudeMd) => {
+              setSelectedConfigId("blank");
+              setName(generatedName);
+              setWizardClaudeMd(generatedClaudeMd);
+              setStep("naming");
+            }}
+          />
+        )}
+        {step === "naming" && (
           <NamingStep
             selectedAgent={selectedDef}
             name={name}
@@ -146,7 +164,10 @@ export function CreateAgentDialog() {
             onColorChange={setColor}
             onExistingPathChange={setExistingPath}
             onProviderChange={(p, m) => { setProvider(p); setModel(m); }}
-            onBack={() => setStep(1)}
+            onBack={() => {
+              setWizardClaudeMd(null);
+              setStep("store");
+            }}
             onSubmit={handleSubmit}
           />
         )}

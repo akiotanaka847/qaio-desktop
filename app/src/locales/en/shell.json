@@ -152,7 +152,16 @@
   },
   "store": {
     "searchPlaceholder": "Search the store...",
-    "noResults": "No agents match your search"
+    "noResults": "No agents match your search",
+    "describeWithAi": "Describe with AI",
+    "describeWithAiDescription": "Tell us what you need and AI will configure an agent for you"
+  },
+  "aiWizard": {
+    "title": "Describe your agent",
+    "subtitle": "Tell us what you need in plain language. AI will generate a name and instructions for your new agent.",
+    "placeholder": "e.g. An assistant that helps me plan weekly team standups and track action items",
+    "generating": "Generating...",
+    "generate": "Generate agent"
   },
   "naming": {
     "dialogTitle": "Name your Agent",

@@ -152,7 +152,16 @@
   },
   "store": {
     "searchPlaceholder": "Buscar en la tienda...",
-    "noResults": "Ningún agente coincide con tu búsqueda"
+    "noResults": "Ningún agente coincide con tu búsqueda",
+    "describeWithAi": "Describir con IA",
+    "describeWithAiDescription": "Cuéntanos qué necesitas y la IA configurará un agente para ti"
+  },
+  "aiWizard": {
+    "title": "Describe tu agente",
+    "subtitle": "Cuéntanos qué necesitas en lenguaje sencillo. La IA generará un nombre e instrucciones para tu nuevo agente.",
+    "placeholder": "p. ej. Un asistente que me ayude a planear las reuniones semanales del equipo y dar seguimiento a las tareas",
+    "generating": "Generando...",
+    "generate": "Generar agente"
   },
   "naming": {
     "dialogTitle": "Nombra tu agente",

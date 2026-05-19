@@ -22,7 +22,8 @@ use axum::{
     Json, Router,
 };
 use qaio_engine_core::sessions::{
-    self, history, resolve_agent_dir, resolve_provider, summarize, SessionRuntime, StartParams,
+    self, generate_agent, history, resolve_agent_dir, resolve_provider, summarize, SessionRuntime,
+    StartParams,
 };
 use qaio_engine_core::CoreError;
 use qaio_terminal_manager::Provider;
@@ -48,6 +49,7 @@ pub fn router() -> Router<Arc<ServerState>> {
             get(load_history),
         )
         .route("/sessions/summarize", post(summarize_activity))
+        .route("/sessions/generate-agent", post(generate_agent_config))
 }
 
 #[derive(Debug, Deserialize)]
@@ -188,6 +190,33 @@ async fn summarize_activity(
     };
     Ok(Json(
         summarize::summarize(&req.message, provider, model.as_deref()).await?,
+    ))
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GenerateAgentRequest {
+    pub description: String,
+    #[serde(default)]
+    pub provider: Option<String>,
+    #[serde(default)]
+    pub model: Option<String>,
+}
+
+async fn generate_agent_config(
+    State(_st): State<Arc<ServerState>>,
+    Json(req): Json<GenerateAgentRequest>,
+) -> Result<Json<generate_agent::GenerateAgentResult>, ApiError> {
+    let provider = if let Some(p_str) = req.provider.as_deref() {
+        p_str
+            .parse()
+            .map_err(|e: String| CoreError::BadRequest(e))?
+    } else {
+        Provider::Anthropic
+    };
+    Ok(Json(
+        generate_agent::generate_agent_config(&req.description, provider, req.model.as_deref())
+            .await?,
     ))
 }
 
