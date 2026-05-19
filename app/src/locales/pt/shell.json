@@ -167,5 +167,24 @@
   },
   "engineGate": {
     "starting": "Iniciando o motor do Qaio…"
+  },
+  "shortcuts": {
+    "title": "Atalhos de teclado",
+    "categories": {
+      "navigation": "Navegação",
+      "actions": "Ações",
+      "general": "Geral"
+    },
+    "actions": {
+      "goDashboard": "Ir para Mission Control",
+      "prevAgent": "Agente anterior",
+      "nextAgent": "Próximo agente",
+      "goSettings": "Abrir configurações",
+      "newMission": "Nova missão",
+      "newAgent": "Novo agente",
+      "search": "Buscar",
+      "showShortcuts": "Mostrar atalhos de teclado",
+      "closePanel": "Fechar painel ou diálogo"
+    }
   }
 }
