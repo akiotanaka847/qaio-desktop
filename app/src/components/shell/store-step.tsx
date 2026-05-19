@@ -1,10 +1,11 @@
 import { useMemo } from "react";
 import { Input } from "@qaio-ai/core";
-import { Search } from "lucide-react";
+import { Search, Sparkles } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { AgentDefinition, StoreListing } from "../../lib/types";
 import { builtinConfigs } from "../../agents/builtin";
 import { AgentCard, StoreAgentCard } from "./experience-card";
+import { SkillCard } from "../skill-card";
 
 interface StoreStepProps {
   search: string;
@@ -13,6 +14,7 @@ interface StoreStepProps {
   storeCatalog: StoreListing[];
   onSelect: (id: string) => void;
   onInstall: (listing: StoreListing) => Promise<void>;
+  onDescribeWithAi: () => void;
 }
 
 export function StoreStep({
@@ -22,6 +24,7 @@ export function StoreStep({
   storeCatalog,
   onSelect,
   onInstall,
+  onDescribeWithAi,
 }: StoreStepProps) {
   const { t } = useTranslation("shell");
 
@@ -90,6 +93,17 @@ export function StoreStep({
                 onSelect={onSelect}
               />
             ))}
+            <SkillCard
+              media={
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10">
+                  <Sparkles className="h-6 w-6 text-primary" />
+                </div>
+              }
+              title={t("store.describeWithAi")}
+              description={t("store.describeWithAiDescription")}
+              className="min-h-[132px]"
+              onClick={onDescribeWithAi}
+            />
             {filteredStore.map((listing) => (
               <StoreAgentCard
                 key={listing.id}
