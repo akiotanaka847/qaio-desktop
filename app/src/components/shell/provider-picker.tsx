@@ -233,7 +233,7 @@ function ProviderCard({
 
       {/* Logo */}
       <div className="h-10 w-10 flex items-center justify-center">
-        {provider.id === "anthropic" ? <ClaudeLogo /> : <OpenAILogo />}
+        {provider.id === "anthropic" ? <ClaudeLogo /> : provider.id === "gemini" ? <GeminiLogo /> : <OpenAILogo />}
       </div>
 
       {/* Name */}
