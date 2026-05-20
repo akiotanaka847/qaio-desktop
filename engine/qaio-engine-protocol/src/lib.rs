@@ -143,7 +143,8 @@ pub fn event_topic(event: &QaioEvent) -> String {
         | QaioEvent::FilesChanged { agent_path }
         | QaioEvent::ConfigChanged { agent_path }
         | QaioEvent::ContextChanged { agent_path }
-        | QaioEvent::LearningsChanged { agent_path } => format!("agent:{agent_path}"),
+        | QaioEvent::LearningsChanged { agent_path }
+        | QaioEvent::KnowledgeBaseChanged { agent_path } => format!("agent:{agent_path}"),
         QaioEvent::ConversationsChanged { agent_path, .. } => format!("agent:{agent_path}"),
         QaioEvent::ComposioCliReady
         | QaioEvent::ComposioCliFailed { .. }

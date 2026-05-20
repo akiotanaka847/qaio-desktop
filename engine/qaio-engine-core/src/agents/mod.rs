@@ -15,6 +15,7 @@
 pub mod activity;
 pub mod config;
 pub mod files;
+pub mod knowledge_base;
 mod learnings_context;
 pub mod prompt;
 pub mod routine_runs;
@@ -92,6 +93,28 @@ impl AgentStore {
         updates: RoutineRunUpdate,
     ) -> CoreResult<RoutineRun> {
         routine_runs::update(&self.root, id, updates)
+    }
+
+    // -- Knowledge Base --
+    pub fn list_knowledge_base(&self) -> CoreResult<Vec<KnowledgeEntry>> {
+        knowledge_base::list(&self.root)
+    }
+    pub fn search_knowledge_base(&self, query: &str) -> CoreResult<Vec<KnowledgeEntry>> {
+        knowledge_base::search(&self.root, query)
+    }
+    pub fn create_knowledge_entry(&self, input: NewKnowledgeEntry) -> CoreResult<KnowledgeEntry> {
+        self.ensure_qaio_dir()?;
+        knowledge_base::create(&self.root, input)
+    }
+    pub fn update_knowledge_entry(
+        &self,
+        id: &str,
+        updates: KnowledgeEntryUpdate,
+    ) -> CoreResult<KnowledgeEntry> {
+        knowledge_base::update(&self.root, id, updates)
+    }
+    pub fn delete_knowledge_entry(&self, id: &str) -> CoreResult<()> {
+        knowledge_base::delete(&self.root, id)
     }
 
     // -- Config --

@@ -32,6 +32,29 @@
     "confirmRemoveDescription": "El agente perderá esta nota. Puedes añadirla de nuevo más tarde.",
     "confirmRemoveLabel": "Quitar"
   },
+  "knowledgeBase": {
+    "emptyTitle": "Aún no hay entradas",
+    "emptyDescription": "Captura lo que el equipo aprende de proyectos, reuniones y el trabajo diario.",
+    "addEntry": "Agregar entrada",
+    "searchPlaceholder": "Buscar en la base de conocimiento",
+    "titlePlaceholder": "Título de la entrada",
+    "contentPlaceholder": "¿Qué aprendiste?",
+    "tagsPlaceholder": "Etiquetas (separadas por coma)",
+    "clientLabel": "Cliente",
+    "clientPlaceholder": "Nombre del cliente",
+    "projectLabel": "Proyecto",
+    "projectPlaceholder": "Nombre del proyecto",
+    "sourceLabel": "Fuente",
+    "sources": {
+      "manual": "Manual",
+      "meeting": "Reunión",
+      "project": "Proyecto",
+      "chat": "Chat"
+    },
+    "confirmDeleteTitle": "¿Eliminar esta entrada?",
+    "confirmDeleteDescription": "Este conocimiento se eliminará permanentemente.",
+    "confirmDeleteLabel": "Eliminar"
+  },
   "subTabs": {
     "instructions": "Instrucciones",
     "skills": "Skills",
@@ -49,6 +72,7 @@
     "prompts": "Instrucciones",
     "events": "Eventos",
     "learnings": "Aprendizajes",
+    "knowledge-base": "Base de conocimiento",
     "configure": "Configurar",
     "settings": "Configuración"
   },

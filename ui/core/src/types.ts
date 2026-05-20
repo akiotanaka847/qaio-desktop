@@ -109,6 +109,10 @@ export type QaioEvent =
       data: { agent_path: string };
     }
   | {
+      type: "KnowledgeBaseChanged";
+      data: { agent_path: string };
+    }
+  | {
       type: "ComposioCliReady";
       data: Record<string, never>;
     }

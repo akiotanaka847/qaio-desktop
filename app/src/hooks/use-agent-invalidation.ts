@@ -47,6 +47,9 @@ export function useAgentInvalidation() {
         case "LearningsChanged":
           qc.invalidateQueries({ queryKey: queryKeys.learnings(p.data.agent_path) });
           break;
+        case "KnowledgeBaseChanged":
+          qc.invalidateQueries({ queryKey: queryKeys.knowledgeBase(p.data.agent_path) });
+          break;
         // SessionStatus triggers activity invalidation (agent finished → status changed)
         case "SessionStatus":
           if (p.data.status === "completed" || p.data.status === "error") {

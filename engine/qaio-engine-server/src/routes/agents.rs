@@ -67,14 +67,14 @@ pub struct CreateRoutineRunBody {
     pub routine_id: String,
 }
 
-fn resolve_root(agent_path: &str) -> Result<PathBuf, CoreError> {
+pub fn resolve_root(agent_path: &str) -> Result<PathBuf, CoreError> {
     if agent_path.trim().is_empty() {
         return Err(CoreError::BadRequest("agent_path is required".into()));
     }
     Ok(expand_tilde(std::path::Path::new(agent_path)))
 }
 
-fn emit(state: &ServerState, event: QaioEvent) {
+pub fn emit(state: &ServerState, event: QaioEvent) {
     state.engine.events.emit(event);
 }
 

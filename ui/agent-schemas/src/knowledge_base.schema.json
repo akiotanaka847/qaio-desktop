@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "KnowledgeBase",
+  "description": "Institutional knowledge entries collected from meetings, projects, and manual input.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["id", "title", "content", "source", "created_at", "updated_at"],
+    "properties": {
+      "id": { "type": "string" },
+      "title": { "type": "string" },
+      "content": { "type": "string" },
+      "source": {
+        "type": "string",
+        "enum": ["manual", "meeting", "project", "chat"]
+      },
+      "tags": {
+        "type": "array",
+        "items": { "type": "string" },
+        "default": []
+      },
+      "client": { "type": "string" },
+      "project": { "type": "string" },
+      "author": { "type": "string" },
+      "created_at": { "type": "string", "format": "date-time" },
+      "updated_at": { "type": "string", "format": "date-time" }
+    },
+    "additionalProperties": false
+  }
+}

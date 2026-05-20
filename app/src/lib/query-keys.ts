@@ -17,6 +17,7 @@ export const queryKeys = {
   config: (agentPath: string) => ["config", agentPath] as const,
   routines: (agentPath: string) => ["routines", agentPath] as const,
   learnings: (agentPath: string) => ["learnings", agentPath] as const,
+  knowledgeBase: (agentPath: string) => ["knowledge-base", agentPath] as const,
   routineRuns: (agentPath: string, routineId?: string) =>
     routineId
       ? (["routine-runs", agentPath, routineId] as const)

@@ -11,6 +11,7 @@
     "./routines.schema.json": "./src/routines.schema.json",
     "./routine_runs.schema.json": "./src/routine_runs.schema.json",
     "./config.schema.json": "./src/config.schema.json",
-    "./learnings.schema.json": "./src/learnings.schema.json"
+    "./learnings.schema.json": "./src/learnings.schema.json",
+    "./knowledge_base.schema.json": "./src/knowledge_base.schema.json"
   }
 }
