@@ -16,6 +16,7 @@ import RoutinesTab from "../components/tabs/routines-tab";
 import EventsTab from "../components/tabs/events-tab";
 import ConfigureTab from "../components/tabs/configure-tab";
 import PromptsTab from "../components/tabs/prompts-tab";
+import KnowledgeBaseTab from "../components/tabs/knowledge-base-tab";
 import LearningsTab from "../components/tabs/learnings-tab";
 import SkillsTab from "../components/tabs/skills-tab";
 import ConfigTab from "../components/tabs/config-tab";
@@ -31,6 +32,7 @@ const BUILTIN_TABS: Record<string, ComponentType<TabProps>> = {
   events: EventsTab,
   configure: ConfigureTab,
   prompts: PromptsTab,
+  "knowledge-base": KnowledgeBaseTab,
   learnings: LearningsTab,
   skills: SkillsTab,
   config: ConfigTab,

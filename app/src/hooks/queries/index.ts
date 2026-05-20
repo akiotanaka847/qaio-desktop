@@ -27,3 +27,10 @@ export {
   useRemoveLearning,
   useUpdateLearning,
 } from "./use-learnings";
+export {
+  useKnowledgeBase,
+  useSearchKnowledgeBase,
+  useCreateKnowledgeEntry,
+  useUpdateKnowledgeEntry,
+  useDeleteKnowledgeEntry,
+} from "./use-knowledge-base";

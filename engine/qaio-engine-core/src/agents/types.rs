@@ -139,6 +139,59 @@ pub struct RoutineRunUpdate {
     pub completed_at: Option<String>,
 }
 
+// -- Knowledge Base --
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct KnowledgeEntry {
+    pub id: String,
+    pub title: String,
+    pub content: String,
+    /// How the entry was created: "manual", "meeting", "project", or "chat".
+    pub source: String,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub tags: Vec<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub client: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub project: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub author: Option<String>,
+    pub created_at: String,
+    pub updated_at: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct NewKnowledgeEntry {
+    pub title: String,
+    #[serde(default)]
+    pub content: String,
+    #[serde(default = "default_manual")]
+    pub source: String,
+    #[serde(default)]
+    pub tags: Vec<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub client: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub project: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub author: Option<String>,
+}
+
+fn default_manual() -> String {
+    "manual".to_string()
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+pub struct KnowledgeEntryUpdate {
+    pub title: Option<String>,
+    pub content: Option<String>,
+    pub source: Option<String>,
+    pub tags: Option<Vec<String>>,
+    pub client: Option<Option<String>>,
+    pub project: Option<Option<String>>,
+    pub author: Option<Option<String>>,
+}
+
 // -- Config --
 
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]

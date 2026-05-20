@@ -119,6 +119,10 @@ pub enum QaioEvent {
     LearningsChanged {
         agent_path: String,
     },
+    /// Knowledge base changed (.qaio/knowledge_base/knowledge_base.json).
+    KnowledgeBaseChanged {
+        agent_path: String,
+    },
 
     // ----- Composio CLI lifecycle -----
 
