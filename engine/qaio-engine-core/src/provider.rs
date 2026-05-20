@@ -7,7 +7,8 @@
 
 use crate::error::{CoreError, CoreResult};
 use qaio_terminal_manager::provider_auth::{
-    probe_claude_auth_status, probe_codex_auth_status, ProviderAuthState,
+    probe_claude_auth_status, probe_codex_auth_status, probe_gemini_auth_status,
+    ProviderAuthState,
 };
 use qaio_terminal_manager::{claude_path, Provider};
 use serde::{Deserialize, Serialize};
@@ -16,7 +17,7 @@ use std::path::PathBuf;
 use std::time::Duration;
 
 mod resolve;
-use resolve::{resolve_claude, resolve_codex};
+use resolve::{resolve_claude, resolve_codex, resolve_gemini};
 
 pub const DEFAULT_PROVIDER_KEY: &str = "default_provider";
 
@@ -66,6 +67,7 @@ pub async fn check_status(provider: Provider) -> CoreResult<ProviderStatus> {
     Ok(match provider {
         Provider::Anthropic => check_claude_status().await,
         Provider::OpenAI => check_codex_status().await,
+        Provider::Gemini => check_gemini_status().await,
     })
 }
 
@@ -181,6 +183,7 @@ fn login_command(provider: Provider) -> CoreResult<ProviderCliCommand> {
     let resolved_path = match provider {
         Provider::Anthropic => resolve_claude().1,
         Provider::OpenAI => resolve_codex().1,
+        Provider::Gemini => resolve_gemini().1,
     };
     build_login_command(provider, resolved_path, claude_path::shell_path())
 }
@@ -189,6 +192,7 @@ fn logout_command(provider: Provider) -> CoreResult<ProviderCliCommand> {
     let resolved_path = match provider {
         Provider::Anthropic => resolve_claude().1,
         Provider::OpenAI => resolve_codex().1,
+        Provider::Gemini => resolve_gemini().1,
     };
     build_logout_command(provider, resolved_path, claude_path::shell_path())
 }
@@ -201,6 +205,16 @@ fn build_login_command(
     let (cli_name, args): (&'static str, Vec<&'static str>) = match provider {
         Provider::Anthropic => ("claude", vec!["auth", "login", "--claudeai"]),
         Provider::OpenAI => ("codex", vec!["login"]),
+        Provider::Gemini => {
+            // Gemini CLI uses Google OAuth on first interactive run.
+            // There is no headless `auth login` subcommand.
+            return Err(CoreError::BadRequest(
+                "Gemini uses Google account authentication. \
+                 Run 'gemini' in a terminal to complete sign-in, \
+                 or set the GEMINI_API_KEY environment variable."
+                    .into(),
+            ));
+        }
     };
 
     let path = resolved_path
@@ -227,6 +241,14 @@ fn build_logout_command(
     let (cli_name, args): (&'static str, Vec<&'static str>) = match provider {
         Provider::Anthropic => ("claude", vec!["auth", "logout"]),
         Provider::OpenAI => ("codex", vec!["logout"]),
+        Provider::Gemini => {
+            return Err(CoreError::BadRequest(
+                "Gemini logout is not supported. \
+                 Remove the GEMINI_API_KEY environment variable \
+                 or delete ~/.gemini/ to revoke credentials."
+                    .into(),
+            ));
+        }
     };
 
     let path = resolved_path
@@ -278,15 +300,35 @@ async fn check_codex_status() -> ProviderStatus {
     }
 }
 
+async fn check_gemini_status() -> ProviderStatus {
+    let (install_source, cli_path) = resolve_gemini();
+    let cli_installed = !matches!(install_source, InstallSource::Missing);
+    let auth_state = if cli_installed {
+        probe_gemini_auth_status().await
+    } else {
+        ProviderAuthState::Unauthenticated
+    };
+    ProviderStatus {
+        provider: "gemini".into(),
+        cli_installed,
+        auth_state,
+        cli_name: "gemini".into(),
+        install_source,
+        cli_path: cli_path.map(|p| p.to_string_lossy().into_owned()),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn parse_rejects_unknown() {
-        assert!(parse("gemini").is_err());
+        assert!(parse("foobar").is_err());
         assert!(parse("anthropic").is_ok());
         assert!(parse("openai").is_ok());
+        assert!(parse("gemini").is_ok());
+        assert!(parse("google").is_ok());
     }
 
     #[test]
