@@ -124,6 +124,34 @@ fn contains_unauthenticated_text(text: &str) -> bool {
         || text.contains("please log in")
 }
 
+/// Gemini auth probe. Checks `GEMINI_API_KEY` env var first, then
+/// falls back to the `~/.gemini/` config directory presence heuristic.
+/// There is no `gemini auth status` subcommand to probe directly.
+pub async fn probe_gemini_auth_status() -> ProviderAuthState {
+    if std::env::var("GEMINI_API_KEY")
+        .ok()
+        .is_some_and(|v| !v.is_empty())
+    {
+        return ProviderAuthState::Authenticated;
+    }
+    let home = std::env::var("HOME").unwrap_or_default();
+    read_gemini_config_auth(&home)
+}
+
+fn read_gemini_config_auth(home: &str) -> ProviderAuthState {
+    let config_dir = PathBuf::from(home).join(".gemini");
+    if !config_dir.is_dir() {
+        return ProviderAuthState::Unauthenticated;
+    }
+    // If the directory contains a settings file, Google OAuth likely completed.
+    let settings = config_dir.join("settings.json");
+    if settings.is_file() {
+        return ProviderAuthState::Authenticated;
+    }
+    // Directory exists but no recognizable credential file.
+    ProviderAuthState::Unknown
+}
+
 fn read_codex_auth_file(home: &str) -> ProviderAuthState {
     let auth_path = PathBuf::from(home).join(".codex").join("auth.json");
     let content = match std::fs::read_to_string(&auth_path) {

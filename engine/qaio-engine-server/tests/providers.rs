@@ -30,7 +30,7 @@ async fn spawn() -> (SocketAddr, String) {
 async fn status_invalid_provider_rejected() {
     let (addr, tok) = spawn().await;
     let res = reqwest::Client::new()
-        .get(format!("http://{addr}/v1/providers/gemini/status"))
+        .get(format!("http://{addr}/v1/providers/foobar/status"))
         .bearer_auth(&tok)
         .send()
         .await

@@ -47,6 +47,21 @@ export const PROVIDERS: readonly ProviderInfo[] = [
     ],
     defaultModel: "sonnet",
   },
+  {
+    id: "gemini",
+    name: "Google",
+    subtitle: "Gemini CLI",
+    cliName: "gemini",
+    installUrl: "https://github.com/google-gemini/gemini-cli",
+    loginCommand: "gemini",
+    cost: "Free tier or API key",
+    models: [
+      { id: "gemini-2.5-pro", label: "Gemini 2.5 Pro", description: "Most capable. Deep reasoning and complex tasks." },
+      { id: "gemini-2.5-flash", label: "Gemini 2.5 Flash", description: "Fast and efficient with built-in thinking." },
+      { id: "gemini-2.0-flash", label: "Gemini 2.0 Flash", description: "Lightweight. Fastest responses." },
+    ],
+    defaultModel: "gemini-2.5-flash",
+  },
 ] as const;
 
 /** Find a provider by id. */
@@ -72,7 +87,6 @@ export interface ComingSoonProviderInfo {
 }
 
 export const COMING_SOON_PROVIDERS: readonly ComingSoonProviderInfo[] = [
-  { id: "gemini", name: "Google", subtitle: "Gemini CLI", mark: "G" },
   { id: "subq", name: "SubQ", subtitle: "SubQ Code", mark: "SQ" },
   { id: "deepseek", name: "DeepSeek", subtitle: "DeepSeek Coder", mark: "DS" },
   { id: "minimax", name: "MiniMax", subtitle: "M2", mark: "MM" },

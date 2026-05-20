@@ -11,6 +11,9 @@ mod cli_process;
 mod codex_command;
 pub mod codex_parser;
 pub mod concurrency;
+mod gemini_command;
+pub mod gemini_parser;
+mod gemini_runner;
 pub mod manager;
 pub mod parser;
 pub mod provider_auth;
@@ -23,6 +26,7 @@ pub mod types;
 
 // Re-export key types for convenience.
 pub use codex_parser::{extract_thread_id, parse_codex_event, CodexAccumulator};
+pub use gemini_parser::{parse_gemini_event, GeminiAccumulator};
 pub use manager::{SessionHandle, SessionManager};
 pub use parser::{extract_session_id, parse_event, StreamAccumulator};
 pub use provider_auth::ProviderAuthState;

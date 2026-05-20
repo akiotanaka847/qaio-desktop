@@ -7,7 +7,9 @@ use crate::session_id_tracker::SessionIdHandle;
 use crate::session_pids::SessionPidMap;
 use qaio_db::Database;
 use qaio_terminal_manager::auth_error::{is_auth_error, is_auth_retry_marker};
-use qaio_terminal_manager::provider_auth::{probe_claude_auth_status, ProviderAuthState};
+use qaio_terminal_manager::provider_auth::{
+    probe_claude_auth_status, probe_gemini_auth_status, ProviderAuthState,
+};
 use qaio_terminal_manager::{FeedItem, Provider, SessionManager, SessionStatus, SessionUpdate};
 use qaio_ui_events::{DynEventSink, QaioEvent};
 use std::path::{Path, PathBuf};
@@ -56,6 +58,7 @@ async fn provider_auth_state(provider: Provider) -> ProviderAuthState {
     match provider {
         Provider::Anthropic => probe_claude_auth_status(Path::new("claude")).await,
         Provider::OpenAI => ProviderAuthState::Unknown,
+        Provider::Gemini => probe_gemini_auth_status().await,
     }
 }
 

@@ -25,6 +25,15 @@ pub(super) fn resolve_codex() -> (InstallSource, Option<PathBuf>) {
     (InstallSource::Missing, None)
 }
 
+/// Gemini CLI is installed globally via npm (`@google/gemini-cli`).
+/// No bundled or managed variant — PATH lookup only.
+pub(super) fn resolve_gemini() -> (InstallSource, Option<PathBuf>) {
+    if let Some(path) = which_on_path("gemini") {
+        return (InstallSource::Path, Some(path));
+    }
+    (InstallSource::Missing, None)
+}
+
 fn which_on_path(command: &str) -> Option<PathBuf> {
     let shell_path = claude_path::shell_path();
     for dir in std::env::split_paths(&shell_path) {
