@@ -11,6 +11,8 @@ pub enum Provider {
     Anthropic,
     /// OpenAI Codex (via `codex` CLI)
     OpenAI,
+    /// Google Gemini (via `gemini` CLI)
+    Gemini,
 }
 
 impl fmt::Display for Provider {
@@ -18,6 +20,7 @@ impl fmt::Display for Provider {
         match self {
             Provider::Anthropic => write!(f, "anthropic"),
             Provider::OpenAI => write!(f, "openai"),
+            Provider::Gemini => write!(f, "gemini"),
         }
     }
 }
@@ -28,6 +31,7 @@ impl FromStr for Provider {
         match s.to_lowercase().as_str() {
             "anthropic" | "claude" => Ok(Provider::Anthropic),
             "openai" | "codex" => Ok(Provider::OpenAI),
+            "gemini" | "google" => Ok(Provider::Gemini),
             other => Err(format!("Unknown provider: {other}")),
         }
     }
