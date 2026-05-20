@@ -21,7 +21,7 @@
 
 Most AI tools give you a chat box and call it a day. Qaio gives each agent a full workspace: kanban boards, file management, integrations with 1000+ services through Composio, and the ability to run code. Every kanban card is a conversation. Every conversation can use tools.
 
-The app ships with 10 pre-built agents (bookkeeping, sales, marketing, legal, support, operations, people, outbound) so you can start working immediately. Build your own in under 5 minutes with two files.
+The app ships with 10 pre-built agents (bookkeeping, sales, marketing, legal, support, operations, people, outbound, Fusion Manager, Workfront Intake) so you can start working immediately. Build your own in under 5 minutes with two files.
 
 **Three providers, your choice:** Claude (Anthropic), Codex (OpenAI), or Gemini (Google). Switch per-conversation.
 
@@ -145,6 +145,8 @@ cd examples/smartbooks && pnpm install && pnpm dev
 | **Operations** | Triage inbox, prep meetings, track goals |
 | **People** | Source candidates, coordinate interviews |
 | **Outbound** | Turn a LinkedIn post into a cold email campaign |
+| **Fusion Manager** | Document, diagnose, and manage Adobe Workfront Fusion scenarios with flow diagrams and blueprint analysis |
+| **Workfront Intake** | Convert team messages into Workfront tickets via Fusion, auto-detecting request type and fields |
 
 All agents are open source. Fork them, customize them, or use them as starting points.
 
