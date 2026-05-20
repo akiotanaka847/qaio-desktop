@@ -508,7 +508,7 @@ build_composio_windows() {
   ( cd "$fork_dir" && pnpm -r --filter '@composio/cli^...' run build ) 2>&1 | tail -3
 
   echo "  tsdown bundle for @composio/cli..."
-  ( cd "$fork_dir/$package_path" && pnpm exec tsdown ) 2>&1 | tail -3
+  ( cd "$fork_dir/$package_path" && pnpm exec tsdown --config-loader unrun ) 2>&1 | tail -3
 
   echo "  bun build:binary:cross --target $bun_target ..."
   ( cd "$fork_dir/$package_path" && pnpm run build:binary:cross -- --target "$bun_target" ) 2>&1 | tail -3

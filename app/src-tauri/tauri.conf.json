@@ -43,7 +43,7 @@
   "bundle": {
     "createUpdaterArtifacts": false,
     "active": true,
-    "targets": ["app", "dmg", "msi"],
+    "targets": ["app", "dmg", "nsis", "msi"],
     "externalBin": ["binaries/qaio-engine"],
     "resources": {
       "resources/bin": "bin",
