@@ -1,28 +1,31 @@
 <p align="center">
-  <a href="https://getqaio.ai">
-    <strong>Qaio</strong>
-  </a>
+  <img src="https://getqaio.ai/icon.png" width="80" alt="Qaio" />
+</p>
+
+<h1 align="center">Qaio</h1>
+
+<p align="center">
+  AI agents that actually do the work.<br>
+  Not another chatbot. A desktop app where agents use real tools, real integrations, and real files.
 </p>
 
 <p align="center">
-  <strong>The open source platform for AI-native products.</strong><br>
-  One desktop app. Pre-built AI agents that work from day one.<br>
-  Real tools. 1000+ integrations. Free.
+  <a href="https://getqaio.ai">Website</a> &middot;
+  <a href="https://getqaio.ai/learn">Learn</a> &middot;
+  <a href="https://github.com/getqaio/qaio/issues">Issues</a>
 </p>
 
-
 ---
 
-## What Qaio is
+## Why Qaio exists
 
-**For everyone** — a free desktop app with AI agents that do real work. Bookkeeping, outreach, research, scheduling. Install agents from the store and start working. No terminal. No prompt engineering.
+Most AI tools give you a chat box and call it a day. Qaio gives each agent a full workspace: kanban boards, file management, integrations with 1000+ services through Composio, and the ability to run code. Every kanban card is a conversation. Every conversation can use tools.
 
+The app ships with 10 pre-built agents (bookkeeping, sales, marketing, legal, support, operations, people, outbound) so you can start working immediately. Build your own in under 5 minutes with two files.
 
----
+**Three providers, your choice:** Claude (Anthropic), Codex (OpenAI), or Gemini (Google). Switch per-conversation.
 
-## Quick start
-
-### Run the Qaio app
+## Get started
 
 ```bash
 git clone https://github.com/getqaio/qaio.git
@@ -31,9 +34,11 @@ pnpm install
 cd app && pnpm tauri dev
 ```
 
-### Build your first agent
+Requires: Node 20+, Rust 1.75+, pnpm 9+. See the [Learn guide](https://getqaio.ai/learn) for platform-specific setup.
 
-Create two files:
+## Build an agent
+
+Two files. That's it.
 
 **qaio.json**
 ```json
@@ -54,137 +59,112 @@ Create two files:
 **CLAUDE.md**
 ```markdown
 # Bookkeeper
-
 You categorize transactions, reconcile accounts, and flag anomalies.
 Ask which period the user wants before starting.
 ```
 
-Push to GitHub. In Qaio, click **New Agent > GitHub**, paste your repo URL. Done.
+Push to GitHub. In Qaio, click **New Agent > GitHub**, paste the URL. Done.
 
-The [Learn guide](https://getqaio.ai/learn/) covers the full details in five short chapters.
+### Workspace templates
 
-### Share a workspace template
-
-Bundle multiple agents into one repo:
+Bundle multiple agents into one repo for team setups:
 
 ```
 my-workspace/
-├── workspace.json
-└── agents/
-    ├── bookkeeper/
-    │   ├── qaio.json
-    │   └── CLAUDE.md
-    └── tax-reviewer/
-        ├── qaio.json
-        └── CLAUDE.md
+  workspace.json
+  agents/
+    bookkeeper/  { qaio.json, CLAUDE.md }
+    tax-reviewer/  { qaio.json, CLAUDE.md }
 ```
 
-**workspace.json**
-```json
-{
-  "name": "Tax Practice",
-  "description": "A complete workspace for tax professionals.",
-  "agents": ["bookkeeper", "tax-reviewer"]
-}
-```
-
-In Qaio, click **New Workspace > Import from GitHub**, paste the repo URL. Qaio creates the workspace with all agents ready to use.
+Import the whole workspace in one click.
 
 ---
 
-## How the app works
+## Architecture
 
-Qaio organizes work into **Workspaces** and **Agents**:
-
-- **Workspace** — a group of agents (like a team or project).
-- **Agent** — an AI agent instance. Chat, kanban board, skills, files, integrations.
-- **Agent Definition** — a `qaio.json` that defines what an agent looks like and does.
+Qaio is three layers that work together or independently.
 
 ```
-Workspace ("Tax Practice")
-  ├── Agent ("Bookkeeper")         ← board, files, instructions
-  ├── Agent ("Document Reviewer")  ← board, files, integrations
-  └── Agent ("Client Comms")       ← board, files, integrations
+                 ┌─────────────────────────────┐
+                 │        Qaio App              │
+                 │   Tauri 2 + React frontend   │
+                 │   macOS / Windows            │
+                 └──────────┬──────────────────┘
+                            │ HTTP + WebSocket
+                 ┌──────────▼──────────────────┐
+                 │       Qaio Engine            │
+                 │   Rust binary, 16 crates     │
+                 │   Sessions, agents, files,   │
+                 │   skills, AI providers       │
+                 └──────────┬──────────────────┘
+                            │
+          ┌─────────────────┼─────────────────┐
+          ▼                 ▼                  ▼
+     Claude API       Codex CLI         Gemini CLI
+     (Anthropic)      (OpenAI)          (Google)
 ```
 
-Each kanban card is a Claude conversation. Click a card to see the full chat. Connect Slack and the same conversation becomes a thread.
+**Engine** is a standalone Rust binary (`qaio-engine`). It handles sessions, agents, file watching, skill execution, integrations, and AI provider calls over HTTP + WebSocket. Any frontend can drive it.
 
----
+**UI** is 11 React packages (`@qaio-ai/chat`, `@qaio-ai/board`, `@qaio-ai/layout`, etc.) connected via `@qaio-ai/engine-client`. Props-only, no store imports, no framework lock-in.
 
-## Agent definitions
+**App** is the Tauri 2 shell that spawns the engine as a sidecar and wires up the UI.
 
-Three tiers:
-
-| Tier | What you write | What you get |
-|------|---------------|-------------|
-| **JSON-only** | `qaio.json` + `CLAUDE.md` | Tabs, prompt, icon. Uses built-in components. |
-| **Custom React** | Add `bundle.js` | Custom React components as tabs. |
-| **Workspace template** | `workspace.json` + agents folder | Multiple agents, one import. |
-
-**Built-in tab types:** `board`, `files`, `job-description`, `integrations`, `routines`, `configure`, `events`
-
----
-
-## Monorepo layout
-
-Organized as **6 end-user products + 3 code libraries**.
+### Monorepo layout
 
 ```
 qaio/
-├── app/                     Qaio App — desktop (Tauri 2)
-│   ├── src/                 React frontend
-│   ├── src-tauri/           Tauri binary
-│   └── qaio-tauri/       Tauri adapter (applies Engine to desktop)
-├── mobile/                  Qaio Mobile companion
-├── desktop-mobile-bridge/   Cloudflare Worker — pairs Desktop ↔ Mobile
-├── store/                   Qaio Store — agent registry
-├── website/                 Qaio Website — getqaio.ai
-├── always-on/               Qaio Always On — VPS deploy (Dockerfile + compose + systemd)
-├── teams/                   Qaio Teams (TBD — hosted multi-tenant)
-│
-├── ui/                      Qaio UI — @qaio-ai/* React packages
-├── engine/                  Qaio Engine — Rust crates (frontend-agnostic)
-├── cloud/                   Qaio Cloud (TBD — managed Engine hosting)
-│
-└── examples/                Reference consumers of qaio-engine
-    └── smartbooks/            Bookkeeping app built on a custom React frontend
+  app/               Desktop app (Tauri 2 + React)
+  engine/            Rust runtime (16 crates, frontend-agnostic)
+  ui/                @qaio-ai/* React packages (11 packages)
+  store/             Pre-built agent catalog
+  examples/
+    smartbooks/      Custom frontend built on qaio-engine
 ```
 
-See `knowledge-base/architecture.md` for crate-level detail + current gaps.
+### Build your own product on the engine
 
----
-
-## Build on Qaio Engine (custom frontends)
-
-The engine is frontend-agnostic. You don't have to ship inside the
-Qaio App — any web or native runtime can drive it over HTTP +
-WebSocket using [`@qaio-ai/engine-client`](ui/engine-client/).
-
-**Working example: [SmartBooks](examples/smartbooks/)** — a
-bookkeeping product with its own brand, its own UX, and zero
-`@qaio-ai/*` UI deps. ~400 lines of TSX, one npm package, renders
-a live transactions table + a multi-sheet Excel workpaper. Soft
-workflow: the user asks for a new column, Claude edits the Python
-script, every future upload picks up the change. Clone it, rename
-things, ship your own AI-native product.
+You don't need the Qaio app. The engine is frontend-agnostic. See **[SmartBooks](examples/smartbooks/)** for a working example: a bookkeeping product with its own brand, its own UX, zero `@qaio-ai/*` UI dependencies. ~400 lines of TSX.
 
 ```bash
-cd examples/smartbooks
-pnpm install
-pnpm dev
+cd examples/smartbooks && pnpm install && pnpm dev
 ```
-
-Full walkthrough + architecture diagram + custom-frontend gotchas in
-[examples/smartbooks/README.md](examples/smartbooks/README.md).
 
 ---
 
+## Pre-built agents
+
+| Agent | What it does |
+|-------|-------------|
+| **Bookkeeping** | Categorize transactions, reconcile accounts, close the books |
+| **Sales** | Find leads, research accounts, prep calls, draft outreach |
+| **Marketing** | Build positioning, plan campaigns, write content |
+| **Legal** | Review contracts, audit compliance, prep filings |
+| **Support** | Triage tickets, draft replies, write help-center articles |
+| **Operations** | Triage inbox, prep meetings, track goals |
+| **People** | Source candidates, coordinate interviews |
+| **Outbound** | Turn a LinkedIn post into a cold email campaign |
+
+All agents are open source. Fork them, customize them, or use them as starting points.
+
+---
+
+## Agent definition tiers
+
+| Tier | You write | You get |
+|------|-----------|---------|
+| **JSON-only** | `qaio.json` + `CLAUDE.md` | Full agent with built-in tabs |
+| **Custom React** | Add a `bundle.js` | Your own React components as tabs |
+| **Workspace** | `workspace.json` + agents/ | Multiple agents, one import |
+
+Built-in tabs: `board`, `files`, `job-description`, `knowledge-base`, `integrations`, `routines`, `configure`, `events`
+
+---
 
 ## Contributing
 
-Qaio is open source under MIT. Issues and PRs welcome.
-
----
+Issues and PRs welcome. Architecture docs live in [`knowledge-base/`](knowledge-base/).
 
 ## License
 
