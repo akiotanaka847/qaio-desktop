@@ -156,7 +156,8 @@ fn stage_engine_sidecar() -> Result<(), String> {
         .and_then(|p| p.parent())
         .ok_or("could not resolve workspace root from CARGO_MANIFEST_DIR")?;
     let triple = std::env::var("TARGET").unwrap_or_default();
-    let bin_name = if cfg!(windows) {
+    let is_windows_target = triple.contains("windows");
+    let bin_name = if is_windows_target {
         "qaio-engine.exe"
     } else {
         "qaio-engine"
@@ -200,7 +201,7 @@ fn stage_engine_sidecar() -> Result<(), String> {
     std::fs::create_dir_all(&dest_dir).map_err(|e| format!("mkdir binaries: {e}"))?;
     let dest_name = if triple.is_empty() {
         bin_name.to_string()
-    } else if cfg!(windows) {
+    } else if is_windows_target {
         format!("qaio-engine-{triple}.exe")
     } else {
         format!("qaio-engine-{triple}")

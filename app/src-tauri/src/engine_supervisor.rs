@@ -104,8 +104,15 @@ impl EngineSubprocess {
             // STATUS_CONTROL_C_EXIT (0xC000013A) — observed on Windows
             // MSI builds. We never need to send Ctrl+C to the child
             // ourselves; the stdin watchdog handles graceful shutdown.
+            //
+            // CREATE_NO_WINDOW (0x08000000) prevents the engine from
+            // opening a visible console window. Without it, launching
+            // qaio-engine.exe spawns a black terminal that stays open
+            // alongside the GUI — ugly and confusing for non-technical
+            // users.
             const CREATE_NEW_PROCESS_GROUP: u32 = 0x0000_0200;
-            cmd.creation_flags(CREATE_NEW_PROCESS_GROUP);
+            const CREATE_NO_WINDOW: u32 = 0x0800_0000;
+            cmd.creation_flags(CREATE_NEW_PROCESS_GROUP | CREATE_NO_WINDOW);
         }
 
         let mut child = cmd

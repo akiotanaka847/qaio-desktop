@@ -62,7 +62,7 @@
       "windows-x64": {
         "source_repo": "https://github.com/akiotanaka847/composio.git",
         "source_ref": "qaio-windows-support",
-        "source_sha": "4608b1cd8b75b8533713f2c2ae1424d1fafb3e8a",
+        "source_sha": "2467e863946c88b0c136bfe4d0450fd21b82a8c1",
         "package_path": "ts/packages/cli",
         "bun_target": "bun-windows-x64-modern",
         "bun_version": "1.3.10",
