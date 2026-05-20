@@ -11,11 +11,6 @@
 </p>
 
 
-<p align="center">
-  <a href="https://github.com/getqaio/qaio/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-0d0d0d" alt="MIT License"></a>
-  <a href="https://github.com/getqaio/qaio/stargazers"><img src="https://img.shields.io/github/stars/getqaio/qaio?color=0d0d0d" alt="Stars"></a>
-</p>
-
 ---
 
 ## What Qaio is
