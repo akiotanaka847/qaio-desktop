@@ -79,15 +79,3 @@ export function getDefaultModel(providerId: string): string {
   return getProvider(providerId)?.defaultModel ?? "sonnet";
 }
 
-export interface ComingSoonProviderInfo {
-  readonly id: string;
-  readonly name: string;
-  readonly subtitle: string;
-  readonly mark: string;
-}
-
-export const COMING_SOON_PROVIDERS: readonly ComingSoonProviderInfo[] = [
-  { id: "subq", name: "SubQ", subtitle: "SubQ Code", mark: "SQ" },
-  { id: "deepseek", name: "DeepSeek", subtitle: "DeepSeek Coder", mark: "DS" },
-  { id: "minimax", name: "MiniMax", subtitle: "M2", mark: "MM" },
-] as const;

@@ -13,9 +13,7 @@ import {
 import { tauriProvider, tauriSystem, type ProviderStatus } from "../../lib/tauri";
 import {
   PROVIDERS,
-  COMING_SOON_PROVIDERS,
   type ProviderInfo,
-  type ComingSoonProviderInfo,
 } from "../../lib/providers";
 import { analytics } from "../../lib/analytics";
 
@@ -128,9 +126,6 @@ export function ProviderPicker({ value, model: controlledModel, onSelect }: Prop
             />
           );
         })}
-        {COMING_SOON_PROVIDERS.map((prov) => (
-          <ComingSoonCard key={prov.id} provider={prov} />
-        ))}
       </div>
 
       {/* Setup guidance — rendered below the grid when a disconnected card
@@ -345,46 +340,6 @@ function ProviderCard({
   );
 }
 
-function ComingSoonCard({ provider }: { provider: ComingSoonProviderInfo }) {
-  const { t } = useTranslation("providers");
-  return (
-    <div
-      aria-disabled="true"
-      className="relative rounded-xl p-5 flex flex-col items-center gap-3 cursor-not-allowed border border-black/[0.05] opacity-60 select-none"
-    >
-      <div className="h-10 w-10 flex items-center justify-center">
-        <ComingSoonLogo provider={provider} />
-      </div>
-      <div className="text-center">
-        <div className="text-sm font-medium text-foreground">{provider.name}</div>
-        <div className="text-xs text-muted-foreground mt-0.5">{provider.subtitle}</div>
-      </div>
-      <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-        {t("card.comingSoon")}
-      </span>
-    </div>
-  );
-}
-
-function ComingSoonLogo({ provider }: { provider: ComingSoonProviderInfo }) {
-  switch (provider.id) {
-    case "gemini":
-      return <GeminiLogo />;
-    case "deepseek":
-      return <DeepSeekLogo />;
-    case "minimax":
-      return <MiniMaxLogo />;
-    default:
-      return (
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary">
-          <span className="text-xs font-semibold tracking-tight text-foreground">
-            {provider.mark}
-          </span>
-        </div>
-      );
-  }
-}
-
 function SetupGuidance({
   provider,
   status,
@@ -539,18 +494,3 @@ function GeminiLogo() {
   );
 }
 
-function DeepSeekLogo() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-8 w-8" fill="currentColor">
-      <path d="M23.748 4.651c-.254-.124-.364.113-.512.233-.051.04-.094.09-.137.137-.372.397-.806.657-1.373.626-.829-.046-1.537.214-2.163.848-.133-.782-.575-1.248-1.247-1.548-.352-.155-.708-.311-.955-.65-.172-.24-.219-.509-.305-.774-.055-.16-.11-.323-.293-.35-.2-.031-.278.136-.356.276-.313.572-.434 1.202-.422 1.84.027 1.436.633 2.58 1.838 3.393.137.094.172.187.129.323-.082.28-.18.553-.266.833-.055.179-.137.218-.328.14a5.5 5.5 0 0 1-1.737-1.179c-.857-.828-1.631-1.743-2.597-2.46a12 12 0 0 0-.689-.47c-.985-.957.13-1.743.387-1.836.27-.098.094-.433-.778-.428-.872.003-1.67.295-2.687.685a3 3 0 0 1-.465.136 9.6 9.6 0 0 0-2.883-.101c-1.885.21-3.39 1.1-4.497 2.622C.082 8.776-.231 10.854.152 13.02c.403 2.284 1.568 4.175 3.36 5.653 1.857 1.533 3.997 2.284 6.438 2.14 1.482-.085 3.132-.284 4.994-1.86.47.234.962.328 1.78.398.629.058 1.235-.031 1.705-.129.735-.155.684-.836.418-.961-2.155-1.004-1.682-.595-2.112-.926 1.095-1.295 2.768-3.598 3.284-6.733.05-.346.115-.834.108-1.114-.004-.171.035-.238.23-.257a4.2 4.2 0 0 0 1.545-.475c1.397-.763 1.96-2.016 2.093-3.517.02-.23-.004-.467-.247-.588M11.58 18.168c-2.088-1.642-3.101-2.183-3.52-2.16-.39.024-.32.472-.234.763.09.288.207.487.371.74.114.167.192.416-.113.603-.673.416-1.842-.14-1.897-.168-1.361-.801-2.5-1.86-3.301-3.306-.775-1.393-1.225-2.888-1.299-4.482-.02-.385.094-.522.477-.592a4.7 4.7 0 0 1 1.53-.038c2.131.311 3.946 1.264 5.467 2.774.868.86 1.525 1.887 2.202 2.89.72 1.066 1.494 2.082 2.48 2.915.348.291.626.513.892.677-.802.09-2.14.109-3.055-.615zm1.001-6.44a.306.306 0 0 1 .415-.287.3.3 0 0 1 .113.074.3.3 0 0 1 .086.214c0 .17-.136.307-.308.307a.303.303 0 0 1-.306-.307m3.11 1.596c-.2.081-.4.151-.591.16a1.25 1.25 0 0 1-.798-.254c-.274-.23-.47-.358-.551-.758a1.7 1.7 0 0 1 .015-.588c.07-.327-.007-.537-.238-.727-.188-.156-.426-.199-.689-.199a.6.6 0 0 1-.254-.078.253.253 0 0 1-.114-.358 1 1 0 0 1 .192-.21c.356-.202.767-.136 1.146.016.352.144.618.408 1.001.782.392.451.462.576.685.915.176.264.336.536.446.848.066.194-.02.353-.25.45" />
-    </svg>
-  );
-}
-
-function MiniMaxLogo() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-8 w-8" fill="currentColor">
-      <path d="M11.43 3.92a.86.86 0 1 0-1.718 0v14.236a1.999 1.999 0 0 1-3.997 0V9.022a.86.86 0 1 0-1.718 0v3.87a1.999 1.999 0 0 1-3.997 0V11.49a.57.57 0 0 1 1.139 0v1.404a.86.86 0 0 0 1.719 0V9.022a1.999 1.999 0 0 1 3.997 0v9.134a.86.86 0 0 0 1.719 0V3.92a1.998 1.998 0 1 1 3.996 0v11.788a.57.57 0 1 1-1.139 0zm10.572 3.105a2 2 0 0 0-1.999 1.997v7.63a.86.86 0 0 1-1.718 0V3.923a1.999 1.999 0 0 0-3.997 0v16.16a.86.86 0 0 1-1.719 0V18.08a.57.57 0 1 0-1.138 0v2a1.998 1.998 0 0 0 3.996 0V3.92a.86.86 0 0 1 1.719 0v12.73a1.999 1.999 0 0 0 3.996 0V9.023a.86.86 0 1 1 1.72 0v6.686a.57.57 0 0 0 1.138 0V9.022a2 2 0 0 0-1.998-1.997" />
-    </svg>
-  );
-}
