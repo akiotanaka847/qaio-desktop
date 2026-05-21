@@ -1,6 +1,6 @@
 [package]
 name = "qaio-ui-events"
-version = "0.4.8"
+version = "0.4.10"
 edition = "2021"
 description = "Event types emitted from Qaio backend to the UI via Tauri's event bus"
 license = "MIT"

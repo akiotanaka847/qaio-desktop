@@ -1,6 +1,6 @@
 [package]
 name = "qaio-db"
-version = "0.4.8"
+version = "0.4.10"
 edition = "2021"
 description = "SQLite database layer for AI agent desktop apps"
 license = "MIT"

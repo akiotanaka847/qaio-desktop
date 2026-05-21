@@ -1,6 +1,6 @@
 [package]
 name = "qaio-engine-protocol"
-version = "0.4.8"
+version = "0.4.10"
 edition = "2021"
 description = "Wire types for Qaio Engine — REST DTOs, WS envelope, error codes, version const"
 license = "MIT"
