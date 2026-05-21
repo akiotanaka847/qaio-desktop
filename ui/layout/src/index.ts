@@ -10,7 +10,7 @@ export { SidebarNavItem } from "./sidebar-nav";
 export type { SidebarNavItemProps } from "./sidebar-nav";
 
 export { WorkspaceSwitcher } from "./workspace-switcher";
-export type { WorkspaceSwitcherProps } from "./workspace-switcher";
+export type { WorkspaceSwitcherProps, WorkspaceSwitcherLabels } from "./workspace-switcher";
 
 export { TabBar } from "./tab-bar";
 export type { TabBarProps } from "./tab-bar";

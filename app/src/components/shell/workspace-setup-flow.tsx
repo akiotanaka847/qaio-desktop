@@ -1,14 +1,15 @@
 import { useState, type FormEvent } from "react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import { useTranslation, Trans } from "react-i18next";
 import { Button, Input } from "@qaio-ai/core";
+import { showErrorToast } from "../../lib/error-toast";
 import { ProviderPicker } from "./provider-picker";
 
 interface Props {
   /** "page" = full-page onboarding, "dialog" = inside a modal */
   mode: "page" | "dialog";
-  /** Called when the full flow completes */
-  onComplete: (name: string, provider: string, model: string) => void;
+  /** Called when the full flow completes. May be async. */
+  onComplete: (name: string, provider: string, model: string) => Promise<void> | void;
 }
 
 export function WorkspaceSetupFlow({ mode, onComplete }: Props) {
@@ -17,6 +18,7 @@ export function WorkspaceSetupFlow({ mode, onComplete }: Props) {
   const [name, setName] = useState("Personal");
   const [provider, setProvider] = useState<string | null>(null);
   const [model, setModel] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
 
   const handleNameSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -29,9 +31,19 @@ export function WorkspaceSetupFlow({ mode, onComplete }: Props) {
     setModel(m);
   };
 
-  const handleFinish = () => {
+  const handleFinish = async () => {
     if (!name.trim() || !provider || !model) return;
-    onComplete(name.trim(), provider, model);
+    setCreating(true);
+    try {
+      await onComplete(name.trim(), provider, model);
+    } catch (e) {
+      showErrorToast(
+        "create_workspace",
+        e instanceof Error ? e.message : String(e),
+      );
+    } finally {
+      setCreating(false);
+    }
   };
 
   const isPage = mode === "page";
@@ -103,9 +115,10 @@ export function WorkspaceSetupFlow({ mode, onComplete }: Props) {
         <div className={`mt-5 ${isPage ? "flex justify-center" : "flex justify-end"}`}>
           <Button
             className="rounded-full"
-            disabled={!provider || !model}
-            onClick={handleFinish}
+            disabled={!provider || !model || creating}
+            onClick={() => void handleFinish()}
           >
+            {creating && <Loader2 className="size-4 animate-spin" />}
             {mode === "page"
               ? t("setup:provider.finishPage")
               : t("setup:provider.finishDialog")}

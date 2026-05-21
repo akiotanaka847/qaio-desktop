@@ -4723,6 +4723,7 @@ dependencies = [
  "axum 0.7.9",
  "base64 0.22.1",
  "chrono",
+ "dirs 5.0.1",
  "futures-util",
  "qaio-claude-installer",
  "qaio-cli-bundle",

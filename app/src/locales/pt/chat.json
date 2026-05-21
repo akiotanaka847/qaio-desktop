@@ -60,8 +60,8 @@
     "thoughtForFew": "Pensou por alguns segundos"
   },
   "process": {
-    "active": "Missão em andamento...",
-    "complete": "Registro da missão"
+    "active": "Tarefa em andamento...",
+    "complete": "Registro da tarefa"
   },
   "summary": {
     "updatesMade": "Atualizações feitas",

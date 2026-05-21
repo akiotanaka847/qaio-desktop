@@ -60,8 +60,8 @@
     "thoughtForFew": "Thought for a few seconds"
   },
   "process": {
-    "active": "Mission in progress...",
-    "complete": "Mission log"
+    "active": "Task in progress...",
+    "complete": "Task log"
   },
   "summary": {
     "updatesMade": "Updates made",

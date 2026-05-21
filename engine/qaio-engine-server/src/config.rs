@@ -113,5 +113,8 @@ fn gen_token() -> String {
 }
 
 fn dirs_home() -> Option<PathBuf> {
-    std::env::var_os("HOME").map(PathBuf::from)
+    // Use the `dirs` crate which handles platform differences:
+    // Unix → $HOME, Windows → %USERPROFILE% (via SHGetKnownFolderPath).
+    // The old `$HOME`-only approach silently failed on Windows.
+    dirs::home_dir()
 }

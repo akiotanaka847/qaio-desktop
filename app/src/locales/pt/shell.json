@@ -1,6 +1,7 @@
 {
   "sidebar": {
-    "missionControl": "Central de missões",
+    "missionControl": "Centro de comando",
+    "createWorkspace": "Criar espaço de trabalho",
     "integrations": "Integrações",
     "settings": "Configurações",
     "yourAgents": "Seus agentes",
@@ -24,7 +25,7 @@
     "runningCount_other": "{{count}} assuntos em execução"
   },
   "tabActions": {
-    "newMission": "Nova missão",
+    "newMission": "Nova tarefa",
     "startTour": "Me guie"
   },
   "agentDelete": {
@@ -57,7 +58,7 @@
       },
       "newMission": {
         "title": "Começar um novo chat",
-        "body": "Clique aqui para abrir uma conversa nova. Cada uma vira um cartão de missão."
+        "body": "Clique aqui para abrir uma conversa nova. Cada uma vira um cartão de tarefa."
       },
       "tabActivity": {
         "title": "Atividade",
@@ -76,7 +77,7 @@
         "body": "As instruções permanentes do seu assistente. Edite quando quiser para mudar como ele se comporta."
       },
       "missionControl": {
-        "title": "Central de Missão",
+        "title": "Centro de comando",
         "body": "Quando adicionar mais agentes, isso vira o painel único de todos. Um lugar só para ver tudo."
       },
       "integrations": {
@@ -185,11 +186,11 @@
       "general": "Geral"
     },
     "actions": {
-      "goDashboard": "Ir para Mission Control",
+      "goDashboard": "Ir para o centro de comando",
       "prevAgent": "Agente anterior",
       "nextAgent": "Próximo agente",
       "goSettings": "Abrir configurações",
-      "newMission": "Nova missão",
+      "newMission": "Nova tarefa",
       "newAgent": "Novo agente",
       "search": "Buscar",
       "showShortcuts": "Mostrar atalhos de teclado",
