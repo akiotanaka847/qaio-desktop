@@ -116,6 +116,7 @@ export function Sidebar({ children }: { children: ReactNode }) {
             currentName={currentWorkspace?.name ?? t("shell:sidebar.selectWorkspace")}
             onSwitch={handleWorkspaceSwitch}
             onCreate={handleCreateWorkspace}
+            labels={{ createWorkspace: t("shell:sidebar.createWorkspace") }}
           />
         }
         navItems={[

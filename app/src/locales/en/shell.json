@@ -1,6 +1,7 @@
 {
   "sidebar": {
-    "missionControl": "Mission Control",
+    "missionControl": "Command Center",
+    "createWorkspace": "Create workspace",
     "integrations": "Integrations",
     "settings": "Settings",
     "yourAgents": "Your Agents",
@@ -24,7 +25,7 @@
     "runningCount_other": "{{count}} issues running"
   },
   "tabActions": {
-    "newMission": "New mission",
+    "newMission": "New task",
     "startTour": "Guide me"
   },
   "agentDelete": {
@@ -57,7 +58,7 @@
       },
       "newMission": {
         "title": "Start a new chat",
-        "body": "Click here to open a fresh conversation. Each one becomes a mission card."
+        "body": "Click here to open a fresh conversation. Each one becomes a task card."
       },
       "tabActivity": {
         "title": "Activity",
@@ -76,7 +77,7 @@
         "body": "Your assistant's standing instructions. Edit any time to change how it behaves."
       },
       "missionControl": {
-        "title": "Mission Control",
+        "title": "Command Center",
         "body": "When you add more agents, this becomes the single board across all of them. One place to see everything."
       },
       "integrations": {
@@ -185,11 +186,11 @@
       "general": "General"
     },
     "actions": {
-      "goDashboard": "Go to Mission Control",
+      "goDashboard": "Go to Command Center",
       "prevAgent": "Previous agent",
       "nextAgent": "Next agent",
       "goSettings": "Open settings",
-      "newMission": "New mission",
+      "newMission": "New task",
       "newAgent": "New agent",
       "search": "Focus search",
       "showShortcuts": "Show keyboard shortcuts",

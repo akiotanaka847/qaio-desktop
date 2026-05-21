@@ -32,11 +32,12 @@ export function BrainMission({
   const [submitting, setSubmitting] = useState(false);
 
   const refresh = useCallback(async () => {
-    const [openai, anthropic] = await Promise.all([
-      tauriProvider.checkStatus("openai"),
-      tauriProvider.checkStatus("anthropic"),
-    ]);
-    setStatuses({ openai, anthropic });
+    const results = await Promise.all(
+      PROVIDERS.map((p) => tauriProvider.checkStatus(p.id)),
+    );
+    const next: Record<string, ProviderStatus> = {};
+    PROVIDERS.forEach((p, i) => { next[p.id] = results[i]; });
+    setStatuses(next);
     setLoading(false);
   }, []);
 
