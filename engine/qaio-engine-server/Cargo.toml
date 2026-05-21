@@ -23,6 +23,7 @@ tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
 sha2 = "0.10"
 base64 = "0.22"
+dirs = "5"
 rand = "0.8"
 futures-util = "0.3"
 qaio-engine-protocol = { version = "0.4.0", path = "../qaio-engine-protocol" }

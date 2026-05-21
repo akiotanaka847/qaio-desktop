@@ -33,7 +33,7 @@ export function showErrorToast(command: string, message: string): void {
           .then(() => {
             addToast({
               title: "Roger that, report received.",
-              description: "Mission control is on it, deploying a fix.",
+              description: "The team is on it, deploying a fix.",
               variant: "success",
             });
           })
