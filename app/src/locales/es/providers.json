@@ -7,8 +7,7 @@
     "modelDropdownLabel": "Modelo",
     "signOut": "Cerrar sesión",
     "signingOut": "Cerrando sesión...",
-    "signOutError": "No se pudo cerrar sesión de {{provider}}",
-    "comingSoon": "Próximamente"
+    "signOutError": "No se pudo cerrar sesión de {{provider}}"
   },
   "setup": {
     "headline": "Configurar {{provider}}",
