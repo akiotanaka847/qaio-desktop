@@ -9,11 +9,6 @@
   Not another chatbot. A desktop app where agents use real tools, real integrations, and real files.
 </p>
 
-<p align="center">
-  <a href="https://getqaio.ai">Website</a> &middot;
-  <a href="https://getqaio.ai/learn">Learn</a> &middot;
-  <a href="https://github.com/getqaio/qaio/issues">Issues</a>
-</p>
 
 ---
 
