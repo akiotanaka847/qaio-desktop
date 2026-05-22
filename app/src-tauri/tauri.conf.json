@@ -41,7 +41,7 @@
     }
   },
   "bundle": {
-    "createUpdaterArtifacts": false,
+    "createUpdaterArtifacts": "v2",
     "active": true,
     "targets": ["app", "dmg", "nsis", "msi"],
     "externalBin": ["binaries/qaio-engine"],
