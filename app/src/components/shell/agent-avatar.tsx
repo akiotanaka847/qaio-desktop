@@ -75,7 +75,7 @@ export function getAgentIcon(name?: string): LucideIcon {
 }
 
 export function getAgentIconColor(color?: string): string {
-  return color ?? "#8b8b8b";
+  return color ?? "var(--color-muted-foreground, #8b8b8b)";
 }
 
 interface AgentAvatarProps {

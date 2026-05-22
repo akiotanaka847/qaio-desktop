@@ -57,7 +57,7 @@ export function AuthReconnectBanner() {
 
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 mb-1">
-              <AlertTriangle className="h-4 w-4 text-[#e0ac00]" />
+              <AlertTriangle className="h-4 w-4 text-warning" />
               <p className="text-sm font-semibold text-foreground">
                 {t("shell:authReconnect.heading")}
               </p>
