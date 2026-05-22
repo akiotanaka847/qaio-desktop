@@ -139,7 +139,7 @@ function DisclaimerOverlay({
           <p
             className={cn(
               "text-xs",
-              hasScrolledToEnd ? "text-muted-foreground" : "text-[#e0ac00]",
+              hasScrolledToEnd ? "text-muted-foreground" : "text-warning",
             )}
             aria-live="polite"
           >
@@ -148,7 +148,7 @@ function DisclaimerOverlay({
               : t("scroll_hint.pending")}
           </p>
           {error ? (
-            <p className="text-xs text-[#e02e2a]" role="alert">
+            <p className="text-xs text-destructive" role="alert">
               {error}
             </p>
           ) : null}

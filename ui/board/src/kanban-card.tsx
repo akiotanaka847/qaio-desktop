@@ -125,7 +125,7 @@ export function KanbanCard({
                 <TooltipTrigger asChild>
                   <button
                     onClick={(e) => { e.stopPropagation(); onApprove() }}
-                    className="p-1 rounded-md text-muted-foreground/40 hover:text-[#00a240] hover:bg-[#00a240]/10 transition-colors duration-200"
+                    className="p-1 rounded-md text-muted-foreground/40 hover:text-success hover:bg-success/10 transition-colors duration-200"
                     aria-label={l.approveTooltip}
                   >
                     <Check className="size-3" />
