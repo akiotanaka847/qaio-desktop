@@ -1,5 +1,17 @@
 {
   "title": "Centro de comando",
+  "greeting": {
+    "morning": "Buenos dias",
+    "afternoon": "Buenas tardes",
+    "evening": "Buenas noches"
+  },
+  "stats": {
+    "activeTasksLabel": "Activas",
+    "runningLabel": "En curso",
+    "needsYouLabel": "Necesitan atencion",
+    "agentsLabel": "Agentes",
+    "completedLabel": "Completadas"
+  },
   "filter": {
     "allAgents": "Todos los agentes"
   },
