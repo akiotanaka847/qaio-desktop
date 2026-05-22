@@ -28,6 +28,11 @@
     "newMission": "New task",
     "startTour": "Guide me"
   },
+  "userMenu": {
+    "accountSettings": "Account settings",
+    "signOut": "Sign out",
+    "signedIn": "Signed in"
+  },
   "agentDelete": {
     "title": "Delete agent?",
     "description": "This will permanently delete the agent and all its data. This cannot be undone."

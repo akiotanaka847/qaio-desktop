@@ -28,6 +28,11 @@
     "newMission": "Nueva tarea",
     "startTour": "Guíame"
   },
+  "userMenu": {
+    "accountSettings": "Configuracion de cuenta",
+    "signOut": "Cerrar sesion",
+    "signedIn": "Conectado"
+  },
   "agentDelete": {
     "title": "¿Eliminar el agente?",
     "description": "Se eliminará el agente y todos sus datos de forma permanente. Esta acción no se puede deshacer."

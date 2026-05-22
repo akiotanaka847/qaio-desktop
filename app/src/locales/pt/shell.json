@@ -28,6 +28,11 @@
     "newMission": "Nova tarefa",
     "startTour": "Me guie"
   },
+  "userMenu": {
+    "accountSettings": "Configuracoes da conta",
+    "signOut": "Sair",
+    "signedIn": "Conectado"
+  },
   "agentDelete": {
     "title": "Excluir o agente?",
     "description": "Isso apaga o agente e todos os seus dados de forma permanente. Não dá para desfazer."
