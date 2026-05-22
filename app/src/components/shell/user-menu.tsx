@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { LogOut, User } from "lucide-react";
 import { useSession } from "../../hooks/use-session";
 import { signOut } from "../../lib/auth";
@@ -10,6 +11,7 @@ import { useUIStore } from "../../stores/ui";
  * when there's no session.
  */
 export function UserMenu() {
+  const { t } = useTranslation("shell");
   const { data: session } = useSession();
   const [open, setOpen] = useState(false);
   const setViewMode = useUIStore((s) => s.setViewMode);
@@ -22,7 +24,7 @@ export function UserMenu() {
     full_name?: string;
     avatar_url?: string;
   };
-  const displayName = meta.full_name ?? meta.name ?? user.email ?? "Signed in";
+  const displayName = meta.full_name ?? meta.name ?? user.email ?? t("userMenu.signedIn");
   const avatar = meta.avatar_url ?? null;
 
   const handleSignOut = async () => {
@@ -34,7 +36,7 @@ export function UserMenu() {
     <div className="relative mx-2 mb-2">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center gap-2 rounded-lg px-3 py-2 text-left hover:bg-accent transition-colors"
+        className="w-full flex items-center gap-2 rounded-lg px-3 py-2 text-left hover:bg-sidebar-accent transition-colors"
       >
         {avatar ? (
           <img
@@ -44,11 +46,11 @@ export function UserMenu() {
             referrerPolicy="no-referrer"
           />
         ) : (
-          <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center">
-            <User className="h-3.5 w-3.5 text-muted-foreground" />
+          <div className="h-6 w-6 rounded-full bg-sidebar-accent flex items-center justify-center">
+            <User className="h-3.5 w-3.5 text-sidebar-foreground/50" />
           </div>
         )}
-        <span className="text-sm truncate flex-1 min-w-0">{displayName}</span>
+        <span className="text-sm truncate flex-1 min-w-0 text-sidebar-foreground">{displayName}</span>
       </button>
 
       {open && (
@@ -67,14 +69,14 @@ export function UserMenu() {
               className="w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors flex items-center gap-2"
             >
               <User className="h-3.5 w-3.5" />
-              Account settings
+              {t("userMenu.accountSettings")}
             </button>
             <button
               onClick={handleSignOut}
               className="w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors flex items-center gap-2 text-destructive"
             >
               <LogOut className="h-3.5 w-3.5" />
-              Sign out
+              {t("userMenu.signOut")}
             </button>
           </div>
         </>
