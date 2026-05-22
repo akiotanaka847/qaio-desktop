@@ -41,6 +41,23 @@ Token variable prefix: `--qaio-*`. Mapped to Tailwind via `@theme` block as `--c
 | `--qaio-success` | `#4CAF7D` | `#4CAF7D` | `bg-success` / `text-success` |
 | `--qaio-warning` | `#E0AC00` | `#eab308` | `bg-warning` |
 
+### Sidebar tokens
+
+The sidebar is a dark surface (navy) inside the light app. Components inside
+the sidebar MUST use sidebar-specific tokens, not the main-surface tokens.
+
+| Token | Light | Tailwind class |
+|-------|-------|----------------|
+| `--qaio-sidebar` | `#1B2A4A` | `bg-sidebar` |
+| `--qaio-sidebar-fg` | `#E8ECF2` | `text-sidebar-foreground` |
+| `--qaio-sidebar-border` | `rgba(255,255,255,0.08)` | `border-sidebar-border` |
+| `--qaio-sidebar-accent` | `rgba(76,175,125,0.15)` | `bg-sidebar-accent` |
+| `--qaio-sidebar-accent-fg` | `#ffffff` | `text-sidebar-accent-foreground` |
+
+Common mistake: using `hover:bg-accent` or `bg-muted` inside the sidebar.
+These resolve to light-mode values and look broken on the navy background.
+Always use `hover:bg-sidebar-accent`, `bg-sidebar-accent`, `text-sidebar-foreground/50`.
+
 ### Borders (opacity)
 Use `border-border` (token). For inline overrides: `border-black/[0.05]` light, `border-black/[0.15]` heavy.
 
@@ -115,7 +132,10 @@ Grid: leading (attach) | primary (text) | trailing (send).
 +----------+---------------+-------------+
 ```
 
-Sidebar 200px, navy `bg-sidebar` with subtle gradient. Right panel 45% width, 380px min. Split view resizable, default 55/45. Chat max-width 768px (`max-w-3xl`). Header 52px.
+Sidebar 220px (`w-[220px]`), navy `bg-sidebar` with subtle gradient. Right panel 45% width, 380px min. Split view resizable, default 55/45. Chat max-width 768px (`max-w-3xl`). Header 52px.
+
+### Dashboard header
+Time-based greeting (`DashboardHeader`) + five `StatPill` components showing active, running, needs-you, agents, completed counts. Uses `useAgentActivitySummaries` hook. Greeting key: morning (< 12), afternoon (< 18), evening. i18n keys in `dashboard` namespace.
 
 ### Radii
 `rounded` (0.25rem chips) / `rounded-md` (inputs) / `rounded-lg` (sidebar items, icon btns) / `rounded-xl` (cards) / `rounded-2xl` (large cards, dialogs) / `rounded-[28px]` (composer) / `rounded-full` (pills, avatars)
