@@ -1,0 +1,46 @@
+{
+  "title": "Analytics",
+  "subtitle_one": "{{count}} agent, {{tasks}} task",
+  "subtitle_other": "{{count}} agents, {{tasks}} tasks",
+  "empty": "Create an agent to start seeing analytics",
+  "kpi": {
+    "total": "Total",
+    "completed": "Completed",
+    "inProgress": "In Progress",
+    "pendingReview": "Pending Review"
+  },
+  "charts": {
+    "completionRate": "Completion Rate",
+    "byStatus": "By Status",
+    "tasksByAgent": "Tasks by Agent",
+    "agentDetails": "Agent Details",
+    "noData": "No data yet",
+    "noTasks": "No tasks yet"
+  },
+  "legend": {
+    "done": "Done",
+    "active": "Active",
+    "review": "Review"
+  },
+  "table": {
+    "agent": "Agent",
+    "total": "Total",
+    "done": "Done",
+    "active": "Active",
+    "review": "Review"
+  },
+  "status": {
+    "requirements": "Backlog",
+    "planning": "Planning",
+    "review_plan": "Review Plan",
+    "implementing": "Implementing",
+    "review_impl": "Review Impl",
+    "testing": "Testing",
+    "done": "Done",
+    "cancelled": "Cancelled",
+    "running": "In Progress",
+    "needs_you": "Needs You",
+    "needs_plan_approval": "Plan Approval",
+    "needs_impl_approval": "Impl Approval"
+  }
+}
