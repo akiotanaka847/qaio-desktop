@@ -112,7 +112,7 @@ export function ConnectPhoneSection() {
               size={220}
               level="M"
               bgColor="transparent"
-              fgColor="#0d0d0d"
+              fgColor="var(--color-foreground, #1B2A4A)"
             />
           </div>
         ) : error ? (

@@ -4,100 +4,100 @@
 
 /* QStrauss Light Corporate theme */
 :root {
-  --ht-background: #FAFBFC;
-  --ht-foreground: #1B2A4A;
-  --ht-card: #ffffff;
-  --ht-card-fg: #1B2A4A;
-  --ht-popover: #ffffff;
-  --ht-popover-fg: #1B2A4A;
-  --ht-primary: #1B2A4A;
-  --ht-primary-fg: #ffffff;
-  --ht-secondary: #F0F3F7;
-  --ht-secondary-fg: #1B2A4A;
-  --ht-muted: #F0F3F7;
-  --ht-muted-fg: #6B7A94;
-  --ht-accent: #4CAF7D;
-  --ht-accent-fg: #ffffff;
-  --ht-destructive: #DC3545;
-  --ht-destructive-fg: #ffffff;
-  --ht-border: rgba(27, 42, 74, 0.08);
-  --ht-input: #E4E9F0;
-  --ht-ring: #4CAF7D;
-  --ht-sidebar: #1B2A4A;
-  --ht-sidebar-fg: #E8ECF2;
-  --ht-sidebar-border: rgba(255, 255, 255, 0.08);
-  --ht-sidebar-accent: rgba(76, 175, 125, 0.15);
-  --ht-sidebar-accent-fg: #ffffff;
-  --ht-success: #4CAF7D;
-  --ht-success-fg: #ffffff;
-  --ht-warning: #E0AC00;
-  --ht-warning-fg: #ffffff;
+  --qaio-background: #FAFAF8;
+  --qaio-foreground: #1B2A4A;
+  --qaio-card: #ffffff;
+  --qaio-card-fg: #1B2A4A;
+  --qaio-popover: #ffffff;
+  --qaio-popover-fg: #1B2A4A;
+  --qaio-primary: #1B2A4A;
+  --qaio-primary-fg: #ffffff;
+  --qaio-secondary: #F0F3F7;
+  --qaio-secondary-fg: #1B2A4A;
+  --qaio-muted: #F0F3F7;
+  --qaio-muted-fg: #6B7A94;
+  --qaio-accent: #4CAF7D;
+  --qaio-accent-fg: #ffffff;
+  --qaio-destructive: #DC3545;
+  --qaio-destructive-fg: #ffffff;
+  --qaio-border: rgba(27, 42, 74, 0.08);
+  --qaio-input: #E4E9F0;
+  --qaio-ring: #4CAF7D;
+  --qaio-sidebar: #1B2A4A;
+  --qaio-sidebar-fg: #E8ECF2;
+  --qaio-sidebar-border: rgba(255, 255, 255, 0.08);
+  --qaio-sidebar-accent: rgba(76, 175, 125, 0.15);
+  --qaio-sidebar-accent-fg: #ffffff;
+  --qaio-success: #4CAF7D;
+  --qaio-success-fg: #ffffff;
+  --qaio-warning: #E0AC00;
+  --qaio-warning-fg: #ffffff;
 }
 
 /* QStrauss Dark Executive theme */
 [data-theme="dark"] {
-  --ht-background: #0F1A2E;
-  --ht-foreground: #E8ECF2;
-  --ht-card: #162240;
-  --ht-card-fg: #E8ECF2;
-  --ht-popover: #162240;
-  --ht-popover-fg: #E8ECF2;
-  --ht-primary: #4CAF7D;
-  --ht-primary-fg: #ffffff;
-  --ht-secondary: #1A2D4D;
-  --ht-secondary-fg: #E8ECF2;
-  --ht-muted: #1A2D4D;
-  --ht-muted-fg: #8899B0;
-  --ht-accent: rgba(76, 175, 125, 0.12);
-  --ht-accent-fg: #6FCF9A;
-  --ht-destructive: #ef4444;
-  --ht-destructive-fg: #ffffff;
-  --ht-border: rgba(255, 255, 255, 0.06);
-  --ht-input: #1E3355;
-  --ht-ring: #4CAF7D;
-  --ht-sidebar: #0A1222;
-  --ht-sidebar-fg: #E8ECF2;
-  --ht-sidebar-border: rgba(255, 255, 255, 0.06);
-  --ht-sidebar-accent: rgba(76, 175, 125, 0.12);
-  --ht-sidebar-accent-fg: #E8ECF2;
-  --ht-success: #4CAF7D;
-  --ht-success-fg: #ffffff;
-  --ht-warning: #eab308;
-  --ht-warning-fg: #000000;
+  --qaio-background: #0F1A2E;
+  --qaio-foreground: #E8ECF2;
+  --qaio-card: #162240;
+  --qaio-card-fg: #E8ECF2;
+  --qaio-popover: #162240;
+  --qaio-popover-fg: #E8ECF2;
+  --qaio-primary: #4CAF7D;
+  --qaio-primary-fg: #ffffff;
+  --qaio-secondary: #1A2D4D;
+  --qaio-secondary-fg: #E8ECF2;
+  --qaio-muted: #1A2D4D;
+  --qaio-muted-fg: #8899B0;
+  --qaio-accent: rgba(76, 175, 125, 0.12);
+  --qaio-accent-fg: #6FCF9A;
+  --qaio-destructive: #ef4444;
+  --qaio-destructive-fg: #ffffff;
+  --qaio-border: rgba(255, 255, 255, 0.06);
+  --qaio-input: #1E3355;
+  --qaio-ring: #4CAF7D;
+  --qaio-sidebar: #0A1222;
+  --qaio-sidebar-fg: #E8ECF2;
+  --qaio-sidebar-border: rgba(255, 255, 255, 0.06);
+  --qaio-sidebar-accent: rgba(76, 175, 125, 0.12);
+  --qaio-sidebar-accent-fg: #E8ECF2;
+  --qaio-success: #4CAF7D;
+  --qaio-success-fg: #ffffff;
+  --qaio-warning: #eab308;
+  --qaio-warning-fg: #000000;
   color-scheme: dark;
 }
 
 /* @theme references the intermediate vars — Tailwind generates utilities from these */
 @theme {
-  --color-background: var(--ht-background);
-  --color-foreground: var(--ht-foreground);
-  --color-card: var(--ht-card);
-  --color-card-foreground: var(--ht-card-fg);
-  --color-popover: var(--ht-popover);
-  --color-popover-foreground: var(--ht-popover-fg);
-  --color-primary: var(--ht-primary);
-  --color-primary-foreground: var(--ht-primary-fg);
-  --color-secondary: var(--ht-secondary);
-  --color-secondary-foreground: var(--ht-secondary-fg);
-  --color-muted: var(--ht-muted);
-  --color-muted-foreground: var(--ht-muted-fg);
-  --color-accent: var(--ht-accent);
-  --color-accent-foreground: var(--ht-accent-fg);
-  --color-destructive: var(--ht-destructive);
-  --color-destructive-foreground: var(--ht-destructive-fg);
-  --color-border: var(--ht-border);
-  --color-input: var(--ht-input);
-  --color-ring: var(--ht-ring);
+  --color-background: var(--qaio-background);
+  --color-foreground: var(--qaio-foreground);
+  --color-card: var(--qaio-card);
+  --color-card-foreground: var(--qaio-card-fg);
+  --color-popover: var(--qaio-popover);
+  --color-popover-foreground: var(--qaio-popover-fg);
+  --color-primary: var(--qaio-primary);
+  --color-primary-foreground: var(--qaio-primary-fg);
+  --color-secondary: var(--qaio-secondary);
+  --color-secondary-foreground: var(--qaio-secondary-fg);
+  --color-muted: var(--qaio-muted);
+  --color-muted-foreground: var(--qaio-muted-fg);
+  --color-accent: var(--qaio-accent);
+  --color-accent-foreground: var(--qaio-accent-fg);
+  --color-destructive: var(--qaio-destructive);
+  --color-destructive-foreground: var(--qaio-destructive-fg);
+  --color-border: var(--qaio-border);
+  --color-input: var(--qaio-input);
+  --color-ring: var(--qaio-ring);
   --radius: 0.5rem;
-  --color-sidebar: var(--ht-sidebar);
-  --color-sidebar-foreground: var(--ht-sidebar-fg);
-  --color-sidebar-border: var(--ht-sidebar-border);
-  --color-sidebar-accent: var(--ht-sidebar-accent);
-  --color-sidebar-accent-foreground: var(--ht-sidebar-accent-fg);
-  --color-success: var(--ht-success);
-  --color-success-foreground: var(--ht-success-fg);
-  --color-warning: var(--ht-warning);
-  --color-warning-foreground: var(--ht-warning-fg);
+  --color-sidebar: var(--qaio-sidebar);
+  --color-sidebar-foreground: var(--qaio-sidebar-fg);
+  --color-sidebar-border: var(--qaio-sidebar-border);
+  --color-sidebar-accent: var(--qaio-sidebar-accent);
+  --color-sidebar-accent-foreground: var(--qaio-sidebar-accent-fg);
+  --color-success: var(--qaio-success);
+  --color-success-foreground: var(--qaio-success-fg);
+  --color-warning: var(--qaio-warning);
+  --color-warning-foreground: var(--qaio-warning-fg);
 }
 
 @layer base {
@@ -149,17 +149,20 @@ body {
 .card-running-glow {
   --glow-angle: 0deg;
   --glow-bg: var(--color-background, #ffffff);
+  --glow-accent: var(--color-accent, #4CAF7D);
+  --glow-accent-dark: color-mix(in srgb, var(--glow-accent) 80%, black);
+  --glow-primary: var(--color-primary, #1B2A4A);
   position: relative;
   background:
     linear-gradient(var(--glow-bg), var(--glow-bg)) padding-box,
     conic-gradient(
       from var(--glow-angle),
       transparent 60%,
-      rgba(76, 175, 125, 0.15) 68%,
-      #4CAF7D 74%,
-      #3D9E6E 78%,
-      #1B2A4A 82%,
-      #4CAF7D 84%,
+      color-mix(in srgb, var(--glow-accent) 15%, transparent) 68%,
+      var(--glow-accent) 74%,
+      var(--glow-accent-dark) 78%,
+      var(--glow-primary) 82%,
+      var(--glow-accent) 84%,
       transparent 88%
     ) border-box;
   border: 1.5px solid transparent;

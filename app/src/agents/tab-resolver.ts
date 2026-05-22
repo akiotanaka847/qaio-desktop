@@ -96,10 +96,10 @@ function BundleError() {
     },
   },
     React.createElement("p", {
-      style: { fontSize: 20, fontWeight: 600, color: "#0d0d0d" },
+      style: { fontSize: 20, fontWeight: 600, color: "var(--color-foreground)" },
     }, "Custom tab unavailable"),
     React.createElement("p", {
-      style: { fontSize: 14, color: "#676767", textAlign: "center" as const, maxWidth: 400 },
+      style: { fontSize: 14, color: "var(--color-muted-foreground)", textAlign: "center" as const, maxWidth: 400 },
     }, "This agent has a custom component but its bundle.js is missing or failed to load. Reinstall the agent or check the agent repo."),
   );
 }

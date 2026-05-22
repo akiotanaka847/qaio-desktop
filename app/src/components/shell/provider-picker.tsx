@@ -242,8 +242,8 @@ function ProviderCard({
       <div className="flex items-center gap-1.5 text-xs" aria-live="polite">
         {connected ? (
           <>
-            <Check className="h-3 w-3 text-[#00a240]" />
-            <span className="text-[#00a240] font-medium">{t("card.connected")}</span>
+            <Check className="h-3 w-3 text-success" />
+            <span className="text-success font-medium">{t("card.connected")}</span>
           </>
         ) : (
           <>
@@ -459,7 +459,7 @@ function StatusRow({ ok, okLabel, notOkLabel }: { ok: boolean; okLabel: string; 
   return (
     <div className="flex items-center gap-2 text-sm">
       {ok ? (
-        <Check className="h-3.5 w-3.5 text-[#00a240] shrink-0" />
+        <Check className="h-3.5 w-3.5 text-success shrink-0" />
       ) : (
         <CircleDashed className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
       )}
