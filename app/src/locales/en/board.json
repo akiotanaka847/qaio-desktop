@@ -46,5 +46,8 @@
   },
   "selectedSkill": {
     "cancel": "Close"
+  },
+  "tags": {
+    "routine": "Routine"
   }
 }

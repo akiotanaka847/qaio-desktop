@@ -101,25 +101,25 @@ export default function BoardTab({ agent, agentDef }: TabProps) {
   );
 
   const items: KanbanItem[] = useMemo(
-    () => (rawItems ?? []).map((t) => {
-      const mode = agentModes?.find((m) => m.id === t.agent);
+    () => (rawItems ?? []).map((task) => {
+      const mode = agentModes?.find((m) => m.id === task.agent);
       return {
-        id: t.id,
-        title: t.title,
-        description: t.description,
-        status: t.status,
-        updatedAt: t.updated_at ?? new Date().toISOString(),
+        id: task.id,
+        title: task.title,
+        description: task.description,
+        status: task.status,
+        updatedAt: task.updated_at ?? new Date().toISOString(),
         group: agent.name,
-        tags: mode ? [mode.name] : (t.routine_id ? ["Routine"] : undefined),
+        tags: mode ? [mode.name] : (task.routine_id ? [t("board:tags.routine")] : undefined),
         metadata: {
-          ...(t.session_key ? { sessionKey: t.session_key } : {}),
-          ...(t.routine_id ? { routineId: t.routine_id } : {}),
-          ...(t.agent ? { agent: t.agent } : {}),
-          ...(t.worktree_path ? { worktreePath: t.worktree_path } : {}),
+          ...(task.session_key ? { sessionKey: task.session_key } : {}),
+          ...(task.routine_id ? { routineId: task.routine_id } : {}),
+          ...(task.agent ? { agent: task.agent } : {}),
+          ...(task.worktree_path ? { worktreePath: task.worktree_path } : {}),
         },
       };
     }),
-    [agent.name, agentModes, rawItems],
+    [agent.name, agentModes, rawItems, t],
   );
 
   // Read and consume pending selection from Mission Control

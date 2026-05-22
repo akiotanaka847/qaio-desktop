@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@qaio-ai/core";
 import { QaioLogo } from "../shell/experience-card";
 import { onAuthError, signInWithGoogle } from "../../lib/auth";
@@ -21,8 +22,9 @@ type Provider = "google";
  * profile and need to retry. The PKCE flow is regenerated each click.
  */
 export function SignInScreen() {
+  const { t } = useTranslation("auth");
   const [pending, setPending] = useState<Provider | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [errorKey, setErrorKey] = useState<string | null>(null);
 
   // Surface OAuth errors that happen AFTER the browser hands off (provider
   // rejection, code-exchange failure, identity already linked to another
@@ -31,18 +33,18 @@ export function SignInScreen() {
   useEffect(() => {
     return onAuthError((message) => {
       setPending(null);
-      setError(prettifyAuthError(message));
+      setErrorKey(resolveAuthErrorKey(message));
     });
   }, []);
 
   const handleSignIn = (provider: Provider) => async () => {
     setPending(provider);
-    setError(null);
+    setErrorKey(null);
     try {
       await signInWithGoogle();
     } catch (e) {
       logger.error(`[auth] ${provider} sign-in failed: ${e}`);
-      setError(prettifyAuthError(String(e)));
+      setErrorKey(resolveAuthErrorKey(String(e)));
     } finally {
       // Re-enable the button immediately once the browser is open. The
       // SignInScreen itself unmounts when the deep-link callback flips the
@@ -56,9 +58,9 @@ export function SignInScreen() {
       <div className="flex flex-col items-center gap-6 max-w-sm w-full">
         <QaioLogo size={48} />
         <div className="text-center">
-          <h1 className="text-2xl font-semibold">Welcome to Qaio</h1>
+          <h1 className="text-2xl font-semibold">{t("welcome.title")}</h1>
           <p className="text-sm text-muted-foreground mt-2">
-            Sign in to save your agents and keep everything in sync.
+            {t("welcome.subtitle")}
           </p>
         </div>
 
@@ -69,16 +71,20 @@ export function SignInScreen() {
             className="w-full rounded-full h-11 flex items-center justify-center gap-2"
           >
             <GoogleIcon />
-            {pending === "google" ? "Opening browser..." : "Continue with Google"}
+            {pending === "google" ? t("google.pending") : t("google.label")}
           </Button>
         </div>
 
         <p className="text-xs text-muted-foreground text-center">
-          Wrong browser profile? Just click again to retry.
+          {t("retryHint")}
         </p>
 
-        {error && (
-          <p className="text-xs text-destructive text-center">{error}</p>
+        {errorKey && (
+          <p className="text-xs text-destructive text-center">
+            {errorKey.startsWith("fallback:")
+              ? t("errors.fallback", { detail: errorKey.slice(9, 229) })
+              : t(`errors.${errorKey}` as "errors.identityConflict")}
+          </p>
         )}
       </div>
     </div>
@@ -86,37 +92,20 @@ export function SignInScreen() {
 }
 
 /**
- * Map raw provider / Supabase error strings to a short, actionable
- * sentence. The original message is appended in parentheses so support
- * still has the technical detail when triaging from logs.
+ * Map raw provider / Supabase error strings to an i18n-resolved message.
+ * Uses the `auth:errors.*` namespace keys. Falls back to showing a
+ * trimmed version of the raw error so the user has something to copy.
  */
-function prettifyAuthError(raw: string): string {
+function resolveAuthErrorKey(raw: string): string {
   const msg = raw.toLowerCase();
-  if (msg.includes("identity") && msg.includes("already")) {
-    return "That email is already signed in with another provider. Use the original sign-in option, or contact support to merge accounts.";
-  }
-  if (msg.includes("aadsts50020") || msg.includes("does not exist in tenant")) {
-    return "Your Microsoft account isn't allowed in this Qaio workspace. Try a different account, or ask your admin to invite it.";
-  }
-  if (msg.includes("aadsts700016") || msg.includes("application with identifier")) {
-    return "Microsoft sign-in isn't fully configured for Qaio yet. Please contact support.";
-  }
-  if (msg.includes("aadsts65001") || msg.includes("consent")) {
-    return "Microsoft needs admin consent before this account can sign in. Ask your IT admin to approve Qaio, then try again.";
-  }
-  if (msg.includes("redirect") && msg.includes("invalid")) {
-    return "The sign-in callback URL isn't allow-listed. Please contact support.";
-  }
-  if (msg.includes("provider") && msg.includes("not enabled")) {
-    return "This sign-in option isn't turned on for Qaio yet. Try the other provider.";
-  }
-  if (msg.includes("authorization code")) {
-    return "Sign-in didn't complete cleanly. Please try again.";
-  }
-  // Fallback: show the raw message so the user has something to copy
-  // when reporting. Keep it bounded so the UI doesn't blow up.
-  const trimmed = raw.length > 220 ? `${raw.slice(0, 220)}…` : raw;
-  return `Sign-in failed: ${trimmed}`;
+  if (msg.includes("identity") && msg.includes("already")) return "identityConflict";
+  if (msg.includes("aadsts50020") || msg.includes("does not exist in tenant")) return "tenantMismatch";
+  if (msg.includes("aadsts700016") || msg.includes("application with identifier")) return "appNotConfigured";
+  if (msg.includes("aadsts65001") || msg.includes("consent")) return "adminConsent";
+  if (msg.includes("redirect") && msg.includes("invalid")) return "redirectInvalid";
+  if (msg.includes("provider") && msg.includes("not enabled")) return "providerDisabled";
+  if (msg.includes("authorization code")) return "codeExchange";
+  return `fallback:${raw}`;
 }
 
 function GoogleIcon() {

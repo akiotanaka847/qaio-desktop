@@ -28,6 +28,7 @@ import providersEn from "../locales/en/providers.json";
 import errorsEn from "../locales/en/errors.json";
 import eventsEn from "../locales/en/events.json";
 import analyticsEn from "../locales/en/analytics.json";
+import authEn from "../locales/en/auth.json";
 import commonEs from "../locales/es/common.json";
 import setupEs from "../locales/es/setup.json";
 import legalEs from "../locales/es/legal.json";
@@ -44,6 +45,7 @@ import providersEs from "../locales/es/providers.json";
 import errorsEs from "../locales/es/errors.json";
 import eventsEs from "../locales/es/events.json";
 import analyticsEs from "../locales/es/analytics.json";
+import authEs from "../locales/es/auth.json";
 import commonPt from "../locales/pt/common.json";
 import setupPt from "../locales/pt/setup.json";
 import legalPt from "../locales/pt/legal.json";
@@ -60,6 +62,7 @@ import providersPt from "../locales/pt/providers.json";
 import errorsPt from "../locales/pt/errors.json";
 import eventsPt from "../locales/pt/events.json";
 import analyticsPt from "../locales/pt/analytics.json";
+import authPt from "../locales/pt/auth.json";
 
 export const SUPPORTED_LOCALES = ["en", "es", "pt"] as const;
 export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
@@ -122,6 +125,7 @@ const resources = {
     errors: errorsEn,
     events: eventsEn,
     analytics: analyticsEn,
+    auth: authEn,
   },
   es: {
     common: commonEs,
@@ -140,6 +144,7 @@ const resources = {
     errors: errorsEs,
     events: eventsEs,
     analytics: analyticsEs,
+    auth: authEs,
   },
   pt: {
     common: commonPt,
@@ -158,6 +163,7 @@ const resources = {
     errors: errorsPt,
     events: eventsPt,
     analytics: analyticsPt,
+    auth: authPt,
   },
 } as const;
 
@@ -196,6 +202,7 @@ void i18n
       "errors",
       "events",
       "analytics",
+      "auth",
     ],
     interpolation: { escapeValue: false }, // react already escapes
     detection: {
