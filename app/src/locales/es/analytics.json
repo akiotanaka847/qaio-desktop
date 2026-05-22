@@ -1,0 +1,46 @@
+{
+  "title": "Analitica",
+  "subtitle_one": "{{count}} agente, {{tasks}} tarea",
+  "subtitle_other": "{{count}} agentes, {{tasks}} tareas",
+  "empty": "Crea un agente para empezar a ver analiticas",
+  "kpi": {
+    "total": "Total",
+    "completed": "Completadas",
+    "inProgress": "En curso",
+    "pendingReview": "Pendiente de revision"
+  },
+  "charts": {
+    "completionRate": "Tasa de finalizacion",
+    "byStatus": "Por estado",
+    "tasksByAgent": "Tareas por agente",
+    "agentDetails": "Detalle por agente",
+    "noData": "Sin datos aun",
+    "noTasks": "Sin tareas aun"
+  },
+  "legend": {
+    "done": "Listas",
+    "active": "Activas",
+    "review": "Revision"
+  },
+  "table": {
+    "agent": "Agente",
+    "total": "Total",
+    "done": "Listas",
+    "active": "Activas",
+    "review": "Revision"
+  },
+  "status": {
+    "requirements": "Backlog",
+    "planning": "Planificando",
+    "review_plan": "Revisar plan",
+    "implementing": "Implementando",
+    "review_impl": "Revisar impl",
+    "testing": "Probando",
+    "done": "Lista",
+    "cancelled": "Cancelada",
+    "running": "En curso",
+    "needs_you": "Te necesita",
+    "needs_plan_approval": "Aprobar plan",
+    "needs_impl_approval": "Aprobar impl"
+  }
+}
