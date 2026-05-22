@@ -29,6 +29,8 @@ import { MissionControlToolbar } from "./mission-control-toolbar";
 import { MissionBoardEmptyState } from "./mission-board-empty-state";
 import { useMissionSearch } from "./use-mission-search";
 import { buildMissionBoardColumns } from "./mission-board-columns";
+import { DashboardHeader } from "./dashboard-header";
+import { useAgentActivitySummaries } from "./shell/use-agent-activity-summaries";
 
 export function Dashboard() {
   const { t } = useTranslation(["dashboard", "board", "common"]);
@@ -45,6 +47,7 @@ export function Dashboard() {
   };
   const panelContainer = useDetailPanelContainer();
   const agents = useAgentStore((s) => s.agents);
+  const activitySummaries = useAgentActivitySummaries(agents);
   const getAgentDef = useAgentCatalogStore((s) => s.getById);
   const setDialogOpen = useUIStore((s) => s.setCreateAgentDialogOpen);
   const setMissionPanelOpen = useUIStore((s) => s.setMissionPanelOpen);
@@ -279,8 +282,19 @@ export function Dashboard() {
     />
   );
 
+  const doneItems = useMemo(
+    () => mc.items.filter((i) => i.status === "done" || i.status === "cancelled").length,
+    [mc.items],
+  );
+
   return (
     <div className="h-full flex flex-col overflow-hidden">
+      <DashboardHeader
+        agents={agents}
+        summaries={activitySummaries}
+        totalItems={mc.items.length}
+        doneItems={doneItems}
+      />
       <MissionControlToolbar
         agents={agents}
         filterPath={filterPath}
