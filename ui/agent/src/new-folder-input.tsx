@@ -25,7 +25,7 @@ export function NewFolderInput({ onConfirm, onCancel }: {
 
   return (
     <div
-      className="h-[24px] bg-[#2068d0] rounded-lg items-center"
+      className="h-[24px] bg-accent rounded-lg items-center"
       style={{ display: "grid", gridTemplateColumns: COL_GRID }}
     >
       <div className="flex items-center gap-1.5 min-w-0 pl-3">

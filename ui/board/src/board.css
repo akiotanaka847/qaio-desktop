@@ -14,17 +14,20 @@
 .card-running-glow {
   --glow-angle: 0deg;
   --glow-bg: var(--color-card, #ffffff);
+  --glow-accent: var(--color-accent, #4CAF7D);
+  --glow-accent-dark: color-mix(in srgb, var(--glow-accent) 80%, black);
+  --glow-primary: var(--color-primary, #1B2A4A);
   position: relative;
   background:
     linear-gradient(var(--glow-bg), var(--glow-bg)) padding-box,
     conic-gradient(
       from var(--glow-angle),
       transparent 60%,
-      rgba(76, 175, 125, 0.12) 68%,
-      #4CAF7D 74%,
-      #3D9E6E 78%,
-      #1B2A4A 82%,
-      #4CAF7D 84%,
+      color-mix(in srgb, var(--glow-accent) 12%, transparent) 68%,
+      var(--glow-accent) 74%,
+      var(--glow-accent-dark) 78%,
+      var(--glow-primary) 82%,
+      var(--glow-accent) 84%,
       transparent 88%
     ) border-box;
   border: 1.5px solid transparent;
