@@ -69,9 +69,9 @@ export function FolderSection({
           <FolderIcon />
           <span className="text-[13px] truncate">{node.name}</span>
         </div>
-        <span className="text-[11px] text-[#6d6d6d] truncate px-2">{"\u2014"}</span>
-        <span className="text-[11px] text-[#6d6d6d] text-right px-2">--</span>
-        <span className="text-[11px] text-[#6d6d6d] truncate px-2">Folder</span>
+        <span className="text-[11px] text-muted-foreground truncate px-2">{"\u2014"}</span>
+        <span className="text-[11px] text-muted-foreground text-right px-2">--</span>
+        <span className="text-[11px] text-muted-foreground truncate px-2">Folder</span>
       </div>
       {open &&
         node.children.map((child) =>
@@ -119,7 +119,7 @@ export function FileRow({
   const renameRef = useRef<HTMLInputElement>(null)
   const padLeft = BASE_INDENT + depth * DEPTH_INDENT + TRIANGLE_AREA
   const hasMenu = onOpen || onReveal || onDelete
-  const sec = selected ? "text-white/80" : "text-[#6d6d6d]"
+  const sec = selected ? "text-white/80" : "text-muted-foreground"
 
   const startRename = () => {
     if (!onRename) return
@@ -163,7 +163,7 @@ export function FileRow({
         data-selected={selected || undefined}
         className={cn(
           "h-[24px] cursor-default select-none items-center outline-none",
-          selected && "!bg-[#2068d0] text-white rounded-lg",
+          selected && "!bg-accent text-white rounded-lg",
           dragging && "opacity-40",
         )}
         style={{ display: "grid", gridTemplateColumns: COL_GRID }}
@@ -180,7 +180,7 @@ export function FileRow({
                 if (e.key === "Escape") { e.stopPropagation(); setRenaming(false) }
               }}
               onBlur={commitRename}
-              className="flex-1 text-[13px] bg-white text-[#0d0d0d] outline-none rounded px-1 -ml-1 min-w-0 border border-[#2068d0] shadow-sm"
+              className="flex-1 text-[13px] bg-card text-foreground outline-none rounded px-1 -ml-1 min-w-0 border border-ring shadow-sm"
             />
           ) : (
             <span className="text-[13px] truncate">{file.name}</span>

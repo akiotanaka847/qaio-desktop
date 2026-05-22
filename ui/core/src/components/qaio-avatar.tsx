@@ -16,7 +16,8 @@
 import type { CSSProperties } from "react";
 import { cn } from "../utils";
 
-const QAIO_GRAY = "#9b9b9b";
+/** Muted foreground fallback when no agent color is set. */
+const QAIO_GRAY = "var(--color-muted-foreground, #9b9b9b)";
 
 interface HelmetProps {
   /** Hex fill color. Defaults to Qaio gray. */
@@ -82,7 +83,7 @@ export function QaioAvatar({
       style={{
         width: innerDiameter,
         height: innerDiameter,
-        backgroundColor: `color-mix(in srgb, var(--color-secondary, #f5f5f5) 82%, ${bg} 18%)`,
+        backgroundColor: `color-mix(in srgb, var(--color-secondary) 82%, ${bg} 18%)`,
       }}
     >
       <QaioHelmet color={bg} size={Math.round(innerDiameter * 0.65)} />

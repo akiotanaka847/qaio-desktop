@@ -56,7 +56,7 @@ function StepRow({ step }: { step: ProgressStep }) {
     >
       <div className="mt-0.5 shrink-0">
         {step.status === "done" && (
-          <div className="size-5 rounded-full bg-[#00a240] flex items-center justify-center">
+          <div className="size-5 rounded-full bg-success flex items-center justify-center">
             <Check className="size-3 text-white" strokeWidth={3} />
           </div>
         )}

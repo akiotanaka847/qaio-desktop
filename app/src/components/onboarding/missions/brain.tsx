@@ -174,7 +174,7 @@ function ProviderCard({
         />
       )}
       {selected && connected && (
-        <p className="text-xs text-[#00a240]">
+        <p className="text-xs text-success">
           {t("providers:card.connected")}
         </p>
       )}
@@ -195,7 +195,7 @@ function ProviderStatusPill({
   }
   if (connected) {
     return (
-      <span className="inline-flex items-center gap-1 text-xs text-[#00a240]">
+      <span className="inline-flex items-center gap-1 text-xs text-success">
         <Check className="size-3" />
         {t("card.connected")}
       </span>
