@@ -15,7 +15,7 @@ interface Props {
 export function WorkspaceSetupFlow({ mode, onComplete }: Props) {
   const { t } = useTranslation(["setup", "common"]);
   const [step, setStep] = useState<1 | 2>(1);
-  const [name, setName] = useState("Personal");
+  const [name, setName] = useState(() => t("setup:tutorial.defaults.workspaceName"));
   const [provider, setProvider] = useState<string | null>(null);
   const [model, setModel] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
