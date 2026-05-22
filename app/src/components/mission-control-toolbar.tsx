@@ -35,12 +35,8 @@ export function MissionControlToolbar({
   const selectedAgent = agents.find((agent) => agent.folderPath === filterPath);
 
   return (
-    <div className="shrink-0 px-5 pt-4">
-      <div className="mb-3 flex flex-col gap-3 lg:flex-row lg:items-center">
-        <h1 className="text-xl font-semibold text-foreground">
-          {t("title")}
-        </h1>
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center lg:ml-auto">
+    <div className="shrink-0 px-5 pt-1 pb-3">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-end">
           <MissionSearchInput
             value={search}
             isSearchingText={isSearchingText}
@@ -81,7 +77,6 @@ export function MissionControlToolbar({
               {t("empty.newMission")}
             </Button>
           </div>
-        </div>
       </div>
     </div>
   );

@@ -1,5 +1,17 @@
 {
   "title": "Command Center",
+  "greeting": {
+    "morning": "Good morning",
+    "afternoon": "Good afternoon",
+    "evening": "Good evening"
+  },
+  "stats": {
+    "activeTasksLabel": "Active",
+    "runningLabel": "Running",
+    "needsYouLabel": "Needs you",
+    "agentsLabel": "Agents",
+    "completedLabel": "Completed"
+  },
   "filter": {
     "allAgents": "All agents"
   },
