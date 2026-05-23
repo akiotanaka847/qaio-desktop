@@ -1,6 +1,5 @@
+import { useMemo, useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { AIBoard } from "@qaio-ai/board";
-import type { KanbanColumnConfig } from "@qaio-ai/board";
 import {
   Empty,
   EmptyHeader,
@@ -10,151 +9,115 @@ import {
 } from "@qaio-ai/core";
 import { Plus } from "lucide-react";
 import { useAgentStore } from "../stores/agents";
+import { useAgentCatalogStore } from "../stores/agent-catalog";
 import { useUIStore } from "../stores/ui";
-import { AgentPickerDialog } from "./agent-picker-dialog";
-import { useQueuedMessageLabels } from "./use-queued-message-labels";
-import { useDetailPanelContainer } from "./shell/detail-panel-context";
-import { QaioThinkingIndicator } from "./shell/experience-card";
-import { AgentCardAvatar } from "./shell/agent-card-avatar";
-import { AgentPanelAvatar } from "./shell/agent-panel-avatar";
-import { MissionControlToolbar } from "./mission-control-toolbar";
-import { MissionBoardEmptyState } from "./mission-board-empty-state";
-import { buildMissionBoardColumns } from "./mission-board-columns";
-import { DashboardHeader } from "./dashboard-header";
 import { useAgentActivitySummaries } from "./shell/use-agent-activity-summaries";
-import { useDashboardPanel } from "./use-dashboard-panel";
-import { useDashboardBoard } from "./use-dashboard-board";
+import { useAllConversations } from "../hooks/queries";
+import { DashboardHero } from "./dashboard-hero";
+import { DashboardStats } from "./dashboard-stats";
+import { DashboardTeamStrip } from "./dashboard-team-strip";
+import { DashboardActivityFeed } from "./dashboard-activity-feed";
+import { AgentPickerDialog } from "./agent-picker-dialog";
+import type { Agent } from "../lib/types";
 
 export function Dashboard() {
-  const { t } = useTranslation(["dashboard", "board", "common"]);
-  const queuedLabels = useQueuedMessageLabels();
-  const cardLabels = {
-    approve: t("board:cardActions.approve"),
-    approveTooltip: t("board:cardActions.approveTooltip"),
-    renameTooltip: t("board:cardActions.renameTooltip"),
-    deleteTooltip: t("board:cardActions.deleteTooltip"),
-    deleteTitle: (name: string) => t("board:deleteCard.titleWithName", { name }),
-    deleteDescription: t("board:deleteCard.description"),
-  };
-  const panelContainer = useDetailPanelContainer();
+  const { t } = useTranslation("dashboard");
   const agents = useAgentStore((s) => s.agents);
-  const activitySummaries = useAgentActivitySummaries(agents);
+  const setCurrentAgent = useAgentStore((s) => s.setCurrent);
+  const getById = useAgentCatalogStore((s) => s.getById);
   const setDialogOpen = useUIStore((s) => s.setCreateAgentDialogOpen);
-  const setMissionPanelOpen = useUIStore((s) => s.setMissionPanelOpen);
-  const missionPanelOpen = useUIStore((s) => s.missionPanelOpen);
-  const addToast = useUIStore((s) => s.addToast);
+  const setViewMode = useUIStore((s) => s.setViewMode);
+  const summaries = useAgentActivitySummaries(agents);
 
-  const board = useDashboardBoard({
-    agents,
-    missionPanelOpen,
-    addToast,
-    searchErrorTitle: t("dashboard:search.historyErrorTitle"),
-    searchErrorDescription: t("dashboard:search.historyErrorDescription"),
-  });
+  const paths = useMemo(() => agents.map((a) => a.folderPath), [agents]);
+  const { data: convos } = useAllConversations(paths);
 
-  const MC_COLUMNS: KanbanColumnConfig[] = buildMissionBoardColumns(
-    {
-      backlog: t("dashboard:columns.backlog", "Backlog"),
-      inProgress: t("dashboard:columns.inProgress", "In Progress"),
-      review: t("dashboard:columns.review", "Review"),
-      done: t("dashboard:columns.done"),
-      newMission: t("dashboard:empty.newMission"),
+  const counts = useMemo(() => {
+    if (!convos) return { pending: 0, running: 0, completed: 0, needsYou: 0 };
+    let pending = 0;
+    let running = 0;
+    let completed = 0;
+    let needsYou = 0;
+    for (const c of convos) {
+      if (c.type !== "activity" || !c.status) continue;
+      if (c.status === "done" || c.status === "cancelled") completed++;
+      else if (c.status === "running" || c.status === "planning" || c.status === "implementing") running++;
+      else if (c.status === "needs_you" || c.status === "needs_plan_approval" || c.status === "needs_impl_approval") needsYou++;
+      else pending++;
+    }
+    pending += running + needsYou;
+    return { pending, running, completed, needsYou };
+  }, [convos]);
+
+  const runningAgents = useMemo(() => {
+    let count = 0;
+    for (const s of Object.values(summaries)) {
+      if (s.runningCount > 0) count++;
+    }
+    return count;
+  }, [summaries]);
+
+  const handleAgentClick = useCallback(
+    (agent: Agent) => {
+      setCurrentAgent(agent);
+      const def = getById(agent.configId);
+      const tab = def?.config.defaultTab ?? "chat";
+      setViewMode(tab);
     },
-    board.openNewMission,
+    [setCurrentAgent, getById, setViewMode],
   );
 
-  const dp = useDashboardPanel({
-    agents,
-    selectedItem: board.selectedItem,
-    pendingAgent: board.pendingAgent,
-    selectedSessionKey: board.selectedSessionKey,
-    loading: board.mc.loading,
-    onSendMessage: board.mc.handleSendMessage,
-    onSelectId: board.mc.setSelectedId,
-  });
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   if (agents.length === 0) {
     return (
       <div className="h-full flex items-center justify-center">
         <Empty className="border-0">
           <EmptyHeader>
-            <EmptyTitle>{t("dashboard:noAgents.title")}</EmptyTitle>
-            <EmptyDescription>{t("dashboard:noAgents.description")}</EmptyDescription>
+            <EmptyTitle>{t("noAgents.title")}</EmptyTitle>
+            <EmptyDescription>{t("noAgents.description")}</EmptyDescription>
           </EmptyHeader>
           <Button className="mt-4 rounded-full" onClick={() => setDialogOpen(true)}>
             <Plus className="h-4 w-4" />
-            {t("dashboard:noAgents.cta")}
+            {t("noAgents.cta")}
           </Button>
         </Empty>
       </div>
     );
   }
 
-  const doneItems = board.mc.items.filter((i) => i.status === "done" || i.status === "cancelled").length;
-
   return (
-    <div className="h-full flex flex-col overflow-hidden">
-      <DashboardHeader agents={agents} summaries={activitySummaries} totalItems={board.mc.items.length} doneItems={doneItems} />
-      <MissionControlToolbar
-        agents={agents} filterPath={board.filterPath} search={board.missionSearchQuery}
-        isSearchingText={board.missionSearch.isSearchingText}
-        onFilterPathChange={board.setFilterPath} onSearchChange={board.setMissionSearchQuery}
-        onNewMission={board.openNewMission}
-      />
-      <div className="flex-1 min-h-0">
-        <AIBoard
-          items={board.missionSearch.items.map((item) => ({
-            ...item,
-            icon: <AgentCardAvatar color={board.colorByPath[item.metadata?.agentPath as string]} />,
-          }))}
-          columns={MC_COLUMNS}
-          selectedId={board.mc.selectedId} onSelect={board.mc.setSelectedId}
-          feedItems={board.mc.feedItems} isLoading={board.mc.loading}
-          onDelete={board.mc.handleDelete} onApprove={board.mc.handleApprove} onRename={board.mc.handleRename}
-          onSendMessage={dp.handleSendMessage}
-          queuedMessages={dp.queuedMessages}
-          onRemoveQueuedMessage={(_, id) => dp.removeQueuedMessage(id)}
-          queuedLabels={queuedLabels}
-          onLoadHistory={board.mc.loadHistory} onHistoryLoaded={board.mc.handleHistoryLoaded}
-          onNewPanelOpenerReady={board.handleOpenerReady}
-          emptyState={
-            <MissionBoardEmptyState
-              isSearch={board.missionSearch.hasQuery} isSearchingText={board.missionSearch.isSearchingText}
-              labels={{
-                emptyTitle: t("dashboard:empty.boardTitle"), emptyDescription: t("dashboard:empty.boardDescription"),
-                newMission: t("dashboard:empty.newMission"), searchEmptyTitle: t("dashboard:search.emptyTitle"),
-                searchEmptyDescription: t("dashboard:search.emptyDescription"),
-                searchSearchingTitle: t("dashboard:search.searchingTitle"),
-                searchSearchingDescription: t("dashboard:search.searchingDescription"),
-                clearSearch: t("dashboard:search.clearCta"),
-              }}
-              onNewMission={board.openNewMission}
-              onClearSearch={() => board.setMissionSearchQuery("")}
-            />
-          }
-          panelContainer={panelContainer} onPanelOpenChange={setMissionPanelOpen}
-          onStopSession={board.handleStopSession}
-          prepareAttachments={dp.attachmentValidation.prepareAttachments}
-          onAttachmentRejections={dp.attachmentValidation.onAttachmentRejections}
-          panelAgentName={dp.activeAgent?.name ?? board.selectedItem?.subtitle}
-          panelAvatar={<AgentPanelAvatar color={dp.activeAgent?.color} running={board.selectedItem?.status === "running"} />}
-          runningStatuses={["running", "planning", "implementing", "testing", "review_plan", "review_impl"]}
-          approveStatuses={["needs_plan_approval", "needs_impl_approval", "needs_you"]}
-          thinkingIndicator={<QaioThinkingIndicator />}
-          cardLabels={cardLabels}
-          chatEmptyState={dp.panel.chatEmptyState} composerHeader={dp.panel.composerHeader}
-          canSendEmpty={dp.panel.canSendEmpty} onComposerSubmit={dp.handleComposerSubmit}
-          footer={dp.panel.footer} renderUserMessage={dp.panel.renderUserMessage}
-          renderSystemMessage={dp.panel.renderSystemMessage} mapFeedItems={dp.panel.mapFeedItems}
-          afterMessages={dp.panel.afterMessages} isSpecialTool={dp.panel.isSpecialTool}
-          renderToolResult={dp.panel.renderToolResult} processLabels={dp.panel.processLabels}
-          getThinkingMessage={dp.panel.getThinkingMessage} renderTurnSummary={dp.panel.renderTurnSummary}
-          renderLink={dp.panel.renderLink}
+    <div className="h-full overflow-y-auto">
+      <div className="p-6 flex flex-col gap-5 max-w-[1200px]">
+        <div className="grid gap-4" style={{ gridTemplateColumns: "1fr 340px" }}>
+          <DashboardHero
+            pendingCount={counts.pending}
+            runningAgents={runningAgents}
+            onNewTask={() => setPickerOpen(true)}
+          />
+          <DashboardStats
+            completed={counts.completed}
+            inProgress={counts.running}
+            needsYou={counts.needsYou}
+            agentCount={agents.length}
+          />
+        </div>
+        <DashboardTeamStrip
+          agents={agents}
+          summaries={summaries}
+          onAgentClick={handleAgentClick}
         />
+        <DashboardActivityFeed agents={agents} />
       </div>
-      {dp.panel.pickerDialog}
-      {dp.attachmentValidation.dialog}
-      <AgentPickerDialog open={board.agentPickerOpen} onOpenChange={board.setAgentPickerOpen} agents={agents} onPick={board.handlePickAgent} />
+      <AgentPickerDialog
+        open={pickerOpen}
+        onOpenChange={setPickerOpen}
+        agents={agents}
+        onPick={(agent) => {
+          setPickerOpen(false);
+          handleAgentClick(agent);
+        }}
+      />
     </div>
   );
 }

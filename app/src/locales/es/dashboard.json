@@ -12,39 +12,68 @@
     "agentsLabel": "Agentes",
     "completedLabel": "Completadas"
   },
+  "hero": {
+    "pendingTasks": "{{count}} tarea pendiente",
+    "pendingTasks_other": "{{count}} tareas pendientes",
+    "agentsWorking": "{{count}} agente trabajando",
+    "agentsWorking_other": "{{count}} agentes trabajando",
+    "summary": "Tienes <strong>{{tasks}}</strong> y <strong>{{agents}}</strong>.",
+    "newTask": "Nueva tarea"
+  },
+  "weekly": {
+    "title": "Resumen semanal",
+    "completed": "Completadas",
+    "inProgress": "En progreso",
+    "needsYou": "Necesitan atencion",
+    "agents": "Agentes"
+  },
+  "team": {
+    "title": "Estado de tu equipo",
+    "viewAll": "Ver todos",
+    "working": "Trabajando",
+    "idle": "En espera",
+    "pending": "Pendientes",
+    "today": "Hoy"
+  },
+  "activity": {
+    "title": "Actividad reciente",
+    "viewAll": "Ver todo",
+    "empty": "Aun no hay actividad reciente.",
+    "timeAgo": "hace {{time}}"
+  },
   "filter": {
     "allAgents": "Todos los agentes"
   },
   "search": {
     "placeholder": "Buscar tareas",
-    "clear": "Borrar búsqueda",
-    "clearCta": "Borrar búsqueda",
+    "clear": "Borrar busqueda",
+    "clearCta": "Borrar busqueda",
     "searchingText": "Buscando en el texto de las tareas",
     "searchingTitle": "Buscando en el texto de las tareas",
     "searchingDescription": "Revisando mensajes anteriores.",
     "emptyTitle": "No hay tareas que coincidan",
-    "emptyDescription": "Prueba otra búsqueda o borra la actual.",
+    "emptyDescription": "Prueba otra busqueda o borra la actual.",
     "historyErrorTitle": "No se pudieron buscar todas las tareas",
     "historyErrorDescription": "No se pudo cargar parte del texto de tareas anteriores."
   },
   "columns": {
     "running": "En curso",
-    "needsYou": "Necesita tu atención",
+    "needsYou": "Necesita tu atencion",
     "done": "Listo"
   },
   "empty": {
-    "boardTitle": "Aún no hay conversaciones",
-    "boardDescription": "Inicia una conversación nueva para delegarle trabajo a un agente.",
+    "boardTitle": "Aun no hay conversaciones",
+    "boardDescription": "Inicia una conversacion nueva para delegarle trabajo a un agente.",
     "newMission": "Nueva tarea"
   },
   "noAgents": {
-    "title": "Aún no tienes agentes",
+    "title": "Aun no tienes agentes",
     "description": "Arma tu equipo de IA y haz trabajo real.",
     "cta": "Nuevo agente"
   },
   "agentPicker": {
-    "title": "¿Qué agente debería ejecutar esto?",
-    "description": "Elige un agente para abrir una nueva conversación."
+    "title": "Que agente deberia ejecutar esto?",
+    "description": "Elige un agente para abrir una nueva conversacion."
   },
   "skillPicker": {
     "title": "Elige un skill",
@@ -52,15 +81,15 @@
     "descriptionWithAgent": "Explora los skills que {{name}} ya sabe hacer.",
     "agentLabel": "Agente",
     "agentPlaceholder": "Selecciona un agente...",
-    "blank": "Conversación en blanco",
-    "blankDescription": "Abre un chat nuevo y escribe tu propia indicación.",
+    "blank": "Conversacion en blanco",
+    "blankDescription": "Abre un chat nuevo y escribe tu propia indicacion.",
     "featuredTab": "Destacados",
     "otherTab": "Otros",
-    "empty": "Aún no hay skills.",
+    "empty": "Aun no hay skills.",
     "pickAgentFirst": "Elige un agente para ver sus skills.",
     "skillsLoading": "Cargando skills...",
-    "skillsEmpty": "Aún no hay skills en esta categoría.",
-    "scrollTabsLeft": "Desplazar pestañas de skills a la izquierda",
-    "scrollTabsRight": "Desplazar pestañas de skills a la derecha"
+    "skillsEmpty": "Aun no hay skills en esta categoria.",
+    "scrollTabsLeft": "Desplazar pestanas de skills a la izquierda",
+    "scrollTabsRight": "Desplazar pestanas de skills a la derecha"
   }
 }
