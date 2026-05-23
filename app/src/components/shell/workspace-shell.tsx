@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Compass, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import {
   Button,
   Empty,
@@ -8,6 +8,7 @@ import {
   EmptyHeader,
   EmptyTitle,
   ToastContainer,
+  cn,
   type Toast,
 } from "@qaio-ai/core";
 import { TabBar } from "@qaio-ai/layout";
@@ -21,13 +22,12 @@ import { IntegrationsView } from "../tabs/integrations-view";
 import { SettingsView } from "../settings/settings-view";
 import { AnalyticsDashboard } from "../analytics-dashboard";
 import { Sidebar } from "./sidebar";
-import { QaioLogo } from "./experience-card";
 import { CreateAgentDialog } from "./create-workspace-dialog";
 import { AgentUpdateBanner } from "./agent-update-banner";
 import { DetailPanelProvider } from "./detail-panel-context";
-import { MissionSearchInput } from "../mission-search-input";
+import { TabBarActions } from "./tab-bar-actions";
 import { UiTour } from "./ui-tour";
-import { cn } from "@qaio-ai/core";
+import { useUiTourSteps } from "./use-ui-tour-steps";
 import { useKeyboardShortcuts } from "../../hooks/use-keyboard-shortcuts";
 import { KeyboardShortcutsDialog } from "../keyboard-shortcuts-dialog";
 
@@ -42,17 +42,8 @@ export function WorkspaceShell({ toasts, onDismissToast }: WorkspaceShellProps) 
   const getById = useAgentCatalogStore((s) => s.getById);
   const viewMode = useUIStore((s) => s.viewMode);
   const setViewMode = useUIStore((s) => s.setViewMode);
-  const onStartMission = useUIStore((s) => s.onStartMission);
-  const boardActions = useUIStore((s) => s.boardActions);
   const missionPanelOpen = useUIStore((s) => s.missionPanelOpen);
   const setCreateAgentDialogOpen = useUIStore((s) => s.setCreateAgentDialogOpen);
-  const agentMissionSearchQuery = useUIStore((s) =>
-    currentAgent ? s.agentMissionSearchQueries[currentAgent.folderPath] ?? "" : "",
-  );
-  const agentMissionSearchLoading = useUIStore((s) =>
-    currentAgent ? s.agentMissionSearchLoading[currentAgent.folderPath] ?? false : false,
-  );
-  const setAgentMissionSearchQuery = useUIStore((s) => s.setAgentMissionSearchQuery);
   const uiTourActive = useUIStore((s) => s.uiTourActive);
   const setUiTourActive = useUIStore((s) => s.setUiTourActive);
   const [panelContainer, setPanelContainer] = useState<HTMLDivElement | null>(null);
@@ -72,6 +63,7 @@ export function WorkspaceShell({ toasts, onDismissToast }: WorkspaceShellProps) 
   // default. Keeps the tour from spotlighting an absent tab on agents that
   // don't expose every built-in.
   const tabOr = (id: string) => (tabIds.has(id) ? id : firstAgentTab);
+  const tourSteps = useUiTourSteps(firstAgentTab, tabOr);
 
   useEffect(() => {
     if (isAgentView && tabs.length > 0 && !tabs.some((tab) => tab.id === viewMode)) {
@@ -116,59 +108,7 @@ export function WorkspaceShell({ toasts, onDismissToast }: WorkspaceShellProps) 
                     activeTab={viewMode}
                     onTabChange={setViewMode}
                     actions={
-                      <div data-keep-panel-open className="flex items-center gap-2">
-                        {currentAgent && hasActivityTab && (
-                          <MissionSearchInput
-                            value={agentMissionSearchQuery}
-                            isSearchingText={agentMissionSearchLoading}
-                            labels={{
-                              placeholder: t("board:search.placeholder"),
-                              clear: t("board:search.clear"),
-                              searchingText: t("board:search.searchingText"),
-                            }}
-                            className="relative w-[240px]"
-                            onChange={(value) => {
-                              setAgentMissionSearchQuery(currentAgent.folderPath, value);
-                              if (viewMode !== "activity") setViewMode("activity");
-                            }}
-                          />
-                        )}
-                        <Button
-                          data-tour-target="appTour"
-                          variant="ghost"
-                          className="rounded-full"
-                          onClick={() => setUiTourActive(true)}
-                        >
-                          {t("shell:tabActions.startTour")}
-                          <Compass className="size-4" />
-                        </Button>
-                        {onStartMission && (
-                          <Button
-                            data-tour-target="newMission"
-                            onClick={() => {
-                              setViewMode("activity");
-                              setTimeout(() => {
-                                useUIStore.getState().onStartMission?.();
-                              }, 50);
-                            }}
-                          >
-                            <QaioLogo size={16} />
-                            {t("shell:tabActions.newMission")}
-                          </Button>
-                        )}
-                        {boardActions.map((action) => (
-                          <Button
-                            key={action.id}
-                            variant="secondary"
-                            onClick={() => {
-                              setViewMode("activity");
-                              setTimeout(() => action.onClick(), 50);
-                            }}
-                          >
-                            {action.label}
-                          </Button>
-                        ))}
-                      </div>
+                      <TabBarActions agent={currentAgent} hasActivityTab={hasActivityTab} />
                     }
                   />
                   </div>
@@ -215,94 +155,7 @@ export function WorkspaceShell({ toasts, onDismissToast }: WorkspaceShellProps) 
       </div>
       {uiTourActive && (
         <UiTour
-          steps={[
-            {
-              title: t("shell:uiTour.steps.assistant.title"),
-              body: t("shell:uiTour.steps.assistant.body"),
-              targetSelector: "[data-tour-target='agents']",
-              onEnter: () => setViewMode(firstAgentTab),
-            },
-            {
-              title: t("shell:uiTour.steps.board.title"),
-              body: t("shell:uiTour.steps.board.body"),
-              targetSelector: "[data-tour-target='main']",
-              onEnter: () => setViewMode(firstAgentTab),
-            },
-            {
-              title: t("shell:uiTour.steps.newMission.title"),
-              body: t("shell:uiTour.steps.newMission.body"),
-              targetSelector: "[data-tour-target='newMission']",
-              onEnter: () => setViewMode(firstAgentTab),
-            },
-            {
-              title: t("shell:uiTour.steps.tabActivity.title"),
-              body: t("shell:uiTour.steps.tabActivity.body"),
-              targetSelector: "[data-tour-target='tab-activity']",
-              onEnter: () => setViewMode(tabOr("activity")),
-            },
-            {
-              title: t("shell:uiTour.steps.tabRoutines.title"),
-              body: t("shell:uiTour.steps.tabRoutines.body"),
-              targetSelector: "[data-tour-target='tab-routines']",
-              onEnter: () => setViewMode(tabOr("routines")),
-            },
-            {
-              title: t("shell:uiTour.steps.tabFiles.title"),
-              body: t("shell:uiTour.steps.tabFiles.body"),
-              targetSelector: "[data-tour-target='tab-files']",
-              onEnter: () => setViewMode(tabOr("files")),
-            },
-            {
-              title: t("shell:uiTour.steps.tabJobDescription.title"),
-              body: t("shell:uiTour.steps.tabJobDescription.body"),
-              targetSelector: "[data-tour-target='tab-job-description']",
-              onEnter: () => setViewMode(tabOr("job-description")),
-            },
-            {
-              title: t("shell:uiTour.steps.missionControl.title"),
-              body: t("shell:uiTour.steps.missionControl.body"),
-              targetSelector: "[data-tour-target='nav-dashboard']",
-              onEnter: () => setViewMode("dashboard"),
-            },
-            {
-              title: t("shell:uiTour.steps.integrations.title"),
-              body: t("shell:uiTour.steps.integrations.body"),
-              targetSelector: "[data-tour-target='nav-connections']",
-              onEnter: () => setViewMode("connections"),
-            },
-            {
-              title: t("shell:uiTour.steps.appTour.title"),
-              body: t("shell:uiTour.steps.appTour.body"),
-              targetSelector: "[data-tour-target='appTour']",
-              onEnter: () => {
-                setCreateAgentDialogOpen(false);
-                setViewMode(firstAgentTab);
-              },
-            },
-            {
-              title: t("shell:uiTour.steps.newAgent.title"),
-              body: t("shell:uiTour.steps.newAgent.body"),
-              targetSelector: "[data-tour-target='newAgent']",
-              onEnter: () => {
-                setCreateAgentDialogOpen(false);
-                setViewMode(firstAgentTab);
-              },
-            },
-            {
-              title: t("shell:uiTour.steps.agentStore.title"),
-              body: t("shell:uiTour.steps.agentStore.body"),
-              targetSelector: "[data-tour-target='agentStore']",
-              spotlightPadding: 4,
-              placement: "viewport-right",
-              onEnter: () => setCreateAgentDialogOpen(true),
-            },
-            {
-              title: t("shell:uiTour.steps.outro.title"),
-              body: t("shell:uiTour.steps.outro.body"),
-              confirmLabel: t("shell:uiTour.steps.outro.confirm"),
-              onEnter: () => setCreateAgentDialogOpen(false),
-            },
-          ]}
+          steps={tourSteps}
           onDismiss={() => {
             setUiTourActive(false);
             setCreateAgentDialogOpen(false);

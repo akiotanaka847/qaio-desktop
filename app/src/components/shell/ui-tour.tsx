@@ -1,6 +1,7 @@
 import { useLayoutEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button, cn } from "@qaio-ai/core";
+import { computeTooltipPosition, TOOLTIP_W, type Rect } from "./ui-tour-placement";
 
 export interface UiTourStep {
   title: string;
@@ -34,21 +35,6 @@ interface UiTourProps {
   onDismiss: () => void;
 }
 
-interface Rect {
-  top: number;
-  left: number;
-  width: number;
-  height: number;
-}
-
-const DEFAULT_PAD = 8;
-const TOOLTIP_W = 360;
-const TOOLTIP_H_EST = 240;
-const TOOLTIP_GAP = 16;
-const VIEWPORT_MARGIN = 16;
-
-type Placement = "below" | "above" | "right" | "left";
-
 /**
  * Game-tutorial style coachmark overlay. Per step:
  *  - Looks up the target element by CSS selector
@@ -81,8 +67,6 @@ export function UiTour({ steps, onDismiss }: UiTourProps) {
       setRect(null);
       return;
     }
-    // The target may not be in the DOM yet if onEnter just switched views or
-    // opened a dialog. Retry a few frames until it appears.
     let cancelled = false;
     let raf = 0;
     let tries = 0;
@@ -116,120 +100,10 @@ export function UiTour({ steps, onDismiss }: UiTourProps) {
   if (!step) return null;
   const isLast = index === steps.length - 1;
   const isFirst = index === 0;
-
-  const pad = step.spotlightPadding ?? DEFAULT_PAD;
-  const cutout = rect
-    ? {
-        top: rect.top - pad,
-        left: rect.left - pad,
-        width: rect.width + pad * 2,
-        height: rect.height + pad * 2,
-      }
-    : null;
-
-  // Tooltip placement: pick a side based on the target's aspect ratio and
-  // available room. Wide-and-short targets (tab bars, top header) prefer
-  // below / above so the card doesn't sit on top of them. Tall targets
-  // (sidebar) prefer left / right. Picks the first side with enough room,
-  // falls back to whichever has the most space.
-  const tooltip = (() => {
-    // Viewport-anchored placements ignore the cutout entirely. Used when the
-    // cutout is so big a cutout-relative card would still cover content
-    // (e.g. spotlighting the interior of a near-fullscreen dialog).
-    if (step.placement === "viewport-right") {
-      return {
-        top: Math.max(VIEWPORT_MARGIN, viewport.height / 2 - TOOLTIP_H_EST / 2),
-        left: viewport.width - TOOLTIP_W - VIEWPORT_MARGIN,
-      };
-    }
-    if (step.placement === "viewport-left") {
-      return {
-        top: Math.max(VIEWPORT_MARGIN, viewport.height / 2 - TOOLTIP_H_EST / 2),
-        left: VIEWPORT_MARGIN,
-      };
-    }
-    if (!cutout) {
-      return {
-        top: viewport.height / 2 - 140,
-        left: viewport.width / 2 - TOOLTIP_W / 2,
-      };
-    }
-    const spaceBelow = viewport.height - (cutout.top + cutout.height) - TOOLTIP_GAP;
-    const spaceAbove = cutout.top - TOOLTIP_GAP;
-    const spaceRight = viewport.width - (cutout.left + cutout.width) - TOOLTIP_GAP;
-    const spaceLeft = cutout.left - TOOLTIP_GAP;
-
-    const isWideShort = cutout.width >= viewport.width * 0.4 && cutout.height < 220;
-    const order: Placement[] = isWideShort
-      ? ["below", "above", "right", "left"]
-      : ["right", "left", "below", "above"];
-    const fits: Record<Placement, boolean> = {
-      below: spaceBelow >= TOOLTIP_H_EST,
-      above: spaceAbove >= TOOLTIP_H_EST,
-      right: spaceRight >= TOOLTIP_W,
-      left: spaceLeft >= TOOLTIP_W,
-    };
-    const space: Record<Placement, number> = {
-      below: spaceBelow,
-      above: spaceAbove,
-      right: spaceRight,
-      left: spaceLeft,
-    };
-
-    const anyFits = order.some((p) => fits[p]);
-    // No side has room (target ≈ full viewport, e.g. the whole main pane) →
-    // just center the card. Looks intentional rather than clipped.
-    if (!anyFits) {
-      return {
-        top: Math.max(VIEWPORT_MARGIN, viewport.height / 2 - TOOLTIP_H_EST / 2),
-        left: Math.max(VIEWPORT_MARGIN, viewport.width / 2 - TOOLTIP_W / 2),
-      };
-    }
-
-    const placement: Placement =
-      (step.placement === "below" ||
-      step.placement === "above" ||
-      step.placement === "right" ||
-      step.placement === "left"
-        ? step.placement
-        : undefined) ??
-      order.find((p) => fits[p]) ??
-      (Object.entries(space).sort((a, b) => b[1] - a[1])[0][0] as Placement);
-
-    const clampLeft = (x: number) =>
-      Math.max(VIEWPORT_MARGIN, Math.min(x, viewport.width - TOOLTIP_W - VIEWPORT_MARGIN));
-    const clampTop = (y: number) =>
-      Math.max(VIEWPORT_MARGIN, Math.min(y, viewport.height - TOOLTIP_H_EST - VIEWPORT_MARGIN));
-
-    switch (placement) {
-      case "below":
-        return {
-          top: clampTop(cutout.top + cutout.height + TOOLTIP_GAP),
-          left: clampLeft(cutout.left + cutout.width / 2 - TOOLTIP_W / 2),
-        };
-      case "above":
-        return {
-          top: clampTop(cutout.top - TOOLTIP_H_EST - TOOLTIP_GAP),
-          left: clampLeft(cutout.left + cutout.width / 2 - TOOLTIP_W / 2),
-        };
-      case "right":
-        return {
-          top: clampTop(cutout.top),
-          left: clampLeft(cutout.left + cutout.width + TOOLTIP_GAP),
-        };
-      case "left":
-        return {
-          top: clampTop(cutout.top),
-          left: clampLeft(cutout.left - TOOLTIP_W - TOOLTIP_GAP),
-        };
-    }
-  })();
+  const { cutout, tooltip } = computeTooltipPosition(rect, viewport, step.placement, step.spotlightPadding);
 
   return (
     <>
-      {/* Scrim. The cutout div has no background but a giant box-shadow that
-          extends the dark scrim across the rest of the viewport. When there's
-          no target, fall back to a full-screen scrim. */}
       {cutout ? (
         <div
           aria-hidden
@@ -249,8 +123,6 @@ export function UiTour({ steps, onDismiss }: UiTourProps) {
         />
       )}
 
-      {/* Pulsing accent ring on the cutout for the "look here" cue. Pure
-          decoration; pointer-events disabled so it doesn't block clicks. */}
       {cutout && (
         <div
           aria-hidden
@@ -264,37 +136,22 @@ export function UiTour({ steps, onDismiss }: UiTourProps) {
         />
       )}
 
-      {/* Tooltip card. Anchored next to the cutout, or centered when there
-          is no target. */}
       <div
         className={cn(
           "fixed z-[60] rounded-2xl border border-black/5 bg-background p-5 shadow-[0_10px_40px_rgba(0,0,0,0.18)]",
         )}
-        style={{
-          top: tooltip.top,
-          left: tooltip.left,
-          width: TOOLTIP_W,
-        }}
+        style={{ top: tooltip.top, left: tooltip.left, width: TOOLTIP_W }}
         role="dialog"
         aria-modal="true"
       >
         <p className="text-xs text-muted-foreground">
-          {t("uiTour.counter", {
-            current: index + 1,
-            total: steps.length,
-          })}
+          {t("uiTour.counter", { current: index + 1, total: steps.length })}
         </p>
-        <h2 className="mt-2 text-[22px] font-normal leading-snug">
-          {step.title}
-        </h2>
+        <h2 className="mt-2 text-[22px] font-normal leading-snug">{step.title}</h2>
         <p className="mt-2 text-sm text-muted-foreground">{step.body}</p>
         <div className="mt-5 flex items-center justify-between gap-2">
           {!isLast ? (
-            <Button
-              variant="ghost"
-              className="rounded-full"
-              onClick={onDismiss}
-            >
+            <Button variant="ghost" className="rounded-full" onClick={onDismiss}>
               {t("uiTour.skip")}
             </Button>
           ) : (
@@ -302,20 +159,11 @@ export function UiTour({ steps, onDismiss }: UiTourProps) {
           )}
           <div className="flex items-center gap-2">
             {!isFirst && (
-              <Button
-                variant="secondary"
-                className="rounded-full"
-                onClick={() => setIndex(index - 1)}
-              >
+              <Button variant="secondary" className="rounded-full" onClick={() => setIndex(index - 1)}>
                 {t("uiTour.previous")}
               </Button>
             )}
-            <Button
-              className="rounded-full"
-              onClick={() =>
-                isLast ? onDismiss() : setIndex(index + 1)
-              }
-            >
+            <Button className="rounded-full" onClick={() => (isLast ? onDismiss() : setIndex(index + 1))}>
               {step.confirmLabel ?? (isLast ? t("uiTour.done") : t("uiTour.next"))}
             </Button>
           </div>
