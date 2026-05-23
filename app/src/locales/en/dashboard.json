@@ -12,6 +12,35 @@
     "agentsLabel": "Agents",
     "completedLabel": "Completed"
   },
+  "hero": {
+    "pendingTasks": "{{count}} pending task",
+    "pendingTasks_other": "{{count}} pending tasks",
+    "agentsWorking": "{{count}} agent working",
+    "agentsWorking_other": "{{count}} agents working",
+    "summary": "You have <strong>{{tasks}}</strong> and <strong>{{agents}}</strong>.",
+    "newTask": "New task"
+  },
+  "weekly": {
+    "title": "Weekly summary",
+    "completed": "Completed",
+    "inProgress": "In progress",
+    "needsYou": "Needs you",
+    "agents": "Agents"
+  },
+  "team": {
+    "title": "Your team status",
+    "viewAll": "View all",
+    "working": "Working",
+    "idle": "Idle",
+    "pending": "Pending",
+    "today": "Today"
+  },
+  "activity": {
+    "title": "Recent activity",
+    "viewAll": "View all",
+    "empty": "No recent activity yet.",
+    "timeAgo": "{{time}} ago"
+  },
   "filter": {
     "allAgents": "All agents"
   },

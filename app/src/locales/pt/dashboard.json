@@ -12,6 +12,35 @@
     "agentsLabel": "Agentes",
     "completedLabel": "Concluidas"
   },
+  "hero": {
+    "pendingTasks": "{{count}} tarefa pendente",
+    "pendingTasks_other": "{{count}} tarefas pendentes",
+    "agentsWorking": "{{count}} agente trabalhando",
+    "agentsWorking_other": "{{count}} agentes trabalhando",
+    "summary": "Voce tem <strong>{{tasks}}</strong> e <strong>{{agents}}</strong>.",
+    "newTask": "Nova tarefa"
+  },
+  "weekly": {
+    "title": "Resumo semanal",
+    "completed": "Concluidas",
+    "inProgress": "Em andamento",
+    "needsYou": "Precisam de voce",
+    "agents": "Agentes"
+  },
+  "team": {
+    "title": "Status do seu time",
+    "viewAll": "Ver todos",
+    "working": "Trabalhando",
+    "idle": "Aguardando",
+    "pending": "Pendentes",
+    "today": "Hoje"
+  },
+  "activity": {
+    "title": "Atividade recente",
+    "viewAll": "Ver tudo",
+    "empty": "Ainda sem atividade recente.",
+    "timeAgo": "ha {{time}}"
+  },
   "filter": {
     "allAgents": "Todos os agentes"
   },
@@ -24,12 +53,12 @@
     "searchingDescription": "Verificando mensagens antigas agora.",
     "emptyTitle": "Nenhuma tarefa encontrada",
     "emptyDescription": "Tente outra busca ou limpe a atual.",
-    "historyErrorTitle": "Não foi possível buscar todas as tarefas",
-    "historyErrorDescription": "Parte do texto de tarefas antigas não pôde ser carregada."
+    "historyErrorTitle": "Nao foi possivel buscar todas as tarefas",
+    "historyErrorDescription": "Parte do texto de tarefas antigas nao pode ser carregada."
   },
   "columns": {
-    "running": "Em execução",
-    "needsYou": "Precisa de você",
+    "running": "Em execucao",
+    "needsYou": "Precisa de voce",
     "done": "Pronto"
   },
   "empty": {
@@ -39,7 +68,7 @@
   },
   "noAgents": {
     "title": "Ainda sem agentes",
-    "description": "Monte seu time de IA e faça trabalho de verdade.",
+    "description": "Monte seu time de IA e faca trabalho de verdade.",
     "cta": "Novo agente"
   },
   "agentPicker": {
@@ -48,12 +77,12 @@
   },
   "skillPicker": {
     "title": "Escolha um skill",
-    "description": "Veja os skills que este agente já sabe fazer.",
-    "descriptionWithAgent": "Veja os skills que {{name}} já sabe fazer.",
+    "description": "Veja os skills que este agente ja sabe fazer.",
+    "descriptionWithAgent": "Veja os skills que {{name}} ja sabe fazer.",
     "agentLabel": "Agente",
     "agentPlaceholder": "Escolha um agente...",
     "blank": "Conversa em branco",
-    "blankDescription": "Abra um chat novo e escreva sua própria instrução.",
+    "blankDescription": "Abra um chat novo e escreva sua propria instrucao.",
     "featuredTab": "Em destaque",
     "otherTab": "Outros",
     "empty": "Ainda sem skills.",
