@@ -1,0 +1,18 @@
+{
+  "search": "Buscar archivos...",
+  "loading": "Cargando…",
+  "emptyTitle": "Sin archivos",
+  "emptyDescription": "Los archivos creados por tu asistente aparecerán aquí.",
+  "categories": {
+    "all": "Todos",
+    "documents": "Documentos",
+    "sheets": "Hojas",
+    "pdf": "PDF"
+  },
+  "dates": {
+    "justNow": "Ahora",
+    "minutesAgo": "Hace {{count}} min",
+    "hoursAgo": "Hace {{count}}h",
+    "yesterday": "Ayer"
+  }
+}

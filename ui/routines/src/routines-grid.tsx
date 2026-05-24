@@ -5,7 +5,6 @@
  * a redundant page header and goes straight to a meta row + the list.
  */
 import {
-  cn,
   EmptyHeader,
   EmptyTitle,
   EmptyDescription,
@@ -14,6 +13,7 @@ import {
 import { Plus } from "lucide-react"
 import type { Routine, RoutineRun } from "./types"
 import { RoutineRow } from "./routine-row"
+import type { RoutineRowLabels } from "./routine-row"
 
 /**
  * Optional translated labels. English defaults so existing callers still
@@ -42,6 +42,8 @@ export interface RoutinesGridProps {
   routines: Routine[]
   /** Most recent run per routine, keyed by routine ID. */
   lastRuns?: Record<string, RoutineRun>
+  /** Total run counts per routine, keyed by routine ID. */
+  runCounts?: Record<string, number>
   /** Account-default IANA timezone — passed to rows for "next run" preview. */
   accountTimezone: string
   loading?: boolean
@@ -49,17 +51,20 @@ export interface RoutinesGridProps {
   onCreate?: () => void
   onToggle?: (routineId: string, enabled: boolean) => void
   labels?: RoutinesGridLabels
+  rowLabels?: RoutineRowLabels
 }
 
 export function RoutinesGrid({
   routines,
   lastRuns = {},
+  runCounts = {},
   accountTimezone,
   loading,
   onSelect,
   onCreate,
   onToggle,
   labels,
+  rowLabels,
 }: RoutinesGridProps) {
   const l = { ...DEFAULT_LABELS, ...labels }
   // Sort: enabled first, then alphabetical
@@ -115,23 +120,20 @@ export function RoutinesGrid({
           )}
         </div>
 
-        {/* List card — gray, divides hold rows */}
-        <div
-          className={cn(
-            "rounded-xl bg-secondary overflow-hidden",
-            "divide-y divide-border/60",
-          )}
-        >
+        {/* 2-column card grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {sorted.map((routine) => (
             <RoutineRow
               key={routine.id}
               routine={routine}
               lastRun={lastRuns[routine.id]}
+              runCount={runCounts[routine.id] ?? 0}
               accountTimezone={accountTimezone}
               onClick={() => onSelect(routine.id)}
               onToggle={
                 onToggle ? (enabled) => onToggle(routine.id, enabled) : undefined
               }
+              labels={rowLabels}
             />
           ))}
         </div>

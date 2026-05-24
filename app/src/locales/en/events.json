@@ -1,4 +1,14 @@
 {
+  "timeline": {
+    "title": "Activity of {{name}}",
+    "export": "Export",
+    "today": "Today",
+    "yesterday": "Yesterday"
+  },
+  "empty": {
+    "title": "No activity yet",
+    "description": "Completed tasks, emails and events will appear here."
+  },
   "comingSoon": {
     "title": "Events coming soon",
     "description": "Incoming events from channels and integrations will appear here."

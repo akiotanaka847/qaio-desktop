@@ -12,7 +12,7 @@ export { RoutinesGrid } from "./routines-grid"
 export type { RoutinesGridProps } from "./routines-grid"
 
 export { RoutineRow } from "./routine-row"
-export type { RoutineRowProps } from "./routine-row"
+export type { RoutineRowProps, RoutineRowLabels } from "./routine-row"
 
 export { RoutineEditor } from "./routine-editor"
 export type { RoutineEditorProps, RoutineFormData } from "./routine-editor"
@@ -27,3 +27,6 @@ export { ScheduleBuilder } from "./schedule-builder"
 export type { ScheduleBuilderProps } from "./schedule-builder"
 
 export { nextFire, describeNextFire } from "./next-fire"
+
+// Cron utilities
+export { cronToPreset, cronToOptions, presetSummary } from "./schedule-cron-utils"

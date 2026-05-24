@@ -29,6 +29,8 @@ import errorsEn from "../locales/en/errors.json";
 import eventsEn from "../locales/en/events.json";
 import analyticsEn from "../locales/en/analytics.json";
 import authEn from "../locales/en/auth.json";
+import filesEn from "../locales/en/files.json";
+import profileEn from "../locales/en/profile.json";
 import commonEs from "../locales/es/common.json";
 import setupEs from "../locales/es/setup.json";
 import legalEs from "../locales/es/legal.json";
@@ -46,6 +48,8 @@ import errorsEs from "../locales/es/errors.json";
 import eventsEs from "../locales/es/events.json";
 import analyticsEs from "../locales/es/analytics.json";
 import authEs from "../locales/es/auth.json";
+import filesEs from "../locales/es/files.json";
+import profileEs from "../locales/es/profile.json";
 import commonPt from "../locales/pt/common.json";
 import setupPt from "../locales/pt/setup.json";
 import legalPt from "../locales/pt/legal.json";
@@ -63,6 +67,8 @@ import errorsPt from "../locales/pt/errors.json";
 import eventsPt from "../locales/pt/events.json";
 import analyticsPt from "../locales/pt/analytics.json";
 import authPt from "../locales/pt/auth.json";
+import filesPt from "../locales/pt/files.json";
+import profilePt from "../locales/pt/profile.json";
 
 export const SUPPORTED_LOCALES = ["en", "es", "pt"] as const;
 export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
@@ -126,6 +132,8 @@ const resources = {
     events: eventsEn,
     analytics: analyticsEn,
     auth: authEn,
+    files: filesEn,
+    profile: profileEn,
   },
   es: {
     common: commonEs,
@@ -145,6 +153,8 @@ const resources = {
     events: eventsEs,
     analytics: analyticsEs,
     auth: authEs,
+    files: filesEs,
+    profile: profileEs,
   },
   pt: {
     common: commonPt,
@@ -164,6 +174,8 @@ const resources = {
     events: eventsPt,
     analytics: analyticsPt,
     auth: authPt,
+    files: filesPt,
+    profile: profilePt,
   },
 } as const;
 
@@ -203,6 +215,8 @@ void i18n
       "events",
       "analytics",
       "auth",
+      "files",
+      "profile",
     ],
     interpolation: { escapeValue: false }, // react already escapes
     detection: {

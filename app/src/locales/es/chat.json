@@ -59,6 +59,10 @@
     "thoughtFor": "Pensó durante {{count}} segundos",
     "thoughtForFew": "Pensó durante unos segundos"
   },
+  "progress": {
+    "title": "Progreso",
+    "counter": "{{done}} de {{total}}"
+  },
   "process": {
     "active": "Tarea en curso...",
     "complete": "Registro de tarea"

@@ -5,7 +5,8 @@
     "approve": "Mover para Pronto",
     "approveTooltip": "Mover para Pronto",
     "renameTooltip": "Mudar título",
-    "deleteTooltip": "Excluir"
+    "deleteTooltip": "Excluir",
+    "agentWorking": "Agente trabalhando"
   },
   "deleteCard": {
     "titleWithName": "Excluir \"{{name}}\"?",

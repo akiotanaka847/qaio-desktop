@@ -20,6 +20,7 @@ import { ToolRuntimeErrorCard } from "../shell/tool-runtime-error-card";
 import { isToolRuntimeErrorMessage } from "../tool-runtime-feed";
 import { isProviderAuthMessage } from "./provider-auth-feed";
 import { useChatTabState } from "./use-chat-tab-state";
+import { ChatProgressPanel } from "./chat-progress-panel";
 
 export default function ChatTab(props: TabProps) {
   const s = useChatTabState(props);
@@ -39,8 +40,11 @@ export default function ChatTab(props: TabProps) {
     [s.connectedSet, s.parseComposioToolkitFromHref],
   );
 
+  const showProgress = s.visibleFeedItems.length > 0;
+
   return (
-    <div className="h-full w-full flex flex-col">
+    <div className="h-full w-full flex">
+      <div className="flex-1 min-w-0 flex flex-col">
       <ChatPanel
         sessionKey={s.sessionKey}
         feedItems={s.visibleFeedItems}
@@ -133,6 +137,13 @@ export default function ChatTab(props: TabProps) {
         }
       />
       {s.attachmentValidation.dialog}
+      </div>
+      {showProgress && (
+        <ChatProgressPanel
+          feedItems={s.visibleFeedItems}
+          isActive={s.isLoading || s.isSessionActive}
+        />
+      )}
     </div>
   );
 }
