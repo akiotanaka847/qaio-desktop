@@ -5,7 +5,8 @@
     "approve": "Move to done",
     "approveTooltip": "Move to done",
     "renameTooltip": "Change title",
-    "deleteTooltip": "Delete"
+    "deleteTooltip": "Delete",
+    "agentWorking": "Agent working"
   },
   "deleteCard": {
     "titleWithName": "Delete \"{{name}}\"?",

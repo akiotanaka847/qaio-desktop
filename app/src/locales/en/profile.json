@@ -1,0 +1,14 @@
+{
+  "jobDescription": "Job description",
+  "activeSkills": "Active skills",
+  "configuration": "Configuration",
+  "config": {
+    "model": "Model",
+    "integrations": "Integrations"
+  },
+  "sidebar": {
+    "performance": "Performance",
+    "totalTasks": "Total tasks",
+    "activeRoutines": "Active routines"
+  }
+}

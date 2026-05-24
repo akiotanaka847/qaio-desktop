@@ -1,6 +1,16 @@
 {
+  "timeline": {
+    "title": "Actividad de {{name}}",
+    "export": "Exportar",
+    "today": "Hoy",
+    "yesterday": "Ayer"
+  },
+  "empty": {
+    "title": "Sin actividad",
+    "description": "Las tareas completadas, correos y eventos apareceran aqui."
+  },
   "comingSoon": {
-    "title": "Los eventos llegarán pronto",
-    "description": "Los eventos entrantes de canales e integraciones aparecerán aquí."
+    "title": "Los eventos llegaran pronto",
+    "description": "Los eventos entrantes de canales e integraciones apareceran aqui."
   }
 }

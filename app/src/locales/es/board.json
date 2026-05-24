@@ -5,7 +5,8 @@
     "approve": "Mover a Listo",
     "approveTooltip": "Mover a Listo",
     "renameTooltip": "Cambiar título",
-    "deleteTooltip": "Eliminar"
+    "deleteTooltip": "Eliminar",
+    "agentWorking": "Agente trabajando"
   },
   "deleteCard": {
     "titleWithName": "¿Eliminar \"{{name}}\"?",

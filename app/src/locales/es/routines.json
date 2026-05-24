@@ -5,5 +5,11 @@
     "emptyDescription": "Las rutinas se disparan en el horario que elijas y solo te avisan cuando algo de verdad necesita atención.",
     "newRoutine": "Nueva rutina",
     "descriptionShort": "Tareas recurrentes que corren en un horario y solo te avisan cuando algo necesita tu atención."
+  },
+  "row": {
+    "last": "Última",
+    "runs": "Ejecuciones",
+    "next": "Siguiente",
+    "disabled": "Desactivada"
   }
 }

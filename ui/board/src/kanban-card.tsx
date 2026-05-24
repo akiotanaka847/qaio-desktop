@@ -2,33 +2,11 @@ import { useState, useRef, useEffect } from "react"
 import {
   cn,
   ConfirmDialog,
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
 } from "@qaio-ai/core"
-import { Trash2, Check, Pencil } from "lucide-react"
 import type { KanbanItem } from "./types"
-
-export interface KanbanCardLabels {
-  /** @deprecated kept for backward-compat. Was the visible Approve pill text;
-   *  the action is now an icon-only button with `approveTooltip`. */
-  approve?: string
-  approveTooltip?: string
-  renameTooltip?: string
-  deleteTooltip?: string
-  /** Delete confirm title, `{name}` substituted with `item.title`. */
-  deleteTitle?: (name: string) => string
-  deleteDescription?: string
-}
-
-const DEFAULT_LABELS: Required<KanbanCardLabels> = {
-  approve: "Move to done",
-  approveTooltip: "Move to done",
-  renameTooltip: "Change title",
-  deleteTooltip: "Delete",
-  deleteTitle: (name) => `Delete "${name}"?`,
-  deleteDescription: "This item and its history will be permanently removed.",
-}
+import { DEFAULT_CARD_LABELS, type KanbanCardLabels } from "./kanban-card-labels"
+import { KanbanCardActions } from "./kanban-card-actions"
+export type { KanbanCardLabels } from "./kanban-card-labels"
 
 export interface KanbanCardProps {
   item: KanbanItem
@@ -55,7 +33,7 @@ export function KanbanCard({
   avatar,
   labels,
 }: KanbanCardProps) {
-  const l = { ...DEFAULT_LABELS, ...labels }
+  const l = { ...DEFAULT_CARD_LABELS, ...labels }
   const isRunning = runningStatuses.includes(item.status)
   const isNeedsApproval = approveStatuses.includes(item.status)
   const [showConfirm, setShowConfirm] = useState(false)
@@ -67,8 +45,7 @@ export function KanbanCard({
     if (editing) inputRef.current?.focus()
   }, [editing])
 
-  const handleDeleteClick = (e: React.MouseEvent) => {
-    e.stopPropagation()
+  const handleDeleteClick = () => {
     setShowConfirm(true)
   }
 
@@ -77,8 +54,7 @@ export function KanbanCard({
     setShowConfirm(false)
   }
 
-  const handleRenameClick = (e: React.MouseEvent) => {
-    e.stopPropagation()
+  const handleRenameClick = () => {
     setEditValue(item.title)
     setEditing(true)
   }
@@ -103,66 +79,41 @@ export function KanbanCard({
           isNeedsApproval && "approval-gate",
         )}
       >
+        {/* Running indicator */}
+        {isRunning && (
+          <div className="flex items-center gap-1 mb-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+            <span className="text-[10px] font-medium text-accent">
+              {l.agentWorking}
+            </span>
+          </div>
+        )}
+
         {/* Top row: agent info + action buttons */}
         <div className="flex items-center justify-between mb-1.5">
           <div className="flex items-center gap-1.5 min-w-0">
-            {avatar ?? (
+            {!isRunning && (avatar ?? (
               item.icon && (
                 <span className="size-3.5 shrink-0 flex items-center justify-center">
                   {item.icon}
                 </span>
               )
-            )}
+            ))}
             {item.group && (
               <span className="text-[11px] text-muted-foreground truncate">
                 {item.group}
               </span>
             )}
           </div>
-          <div className="flex items-center gap-0.5 shrink-0">
-            {!actions && isNeedsApproval && onApprove && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); onApprove() }}
-                    className="p-1 rounded-md text-muted-foreground/40 hover:text-success hover:bg-success/10 transition-colors duration-200"
-                    aria-label={l.approveTooltip}
-                  >
-                    <Check className="size-3" />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent side="top">{l.approveTooltip}</TooltipContent>
-              </Tooltip>
-            )}
-            {onRename && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    onClick={handleRenameClick}
-                    className="p-1 rounded-md text-muted-foreground/40 hover:text-foreground hover:bg-accent transition-colors duration-200"
-                    aria-label={l.renameTooltip}
-                  >
-                    <Pencil className="size-3" />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent side="top">{l.renameTooltip}</TooltipContent>
-              </Tooltip>
-            )}
-            {onDelete && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    onClick={handleDeleteClick}
-                    className="p-1 rounded-md text-muted-foreground/40 hover:text-destructive hover:bg-destructive/10 transition-colors duration-200"
-                    aria-label={l.deleteTooltip}
-                  >
-                    <Trash2 className="size-3" />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent side="top">{l.deleteTooltip}</TooltipContent>
-              </Tooltip>
-            )}
-          </div>
+          <KanbanCardActions
+            showApprove={!actions && isNeedsApproval}
+            onApprove={onApprove}
+            onRename={onRename ? handleRenameClick : undefined}
+            onDelete={onDelete ? handleDeleteClick : undefined}
+            approveTooltip={l.approveTooltip}
+            renameTooltip={l.renameTooltip}
+            deleteTooltip={l.deleteTooltip}
+          />
         </div>
 
         {/* Title */}
@@ -192,10 +143,15 @@ export function KanbanCard({
           </p>
         )}
 
-        {/* Footer: tags + custom actions. The Approve action moved to the
-           top-right icon row (see above) so it's visually consistent with
-           Rename / Delete and the tooltip explains exactly what it does. */}
-        {(item.tags?.length || actions) && (
+        {/* Running progress bar */}
+        {isRunning && (
+          <div className="mt-2 h-1 rounded-full bg-accent/15 overflow-hidden">
+            <div className="h-full bg-accent rounded-full animate-progress-indeterminate" />
+          </div>
+        )}
+
+        {/* Footer: tags + avatar + custom actions */}
+        {(item.tags?.length || actions || avatar) && (
           <div className="flex items-center justify-between mt-2.5">
             <div className="flex items-center gap-1 flex-wrap min-w-0">
               {item.tags?.map((tag) => (
@@ -207,8 +163,9 @@ export function KanbanCard({
                 </span>
               ))}
             </div>
-            <div className="shrink-0">
+            <div className="flex items-center gap-1.5 shrink-0">
               {actions}
+              {avatar}
             </div>
           </div>
         )}

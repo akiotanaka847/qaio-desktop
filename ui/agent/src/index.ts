@@ -14,6 +14,9 @@ export type { InstructionsPanelProps } from "./instructions-panel"
 // Hooks
 export { useDropZone, useFolderDropTarget, INTERNAL_DRAG_TYPE } from "./drop-zone"
 
+// Icons
+export { getFileIcon } from "./finder-icons"
+
 // Utilities
 export { formatSize, formatFinderDate, getKind } from "./utils"
 export type { SortKey, SortDirection } from "./utils"
