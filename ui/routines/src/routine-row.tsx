@@ -1,9 +1,7 @@
 /**
- * RoutineRow — a single full-width row in the routines list.
+ * RoutineRow — a card in the 2-column routines grid.
  *
- * Visual: hairline-divided rows, generous height, status as a left-edge dot
- * + colored accent. Switch on the right. The whole row is clickable; the
- * switch stops propagation so toggling doesn't open the editor.
+ * Shows name, schedule, description, toggle, execution stats, and next run.
  */
 import { cn, Switch } from "@qaio-ai/core"
 import type { Routine, RoutineRun } from "./types"
@@ -11,13 +9,33 @@ import { cronToPreset, presetSummary, cronToOptions } from "./schedule-cron-util
 import { nextFire, describeNextFire } from "./next-fire"
 import { useNow } from "./use-now"
 
+/**
+ * Optional translated labels. English defaults so existing callers still
+ * work. Consumers pass `t()` results for localization.
+ */
+export interface RoutineRowLabels {
+  last?: string
+  runs?: string
+  next?: string
+  disabled?: string
+}
+
+const DEFAULT_ROW_LABELS: Required<RoutineRowLabels> = {
+  last: "Last",
+  runs: "Runs",
+  next: "Next",
+  disabled: "Disabled",
+}
+
 export interface RoutineRowProps {
   routine: Routine
   lastRun?: RoutineRun
+  runCount?: number
   /** IANA tz of the user's account preference, used when routine has no override. */
   accountTimezone: string
   onClick?: () => void
   onToggle?: (enabled: boolean) => void
+  labels?: RoutineRowLabels
 }
 
 function scheduleSummary(cron: string): string {
@@ -31,33 +49,28 @@ function scheduleSummary(cron: string): string {
   })
 }
 
-const STATUS_DOT: Record<string, string> = {
-  silent: "bg-gray-400",
-  surfaced: "bg-foreground",
-  running: "bg-blue-500",
-  error: "bg-red-500",
-}
-
 function lastRunLabel(lastRun: RoutineRun | undefined, now: Date): string | null {
   if (!lastRun) return null
   const date = new Date(lastRun.started_at)
   const diff = now.getTime() - date.getTime()
   const mins = Math.floor(diff / 60_000)
-  if (mins < 1) return "just ran"
-  if (mins < 60) return `ran ${mins}m ago`
+  if (mins < 1) return "just now"
+  if (mins < 60) return `${mins}m ago`
   const hours = Math.floor(mins / 60)
-  if (hours < 24) return `ran ${hours}h ago`
-  const days = Math.floor(hours / 24)
-  return `ran ${days}d ago`
+  if (hours < 24) return `${hours}h ago`
+  return date.toLocaleDateString([], { day: "numeric", month: "short" })
 }
 
 export function RoutineRow({
   routine,
   lastRun,
+  runCount = 0,
   accountTimezone,
   onClick,
   onToggle,
+  labels,
 }: RoutineRowProps) {
+  const rl = { ...DEFAULT_ROW_LABELS, ...labels }
   const now = useNow(60_000)
   const tz = routine.timezone ?? accountTimezone
   const next = routine.enabled ? nextFire(routine.schedule, tz, now) : null
@@ -76,71 +89,64 @@ export function RoutineRow({
         }
       }}
       className={cn(
-        "group relative flex items-center gap-4 px-5 py-4 cursor-pointer",
-        "transition-colors duration-150",
-        "hover:bg-black/[0.03]",
-        "focus-visible:outline-none focus-visible:bg-black/[0.03]",
+        "group relative rounded-xl border border-border/60 bg-card p-4 cursor-pointer",
+        "transition-all duration-200",
+        "hover:shadow-[0_4px_12px_rgba(27,42,74,0.08)] hover:border-border",
         !routine.enabled && "opacity-55",
       )}
     >
-      {/* Status dot — small but always present */}
-      <div
-        className={cn(
-          "size-2 rounded-full shrink-0",
-          routine.enabled
-            ? STATUS_DOT[lastRun?.status ?? "silent"] ?? "bg-gray-300"
-            : "bg-gray-300",
-          lastRun?.status === "running" && "animate-pulse",
-        )}
-        aria-hidden
-      />
-
-      {/* Title + meta column */}
-      <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium text-foreground truncate leading-tight">
-          {routine.name || "Untitled"}
-        </p>
-        <p className="text-xs text-muted-foreground truncate mt-0.5">
-          {scheduleSummary(routine.schedule)}
-          {routine.timezone && (
-            <span className="text-muted-foreground/60"> · {routine.timezone}</span>
-          )}
-        </p>
-      </div>
-
-      {/* Right meta column: next run + last run */}
-      <div className="hidden sm:flex flex-col items-end shrink-0 min-w-[140px]">
-        {nextDescr ? (
-          <>
-            <p className="text-xs text-foreground tabular-nums">
-              Next {nextDescr.relative}
-            </p>
-            <p className="text-[11px] text-muted-foreground tabular-nums mt-0.5">
-              {nextDescr.absolute}
-            </p>
-          </>
-        ) : routine.enabled ? (
-          <p className="text-xs text-muted-foreground">No next run</p>
-        ) : (
-          <p className="text-xs text-muted-foreground">Paused</p>
-        )}
-        {lastLabel && (
-          <p className="text-[11px] text-muted-foreground/70 mt-0.5 tabular-nums">
-            {lastLabel}
+      {/* Header: title + toggle */}
+      <div className="flex items-start justify-between gap-2 mb-1">
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-medium text-foreground truncate">
+            {routine.name || "Untitled"}
           </p>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            {scheduleSummary(routine.schedule)}
+          </p>
+        </div>
+        {onToggle && (
+          <div onClick={(e) => e.stopPropagation()} className="shrink-0 pt-0.5">
+            <Switch
+              checked={routine.enabled}
+              onCheckedChange={(checked) => onToggle(checked)}
+              aria-label={routine.enabled ? "Pause routine" : "Resume routine"}
+            />
+          </div>
         )}
       </div>
 
-      {/* Switch */}
-      {onToggle && (
-        <div onClick={(e) => e.stopPropagation()} className="shrink-0">
-          <Switch
-            checked={routine.enabled}
-            onCheckedChange={(checked) => onToggle(checked)}
-            aria-label={routine.enabled ? "Pause routine" : "Resume routine"}
-          />
-        </div>
+      {/* Description */}
+      {routine.description && (
+        <p className="text-xs text-muted-foreground line-clamp-2 mt-2 leading-relaxed">
+          {routine.description}
+        </p>
       )}
+
+      {/* Stats row */}
+      <div className="mt-3 flex items-center gap-3 text-[11px] text-muted-foreground">
+        {lastLabel && (
+          <span>
+            {rl.last}: <strong className="font-semibold text-foreground">{lastLabel}</strong>
+          </span>
+        )}
+        {runCount > 0 && (
+          <span>
+            {rl.runs}: <strong className="font-semibold text-foreground">{runCount}</strong>
+          </span>
+        )}
+      </div>
+
+      {/* Next run / disabled label */}
+      <div className="mt-1">
+        {routine.enabled && nextDescr ? (
+          <p className="text-[11px] text-accent font-medium">
+            {rl.next}: {nextDescr.relative}
+          </p>
+        ) : !routine.enabled ? (
+          <p className="text-[11px] text-muted-foreground">{rl.disabled}</p>
+        ) : null}
+      </div>
     </div>
   )
 }

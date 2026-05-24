@@ -1,0 +1,14 @@
+{
+  "jobDescription": "Descripcion del puesto",
+  "activeSkills": "Habilidades activas",
+  "configuration": "Configuracion",
+  "config": {
+    "model": "Modelo",
+    "integrations": "Integraciones"
+  },
+  "sidebar": {
+    "performance": "Rendimiento",
+    "totalTasks": "Tareas totales",
+    "activeRoutines": "Rutinas activas"
+  }
+}

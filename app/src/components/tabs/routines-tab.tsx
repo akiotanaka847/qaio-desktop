@@ -1,7 +1,7 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { RoutinesGrid, RoutineEditor } from "@qaio-ai/routines";
-import type { RoutineFormData, RoutineRun } from "@qaio-ai/routines";
+import type { RoutineFormData } from "@qaio-ai/routines";
 import {
   useRoutines,
   useRoutineRuns,
@@ -12,31 +12,9 @@ import {
 } from "../../hooks/queries";
 import { useTimezonePreference } from "../../hooks/use-timezone-preference";
 import type { TabProps } from "../../lib/types";
+import { EMPTY_FORM, formMatchesRoutine, useRunStats } from "./routines-tab-utils";
 
 type View = { type: "grid" } | { type: "editor"; editId?: string };
-
-const EMPTY_FORM: RoutineFormData = {
-  name: "",
-  description: "",
-  prompt: "",
-  schedule: "0 9 * * *",
-  suppress_when_silent: true,
-  timezone: null,
-};
-
-function formMatchesRoutine(
-  form: RoutineFormData,
-  source: RoutineFormData,
-): boolean {
-  return (
-    form.name === source.name &&
-    form.description === source.description &&
-    form.prompt === source.prompt &&
-    form.schedule === source.schedule &&
-    form.suppress_when_silent === source.suppress_when_silent &&
-    (form.timezone ?? null) === (source.timezone ?? null)
-  );
-}
 
 export default function RoutinesTab({ agent }: TabProps) {
   const { t } = useTranslation("routines");
@@ -54,18 +32,7 @@ export default function RoutinesTab({ agent }: TabProps) {
   const [form, setForm] = useState<RoutineFormData>(EMPTY_FORM);
   const [baseline, setBaseline] = useState<RoutineFormData>(EMPTY_FORM);
 
-  // Compute last run per routine
-  const lastRuns = useMemo(() => {
-    if (!allRuns) return {};
-    const map: Record<string, RoutineRun> = {};
-    for (const run of allRuns) {
-      const existing = map[run.routine_id];
-      if (!existing || new Date(run.started_at) > new Date(existing.started_at)) {
-        map[run.routine_id] = run;
-      }
-    }
-    return map;
-  }, [allRuns]);
+  const { lastRuns, runCounts } = useRunStats(allRuns);
 
   const handleCreate = useCallback(() => {
     setForm(EMPTY_FORM);
@@ -99,7 +66,6 @@ export default function RoutinesTab({ agent }: TabProps) {
         routineId: view.editId,
         updates: form,
       });
-      // Reset baseline so the Save button disables until the next edit.
       setBaseline({
         name: updated.name,
         description: updated.description,
@@ -136,10 +102,6 @@ export default function RoutinesTab({ agent }: TabProps) {
     [runNow],
   );
 
-  // `useTimezonePreference` auto-seeds on first call, so `tz.timezone` is
-  // non-null from the first render. We still wait for the roundtrip to
-  // finish so the cron schedule renders against the real zone instead of
-  // an empty placeholder.
   if (!tz.loaded || !tz.timezone) {
     return (
       <div className="flex-1 flex items-center justify-center">
@@ -179,6 +141,7 @@ export default function RoutinesTab({ agent }: TabProps) {
     <RoutinesGrid
       routines={routines ?? []}
       lastRuns={lastRuns}
+      runCounts={runCounts}
       accountTimezone={tz.timezone}
       loading={isLoading}
       onSelect={openEditor}
@@ -190,6 +153,12 @@ export default function RoutinesTab({ agent }: TabProps) {
         emptyDescription: t("grid.emptyDescription"),
         descriptionShort: t("grid.descriptionShort"),
         newRoutine: t("grid.newRoutine"),
+      }}
+      rowLabels={{
+        last: t("row.last"),
+        runs: t("row.runs"),
+        next: t("row.next"),
+        disabled: t("row.disabled"),
       }}
     />
   );

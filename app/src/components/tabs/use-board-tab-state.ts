@@ -29,6 +29,7 @@ export function useBoardTabState({ agent, agentDef }: TabProps) {
     deleteTooltip: t("board:cardActions.deleteTooltip"),
     deleteTitle: (name: string) => t("board:deleteCard.titleWithName", { name }),
     deleteDescription: t("board:deleteCard.description"),
+    agentWorking: t("board:cardActions.agentWorking"),
   };
   const path = agent.folderPath;
   const agentModes = agentDef.config.agents;

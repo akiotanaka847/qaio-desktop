@@ -5,5 +5,11 @@
     "emptyDescription": "As rotinas disparam no horário programado e só te chamam quando algo realmente precisa de atenção.",
     "newRoutine": "Nova rotina",
     "descriptionShort": "Tarefas recorrentes que rodam no horário e só te avisam quando algo precisa da sua atenção."
+  },
+  "row": {
+    "last": "Última",
+    "runs": "Execuções",
+    "next": "Próxima",
+    "disabled": "Desativada"
   }
 }

@@ -5,5 +5,11 @@
     "emptyDescription": "Routines fire on a schedule and only ping you when something actually needs attention.",
     "newRoutine": "New routine",
     "descriptionShort": "Recurring tasks that fire on schedule and only ping you when something needs attention."
+  },
+  "row": {
+    "last": "Last",
+    "runs": "Runs",
+    "next": "Next",
+    "disabled": "Disabled"
   }
 }
