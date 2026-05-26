@@ -1,35 +1,26 @@
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Check, CircleDashed, ExternalLink, Terminal } from "lucide-react";
+import { Check, CircleDashed, ExternalLink, Terminal, X } from "lucide-react";
 import { Spinner, Button } from "@qaio-ai/core";
-import { tauriProvider, tauriSystem, type ProviderStatus } from "../../lib/tauri";
+import { tauriSystem, type ProviderStatus } from "../../lib/tauri";
 import type { ProviderInfo } from "../../lib/providers";
 
 interface SetupGuidanceProps {
   provider: ProviderInfo;
   status: ProviderStatus | undefined;
   isSelected: boolean;
+  loginPending: boolean;
   onRefresh: () => void;
+  onLaunchLogin: () => void;
+  onCancel: () => void;
 }
 
-export function SetupGuidance({ provider, status, isSelected, onRefresh }: SetupGuidanceProps) {
+export function SetupGuidance({
+  provider, status, isSelected, loginPending,
+  onRefresh, onLaunchLogin, onCancel,
+}: SetupGuidanceProps) {
   const { t } = useTranslation("providers");
   const installed = status?.cli_installed ?? false;
   const authenticated = status?.authenticated ?? false;
-  const [loginLaunched, setLoginLaunched] = useState(false);
-  const [loginError, setLoginError] = useState<string | null>(null);
-
-  const handleSignIn = async () => {
-    setLoginError(null);
-    try {
-      await tauriProvider.launchLogin(provider.id);
-      setLoginLaunched(true);
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : String(e);
-      console.error(`[provider-picker] launchLogin(${provider.id}) failed:`, msg);
-      setLoginError(msg);
-    }
-  };
 
   return (
     <div className="rounded-xl border border-black/[0.08] bg-secondary/50 p-4 space-y-3">
@@ -54,29 +45,30 @@ export function SetupGuidance({ provider, status, isSelected, onRefresh }: Setup
         </div>
       )}
 
-      {installed && !authenticated && !loginLaunched && (
-        <Button onClick={handleSignIn} className="rounded-full" size="sm">
+      {installed && !authenticated && !loginPending && (
+        <Button onClick={onLaunchLogin} className="rounded-full" size="sm">
           {t("setup.signInWith", { provider: provider.name })}
         </Button>
       )}
 
-      {installed && !authenticated && loginLaunched && (
+      {installed && !authenticated && loginPending && (
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Spinner className="h-3.5 w-3.5" />
             <span>{t("setup.waiting")}</span>
+            <button
+              type="button"
+              onClick={onCancel}
+              className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <X className="h-3 w-3" />
+              {t("card.cancel")}
+            </button>
           </div>
-          <button onClick={handleSignIn}
+          <button onClick={onLaunchLogin}
             className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground transition-colors">
             {t("setup.openBrowserAgain")}
           </button>
-        </div>
-      )}
-
-      {loginError && (
-        <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-2.5 text-xs text-destructive">
-          <div className="font-medium mb-0.5">{t("setup.launchErrorTitle", { cli: provider.cliName })}</div>
-          <div className="text-destructive/80">{loginError}</div>
         </div>
       )}
 

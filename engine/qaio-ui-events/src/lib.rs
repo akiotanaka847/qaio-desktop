@@ -13,7 +13,7 @@ use serde::Serialize;
 use std::sync::Arc;
 use tokio::sync::broadcast;
 
-#[derive(Clone, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 #[serde(tag = "type", content = "data")]
 pub enum QaioEvent {
     /// A feed item from a running session.
@@ -142,6 +142,16 @@ pub enum QaioEvent {
     /// browser lifecycle and Composio's eventual-consistency lag on
     /// `GET /api/v3/org/consumer/connected_toolkits`.
     ComposioConnectionAdded { toolkit: String },
+
+    // ----- Provider login lifecycle -----
+
+    /// A provider login subprocess finished (either naturally or via
+    /// cancel). Frontend uses this to stop the spinner / pending state
+    /// and refresh the provider status without polling.
+    ProviderLoginComplete {
+        provider: String,
+        cancelled: bool,
+    },
 
     // ----- Claude Code CLI lifecycle -----
     //

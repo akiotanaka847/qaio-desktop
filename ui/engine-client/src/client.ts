@@ -438,6 +438,9 @@ export class QaioClient {
   providerLogout(name: string): Promise<void> {
     return this.request("POST", `/providers/${this.seg(name)}/logout`);
   }
+  cancelProviderLogin(name: string): Promise<void> {
+    return this.request("POST", `/providers/${this.seg(name)}/login/cancel`);
+  }
 
   // ---------- store ----------
 
