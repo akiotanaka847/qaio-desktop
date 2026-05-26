@@ -100,6 +100,7 @@ export function useChatTabState({ agent }: TabProps) {
         await tauriChat.send(agentPath, prompt, sessionKey, {
           providerOverride: model.chatProvider ?? undefined,
           modelOverride: model.chatModel ?? undefined,
+          effortOverride: model.chatEffort ?? undefined,
         });
         started = true;
         pushFeedItem(agentPath, sessionKey, { feed_type: "user_message", data: prompt });
@@ -118,7 +119,7 @@ export function useChatTabState({ agent }: TabProps) {
         sendingRef.current = false;
       }
     },
-    [agentPath, sessionKey, attachmentScope, pushFeedItem, setComposerText, setComposerFiles, model.chatProvider, model.chatModel, t],
+    [agentPath, sessionKey, attachmentScope, pushFeedItem, setComposerText, setComposerFiles, model.chatProvider, model.chatModel, model.chatEffort, t],
   );
 
   const handleQueued = useCallback(() => {

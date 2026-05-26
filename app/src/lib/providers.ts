@@ -1,7 +1,13 @@
+export type EffortLevel = "low" | "medium" | "high" | "xhigh" | "max";
+
+export const DEFAULT_EFFORT: EffortLevel = "medium";
+
 export interface ModelOption {
   id: string;
   label: string;
   description: string;
+  /** Accepted effort levels for this model. Empty/undefined = no effort control. */
+  effortLevels?: readonly EffortLevel[];
 }
 
 export interface ProviderInfo {
@@ -26,9 +32,9 @@ export const PROVIDERS: readonly ProviderInfo[] = [
     loginCommand: "codex login",
     cost: "Your ChatGPT subscription",
     models: [
-      { id: "gpt-5.4", label: "GPT-5.4", description: "Flagship. Best reasoning and tool use." },
-      { id: "gpt-5.4-mini", label: "GPT-5.4 Mini", description: "Faster and cheaper for lighter tasks." },
-      { id: "gpt-5.3-codex", label: "Codex", description: "Purpose-built for coding agents." },
+      { id: "gpt-5.4", label: "GPT-5.4", description: "Flagship. Best reasoning and tool use.", effortLevels: ["low", "medium", "high", "xhigh"] },
+      { id: "gpt-5.4-mini", label: "GPT-5.4 Mini", description: "Faster and cheaper for lighter tasks.", effortLevels: ["low", "medium", "high", "xhigh"] },
+      { id: "gpt-5.3-codex", label: "Codex", description: "Purpose-built for coding agents.", effortLevels: ["low", "medium", "high", "xhigh"] },
     ],
     defaultModel: "gpt-5.4",
   },
@@ -41,9 +47,9 @@ export const PROVIDERS: readonly ProviderInfo[] = [
     loginCommand: "claude login",
     cost: "Your Claude subscription",
     models: [
-      { id: "sonnet", label: "Sonnet", description: "Best balance of speed and quality." },
-      { id: "opus", label: "Opus", description: "Most capable. Slower, more tokens." },
-      { id: "haiku", label: "Haiku", description: "Fastest and cheapest for simple tasks." },
+      { id: "sonnet", label: "Sonnet", description: "Best balance of speed and quality.", effortLevels: ["low", "medium", "high", "max"] },
+      { id: "opus", label: "Opus", description: "Most capable. Slower, more tokens.", effortLevels: ["low", "medium", "high", "xhigh", "max"] },
+      { id: "haiku", label: "Haiku", description: "Fastest and cheapest for simple tasks.", effortLevels: ["low", "medium", "high", "max"] },
     ],
     defaultModel: "sonnet",
   },
@@ -77,5 +83,26 @@ export function getModel(providerId: string, modelId: string): ModelOption | und
 /** Get the default provider + model for a provider id. */
 export function getDefaultModel(providerId: string): string {
   return getProvider(providerId)?.defaultModel ?? "sonnet";
+}
+
+/** Get the accepted effort levels for a specific model. Empty = no effort control. */
+export function getEffortLevels(providerId: string, modelId: string): readonly EffortLevel[] {
+  return getModel(providerId, modelId)?.effortLevels ?? [];
+}
+
+/**
+ * Validate an effort value against a model's accepted levels.
+ * Returns the effort if valid, otherwise the default, or `null` if
+ * the model doesn't support effort at all.
+ */
+export function validEffortOrDefault(
+  providerId: string,
+  modelId: string,
+  effort: string | null | undefined,
+): EffortLevel | null {
+  const levels = getEffortLevels(providerId, modelId);
+  if (levels.length === 0) return null;
+  if (effort && levels.includes(effort as EffortLevel)) return effort as EffortLevel;
+  return DEFAULT_EFFORT;
 }
 

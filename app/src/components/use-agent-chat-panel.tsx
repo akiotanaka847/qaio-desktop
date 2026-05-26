@@ -17,6 +17,7 @@ import { useFileToolRenderer } from "../hooks/use-file-tool-renderer";
 import { ComposioLinkCard, parseComposioToolkitFromHref } from "./composio-link-card";
 import { ComposioSigninCard, isComposioSigninHref } from "./composio-signin-card";
 import { ChatModelSelector } from "./chat-model-selector";
+import { ChatEffortSelector } from "./chat-effort-selector";
 import { decodeSkillMessage } from "../lib/skill-message";
 import { SkillCard } from "./skill-card";
 import { UserSkillMessage } from "./user-skill-message";
@@ -53,14 +54,13 @@ export function useAgentChatPanel({
   const model = useChatModelResolution(path);
   const skill = useSkillComposer({
     agent, agentDef, path, selectedSessionKey,
-    chatProvider: model.chatProvider, chatModel: model.chatModel,
+    chatProvider: model.chatProvider, chatModel: model.chatModel, chatEffort: model.chatEffort,
     onSelectSession,
   });
 
   // Composio link card support
   const { data: composioStatus } = useConnections();
-  const isSignedIn = composioStatus?.status === "ok";
-  const { data: connectedList } = useConnectedToolkits(isSignedIn);
+  const { data: connectedList } = useConnectedToolkits(composioStatus?.status === "ok");
   const connectedSet = useMemo(() => new Set(connectedList ?? []), [connectedList]);
   const renderLink = useCallback(
     ({ href, onOpen }: { href: string; onOpen: () => void }) => {
@@ -101,6 +101,7 @@ export function useAgentChatPanel({
             await tauriChat.send(path, text, selectedSessionKey, {
               providerOverride: model.chatProvider ?? undefined,
               modelOverride: model.chatModel ?? undefined,
+              effortOverride: model.chatEffort ?? undefined,
             });
             pushFeedItem(path, selectedSessionKey, { feed_type: "user_message", data: text });
           }} />
@@ -109,7 +110,7 @@ export function useAgentChatPanel({
       if (isProviderAuthMessage(msg.content)) return null;
       return undefined;
     },
-    [model.chatModel, model.chatProvider, path, pushFeedItem, selectedSessionKey, t],
+    [model.chatEffort, model.chatModel, model.chatProvider, path, pushFeedItem, selectedSessionKey, t],
   );
 
   const mapFeedItems = useCallback(
@@ -167,9 +168,11 @@ export function useAgentChatPanel({
         </button>
         <ChatModelSelector provider={model.effectiveProvider} model={model.effectiveModel}
           onSelect={model.handleModelSelect} lockedProvider={hasMessages ? model.effectiveProvider : null} />
+        <ChatEffortSelector provider={model.effectiveProvider} model={model.effectiveModel}
+          effort={model.effectiveEffort} onSelect={model.handleEffortSelect} />
       </div>
     );
-  }, [agent, t, model.effectiveProvider, model.effectiveModel, model.handleModelSelect, skill.setPickerOpen]);
+  }, [agent, t, model.effectiveProvider, model.effectiveModel, model.effectiveEffort, model.handleModelSelect, model.handleEffortSelect, skill.setPickerOpen]);
 
   return {
     chatEmptyState,
@@ -192,5 +195,6 @@ export function useAgentChatPanel({
     effectiveModel: model.effectiveModel,
     chatProvider: model.chatProvider,
     chatModel: model.chatModel,
+    chatEffort: model.chatEffort,
   };
 }

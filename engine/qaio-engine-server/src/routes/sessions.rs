@@ -22,8 +22,8 @@ use axum::{
     Json, Router,
 };
 use qaio_engine_core::sessions::{
-    self, generate_agent, history, resolve_agent_dir, resolve_provider, summarize, SessionRuntime,
-    StartParams,
+    self, generate_agent, history, resolve_agent_dir, resolve_effort, resolve_provider, summarize,
+    SessionRuntime, StartParams,
 };
 use qaio_engine_core::CoreError;
 use qaio_terminal_manager::Provider;
@@ -74,6 +74,10 @@ pub struct StartRequest {
     /// Model override. Wins over any resolved default.
     #[serde(default)]
     pub model: Option<String>,
+    /// Effort override. Wins over agent config. Validated against the
+    /// provider's accepted levels.
+    #[serde(default)]
+    pub effort: Option<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -98,6 +102,17 @@ async fn start_session(
     let ResolvedProviderChoice { provider, model } =
         resolve_provider_with_overrides(&st, &agent_dir, req.provider.as_deref(), req.model.clone())?;
 
+    // Effort: request override wins, else resolve from agent config.
+    let effort = if let Some(ref e) = req.effort {
+        if provider.is_valid_effort(e) {
+            Some(e.clone())
+        } else {
+            resolve_effort(&agent_dir, provider)
+        }
+    } else {
+        resolve_effort(&agent_dir, provider)
+    };
+
     let params = StartParams {
         agent_dir,
         working_dir,
@@ -107,6 +122,7 @@ async fn start_session(
         source: req.source,
         provider,
         model,
+        effort,
     };
 
     let rt = SessionRuntime::clone(&st.engine.sessions);

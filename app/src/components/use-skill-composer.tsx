@@ -33,12 +33,13 @@ interface UseSkillComposerArgs {
   selectedSessionKey: string | null;
   chatProvider: string | null;
   chatModel: string | null;
+  chatEffort: string | null;
   onSelectSession?: (id: string) => void;
 }
 
 export function useSkillComposer({
   agent, agentDef, path, selectedSessionKey,
-  chatProvider, chatModel, onSelectSession,
+  chatProvider, chatModel, chatEffort, onSelectSession,
 }: UseSkillComposerArgs) {
   const { t } = useTranslation(["board", "chat"]);
   const queryClient = useQueryClient();
@@ -78,6 +79,7 @@ export function useSkillComposer({
           mode: mode?.promptFile,
           providerOverride: chatProvider ?? undefined,
           modelOverride: chatModel ?? undefined,
+          effortOverride: chatEffort ?? undefined,
         });
         pushFeedItem(path, sessionKey, { feed_type: "user_message", data: encodedWithAttachments });
       } else {
@@ -106,6 +108,7 @@ export function useSkillComposer({
             promptFile: mode?.promptFile,
             providerOverride: chatProvider ?? undefined,
             modelOverride: chatModel ?? undefined,
+            effortOverride: chatEffort ?? undefined,
             buildPrompt: async (activityId) => {
               const paths = await tauriAttachments.save(`activity-${activityId}`, files);
               const prompt = withAttachmentPaths(claudePrompt, paths);
@@ -123,7 +126,7 @@ export function useSkillComposer({
       setActiveSkill(null);
       return true;
     },
-    [activeSkill, agent, path, agentModes, chatProvider, chatModel, pushFeedItem, queryClient, t],
+    [activeSkill, agent, path, agentModes, chatProvider, chatModel, chatEffort, pushFeedItem, queryClient, t],
   );
 
   const applySkill = useCallback((skill: SkillSummary) => setActiveSkill(skill), []);

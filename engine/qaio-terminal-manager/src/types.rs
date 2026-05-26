@@ -37,6 +37,40 @@ impl FromStr for Provider {
     }
 }
 
+/// Default reasoning effort for providers that support it.
+pub const DEFAULT_EFFORT: &str = "medium";
+
+impl Provider {
+    /// Accepted reasoning-effort levels for this provider.
+    ///
+    /// Empty slice → provider does not support effort control.
+    /// Codex supports `low`/`medium`/`high`/`xhigh` (no `max`).
+    /// Claude supports `low`/`medium`/`high`/`max` (no `xhigh`).
+    /// Opus supports all five levels.
+    /// Gemini does not support effort control.
+    pub fn effort_levels(&self) -> &[&str] {
+        match self {
+            Provider::Anthropic => &["low", "medium", "high", "max"],
+            Provider::OpenAI => &["low", "medium", "high", "xhigh"],
+            Provider::Gemini => &[],
+        }
+    }
+
+    /// Default effort level, or `None` if the provider has no effort control.
+    pub fn default_effort(&self) -> Option<&str> {
+        if self.effort_levels().is_empty() {
+            None
+        } else {
+            Some(DEFAULT_EFFORT)
+        }
+    }
+
+    /// Validate an effort string against this provider's accepted levels.
+    pub fn is_valid_effort(&self, effort: &str) -> bool {
+        self.effort_levels().contains(&effort)
+    }
+}
+
 /// Events parsed from Claude's `--output-format stream-json` NDJSON output.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
