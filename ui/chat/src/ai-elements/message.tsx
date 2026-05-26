@@ -11,7 +11,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@qaio-ai/core";
-import { cn } from "@qaio-ai/core";
+import { cn, ErrorBoundary } from "@qaio-ai/core";
 import { cjk } from "@streamdown/cjk";
 import { code } from "@streamdown/code";
 import { math } from "@streamdown/math";
@@ -412,15 +412,23 @@ export const MessageResponse = memo(
     }, [onOpenLink, renderLink]);
 
     return (
-      <Streamdown
-        className={cn(
-          "size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0",
-          className
-        )}
-        plugins={streamdownPlugins}
-        components={components}
-        {...props}
-      />
+      <ErrorBoundary
+        fallback={
+          <div className="size-full whitespace-pre-wrap break-words">
+            {props.children}
+          </div>
+        }
+      >
+        <Streamdown
+          className={cn(
+            "size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0",
+            className
+          )}
+          plugins={streamdownPlugins}
+          components={components}
+          {...props}
+        />
+      </ErrorBoundary>
     );
   },
   (prevProps, nextProps) =>
