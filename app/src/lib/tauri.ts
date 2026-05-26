@@ -653,6 +653,8 @@ export const tauriProvider = {
     call<void>("launch_provider_login", () => getEngine().providerLogin(provider)),
   launchLogout: (provider: string) =>
     call<void>("launch_provider_logout", () => getEngine().providerLogout(provider)),
+  cancelLogin: (provider: string) =>
+    call<void>("cancel_provider_login", () => getEngine().cancelProviderLogin(provider)),
 };
 
 // ─── System (OS-native helpers, preserved for back-compat) ────────────

@@ -123,4 +123,8 @@ export type QaioEvent =
   | {
       type: "ComposioConnectionAdded";
       data: { toolkit: string };
+    }
+  | {
+      type: "ProviderLoginComplete";
+      data: { provider: string; cancelled: boolean };
     };

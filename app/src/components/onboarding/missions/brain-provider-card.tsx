@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Check,
@@ -7,9 +6,10 @@ import {
   Loader2,
   RefreshCw,
   Terminal,
+  X,
 } from "lucide-react";
 import { Button, cn } from "@qaio-ai/core";
-import { tauriProvider, tauriSystem, type ProviderStatus } from "../../../lib/tauri";
+import { tauriSystem, type ProviderStatus } from "../../../lib/tauri";
 import type { ProviderInfo } from "../../../lib/providers";
 
 interface BrainProviderCardProps {
@@ -17,8 +17,11 @@ interface BrainProviderCardProps {
   status: ProviderStatus | undefined;
   loading: boolean;
   selected: boolean;
+  loginPending: boolean;
   onSelect: (modelId: string) => void;
   onRefresh: () => Promise<void>;
+  onLaunchLogin: () => void;
+  onCancelLogin: () => void;
   costLabel: string;
 }
 
@@ -27,28 +30,23 @@ export function BrainProviderCard({
   status,
   loading,
   selected,
+  loginPending,
   onSelect,
   onRefresh,
+  onLaunchLogin,
+  onCancelLogin,
   costLabel,
 }: BrainProviderCardProps) {
   const { t } = useTranslation(["setup", "providers"]);
   const installed = status?.cli_installed ?? false;
   const authenticated = status?.authenticated ?? false;
   const connected = installed && authenticated;
-  const [loginLaunched, setLoginLaunched] = useState(false);
-  const [loginError, setLoginError] = useState<string | null>(null);
 
   const handlePick = () => onSelect(provider.defaultModel);
 
-  const handleSignIn = async () => {
-    setLoginError(null);
+  const handleSignIn = () => {
     handlePick();
-    try {
-      await tauriProvider.launchLogin(provider.id);
-      setLoginLaunched(true);
-    } catch (e) {
-      setLoginError(e instanceof Error ? e.message : String(e));
-    }
+    onLaunchLogin();
   };
 
   return (
@@ -73,9 +71,9 @@ export function BrainProviderCard({
         <SetupHint
           provider={provider}
           installed={installed}
-          loginLaunched={loginLaunched}
-          loginError={loginError}
-          onSignIn={() => void handleSignIn()}
+          loginPending={loginPending}
+          onSignIn={handleSignIn}
+          onCancel={onCancelLogin}
           onRefresh={() => void onRefresh()}
         />
       )}
@@ -112,16 +110,16 @@ function ProviderStatusPill({ loading, connected }: { loading: boolean; connecte
 function SetupHint({
   provider,
   installed,
-  loginLaunched,
-  loginError,
+  loginPending,
   onSignIn,
+  onCancel,
   onRefresh,
 }: {
   provider: ProviderInfo;
   installed: boolean;
-  loginLaunched: boolean;
-  loginError: string | null;
+  loginPending: boolean;
   onSignIn: () => void;
+  onCancel: () => void;
   onRefresh: () => void;
 }) {
   const { t } = useTranslation(["setup", "providers"]);
@@ -146,16 +144,24 @@ function SetupHint({
           </span>
         </div>
       )}
-      {installed && !loginLaunched && (
+      {installed && !loginPending && (
         <Button size="sm" className="rounded-full" onClick={onSignIn}>
           <ExternalLink className="size-3.5" />
           {t("providers:setup.signInWith", { provider: provider.name })}
         </Button>
       )}
-      {installed && loginLaunched && (
+      {installed && loginPending && (
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <Loader2 className="size-3.5 animate-spin" />
           <span>{t("providers:setup.waiting")}</span>
+          <button
+            type="button"
+            onClick={onCancel}
+            className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <X className="size-3" />
+            {t("providers:card.cancel")}
+          </button>
         </div>
       )}
       {!installed && (
@@ -167,9 +173,6 @@ function SetupHint({
           <RefreshCw className="size-3" />
           {t("providers:setup.installedCheckAgain")}
         </button>
-      )}
-      {loginError && (
-        <p className="mt-2 text-xs text-destructive">{loginError}</p>
       )}
     </div>
   );

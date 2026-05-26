@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Check, CircleDashed, ChevronDown, LogOut } from "lucide-react";
+import { Check, CircleDashed, ChevronDown, LogOut, X } from "lucide-react";
 import {
   Spinner,
   DropdownMenu,
@@ -19,16 +19,18 @@ interface ProviderCardProps {
   connected: boolean;
   selected: boolean;
   expanded: boolean;
+  loginPending: boolean;
   selectedModel: string;
   onModelChange: (model: string) => void;
   onSelect: () => void;
   onExpand: () => void;
   onSignedOut: () => void | Promise<void>;
+  onCancel: () => void;
 }
 
 export function ProviderCard({
-  provider, connected, selected, expanded, selectedModel,
-  onModelChange, onSelect, onExpand, onSignedOut,
+  provider, connected, selected, expanded, loginPending, selectedModel,
+  onModelChange, onSelect, onExpand, onSignedOut, onCancel,
 }: ProviderCardProps) {
   const { t } = useTranslation("providers");
   const [signingOut, setSigningOut] = useState(false);
@@ -89,7 +91,20 @@ export function ProviderCard({
       </div>
 
       <div className="flex items-center gap-1.5 text-xs" aria-live="polite">
-        {connected ? (
+        {loginPending ? (
+          <>
+            <Spinner className="h-3 w-3" />
+            <span className="text-muted-foreground">{t("card.connecting")}</span>
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); onCancel(); }}
+              className="ml-1 inline-flex items-center text-muted-foreground hover:text-foreground transition-colors"
+              aria-label={t("card.cancel")}
+            >
+              <X className="h-3 w-3" />
+            </button>
+          </>
+        ) : connected ? (
           <>
             <Check className="h-3 w-3 text-success" />
             <span className="text-success font-medium">{t("card.connected")}</span>

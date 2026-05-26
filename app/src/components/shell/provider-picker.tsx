@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Spinner } from "@qaio-ai/core";
 import { tauriProvider, type ProviderStatus } from "../../lib/tauri";
+import { subscribeQaioEvents } from "../../lib/events";
+import { showErrorToast } from "../../lib/error-toast";
 import { PROVIDERS } from "../../lib/providers";
 import { analytics } from "../../lib/analytics";
 import { ProviderCard } from "./provider-card";
@@ -22,6 +24,8 @@ export function ProviderPicker({ value, model: controlledModel, onSelect }: Prop
     if (controlledModel && value) defaults[value] = controlledModel;
     return defaults;
   });
+
+  const [loginPending, setLoginPending] = useState<string | null>(null);
 
   const prevStatuses = useRef<Record<string, ProviderStatus>>({});
   const loadStatuses = useCallback(async () => {
@@ -54,6 +58,35 @@ export function ProviderPicker({ value, model: controlledModel, onSelect }: Prop
     return () => { if (pollRef.current) clearInterval(pollRef.current); };
   }, [expanded, statuses, loadStatuses]);
 
+  // React to ProviderLoginComplete — clear pending state + refresh.
+  useEffect(() => {
+    return subscribeQaioEvents((ev) => {
+      if (ev.type === "ProviderLoginComplete") {
+        setLoginPending(null);
+        void loadStatuses();
+      }
+    });
+  }, [loadStatuses]);
+
+  const handleCancel = useCallback(async (providerId: string) => {
+    try {
+      await tauriProvider.cancelLogin(providerId);
+    } catch {
+      // Cancel is best-effort; the event will clear pending state anyway.
+    }
+  }, []);
+
+  const handleLaunchLogin = useCallback(async (providerId: string) => {
+    setLoginPending(providerId);
+    try {
+      await tauriProvider.launchLogin(providerId);
+    } catch (err) {
+      setLoginPending(null);
+      const msg = err instanceof Error ? err.message : String(err);
+      showErrorToast("launch_provider_login", msg);
+    }
+  }, []);
+
   const handleRefresh = async () => {
     setLoading(true);
     await loadStatuses();
@@ -79,6 +112,7 @@ export function ProviderPicker({ value, model: controlledModel, onSelect }: Prop
             <ProviderCard
               key={prov.id}
               provider={prov} connected={connected} selected={isSelected} expanded={isExpanded}
+              loginPending={loginPending === prov.id}
               selectedModel={models[prov.id] ?? prov.defaultModel}
               onModelChange={(m) => {
                 setModels((prev) => ({ ...prev, [prov.id]: m }));
@@ -87,6 +121,7 @@ export function ProviderPicker({ value, model: controlledModel, onSelect }: Prop
               onSelect={() => onSelect(prov.id, models[prov.id] ?? prov.defaultModel)}
               onSignedOut={async () => { await loadStatuses(); setExpanded(prov.id); }}
               onExpand={() => setExpanded(connected ? null : isExpanded ? null : prov.id)}
+              onCancel={() => void handleCancel(prov.id)}
             />
           );
         })}
@@ -98,7 +133,10 @@ export function ProviderPicker({ value, model: controlledModel, onSelect }: Prop
           provider={PROVIDERS.find((p) => p.id === expanded)!}
           status={statuses[expanded]}
           isSelected={value === expanded}
+          loginPending={loginPending === expanded}
           onRefresh={handleRefresh}
+          onLaunchLogin={() => void handleLaunchLogin(expanded)}
+          onCancel={() => void handleCancel(expanded)}
         />
       )}
     </div>
