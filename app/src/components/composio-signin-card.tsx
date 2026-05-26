@@ -10,13 +10,12 @@ const COMPOSIO_LOGO =
 
 /**
  * Inline card the agent posts when its Composio call fails because the
- * user isn't signed into Composio at all (no token, not just a missing
- * per-toolkit connection). Mirrors `ComposioLinkCard` visually so the
- * agent can hand the user a one-click sign-in directly in chat instead
- * of telling them to "go to settings".
+ * user isn't signed into Composio at all. Mirrors `ComposioLinkCard`
+ * visually so the agent can hand the user a one-click sign-in directly
+ * in chat.
  *
- * Reflects live `useConnections()` state — flips to a green "Connected"
- * pill the moment auth completes.
+ * Reflects live `useConnections()` state, flipping to a green
+ * "Connected" pill the moment auth completes.
  */
 export function ComposioSigninCard() {
   const { t } = useTranslation("chat");
@@ -31,7 +30,7 @@ export function ComposioSigninCard() {
 
   return (
     <span className="not-prose inline-flex my-1 max-w-full align-middle">
-      <span className="inline-flex items-center gap-3 px-3 py-2.5 rounded-xl border border-black/5 bg-background min-w-0">
+      <span className="inline-flex items-center gap-3 px-3 py-2.5 rounded-xl border border-border/60 bg-card min-w-0">
         <img
           src={COMPOSIO_LOGO}
           alt={t("composioSignin.appName")}
@@ -57,7 +56,7 @@ export function ComposioSigninCard() {
             type="button"
             onClick={handleSignIn}
             disabled={auth.state.phase === "waiting"}
-            className="inline-flex items-center gap-1 h-7 px-2.5 rounded-full border border-border bg-foreground text-background text-xs font-medium hover:opacity-90 transition-opacity duration-200 disabled:opacity-50 shrink-0"
+            className="inline-flex items-center gap-1 h-7 px-2.5 rounded-full bg-foreground text-background text-xs font-medium hover:bg-foreground/90 transition-colors duration-200 disabled:opacity-50 shrink-0"
           >
             {auth.state.phase === "waiting" ? (
               <Loader2 className="size-3 animate-spin" />
@@ -81,10 +80,7 @@ export function ComposioSigninCard() {
 
 /**
  * Detects URLs the agent posts to request Composio account sign-in.
- * Pattern: any URL with `#qaio_composio_signin=1` (or just the
- * marker present) in the hash fragment. Mirrors
- * `parseComposioToolkitFromHref` so both card types share the same
- * mental model.
+ * Pattern: any URL with `#qaio_composio_signin=1` in the hash fragment.
  */
 export function isComposioSigninHref(href: string): boolean {
   try {

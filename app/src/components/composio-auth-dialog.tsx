@@ -12,9 +12,9 @@ interface ComposioAuthDialogProps {
 }
 
 /**
- * Sign-in dialog for Composio. Always shows the login URL as a
- * clickable button as soon as `state.loginUrl` is set, so the user
- * can always manually open it even if the auto-open failed.
+ * Sign-in dialog for Composio. Shows a spinner while waiting for the
+ * user to approve in the browser, an error state if something fails,
+ * and a manual "Open in browser" fallback link.
  */
 export function ComposioAuthDialog({
   state,
@@ -37,30 +37,32 @@ export function ComposioAuthDialog({
           </DialogDescription>
         </DialogHeader>
 
-        {state.phase === "waiting" && (
-          <div className="flex items-center gap-3 py-2">
-            <Loader2 className="size-4 text-muted-foreground animate-spin shrink-0" />
-            <p className="text-sm text-muted-foreground">
-              {t("authDialog.waiting")}
-            </p>
-          </div>
-        )}
+        <div className="space-y-3 py-1">
+          {state.phase === "waiting" && (
+            <div className="flex items-center gap-3 rounded-lg bg-secondary/50 px-4 py-3">
+              <Loader2 className="size-4 text-muted-foreground animate-spin shrink-0" />
+              <p className="text-sm text-muted-foreground">
+                {t("authDialog.waiting")}
+              </p>
+            </div>
+          )}
 
-        {state.phase === "error" && state.error && (
-          <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">
-            {state.error}
-          </p>
-        )}
+          {state.phase === "error" && state.error && (
+            <div className="rounded-lg bg-destructive/5 border border-destructive/20 px-4 py-3">
+              <p className="text-sm text-destructive">{state.error}</p>
+            </div>
+          )}
 
-        {state.loginUrl && (
-          <button
-            onClick={onReopenBrowser}
-            className="inline-flex items-center gap-1.5 h-9 px-4 rounded-full border border-border bg-background text-foreground text-sm font-medium hover:bg-secondary transition-colors duration-200 self-start"
-          >
-            {t("authDialog.openInBrowser")}
-            <ExternalLink className="size-3.5" />
-          </button>
-        )}
+          {state.loginUrl && (
+            <button
+              onClick={onReopenBrowser}
+              className="inline-flex items-center gap-1.5 h-9 px-4 rounded-full border border-border bg-background text-foreground text-sm font-medium hover:bg-secondary transition-colors duration-200"
+            >
+              {t("authDialog.openInBrowser")}
+              <ExternalLink className="size-3.5" />
+            </button>
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );

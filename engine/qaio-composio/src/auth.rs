@@ -93,11 +93,8 @@ pub async fn begin_oauth_flow() -> Result<(), String> {
         });
     }
 
-    // Open browser
-    std::process::Command::new("open")
-        .arg(&auth_url)
-        .spawn()
-        .map_err(|e| format!("Failed to open browser: {e}"))?;
+    // Open browser (cross-platform)
+    open_browser_url(&auth_url)?;
 
     tracing::info!("[composio:auth] Waiting for OAuth callback on port {CALLBACK_PORT}…");
 
@@ -132,10 +129,7 @@ pub async fn begin_oauth_flow() -> Result<(), String> {
 pub fn reopen_oauth_browser() -> Result<(), String> {
     let pending = PENDING.lock().unwrap();
     let p = pending.as_ref().ok_or("No pending OAuth flow")?;
-    std::process::Command::new("open")
-        .arg(&p.auth_url)
-        .spawn()
-        .map_err(|e| format!("Failed to open browser: {e}"))?;
+    open_browser_url(&p.auth_url)?;
     Ok(())
 }
 
@@ -820,6 +814,35 @@ fn update_keychain_token(
     );
 
     write_keychain(&username, &data)
+}
+
+// -- Cross-platform browser open --
+
+/// Open a URL in the user's default browser. Uses `open` on macOS,
+/// `cmd /c start` on Windows, and `xdg-open` on Linux.
+fn open_browser_url(url: &str) -> Result<(), String> {
+    #[cfg(target_os = "macos")]
+    {
+        std::process::Command::new("open")
+            .arg(url)
+            .spawn()
+            .map_err(|e| format!("Failed to open browser: {e}"))?;
+    }
+    #[cfg(target_os = "windows")]
+    {
+        std::process::Command::new("cmd")
+            .args(["/c", "start", "", url])
+            .spawn()
+            .map_err(|e| format!("Failed to open browser: {e}"))?;
+    }
+    #[cfg(target_os = "linux")]
+    {
+        std::process::Command::new("xdg-open")
+            .arg(url)
+            .spawn()
+            .map_err(|e| format!("Failed to open browser: {e}"))?;
+    }
+    Ok(())
 }
 
 // -- Keychain helpers --
