@@ -1,4 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { ConfirmDialog } from "@qaio-ai/core";
 import {
   useConnections,
   useConnectedToolkits,
@@ -23,11 +25,14 @@ interface IntegrationsViewProps {
 }
 
 export function IntegrationsView({ title }: IntegrationsViewProps) {
+  const { t } = useTranslation("integrations");
   const { data: result, isLoading: loading, refetch } = useConnections();
   const reset = useResetConnections();
   const auth = useComposioAuth(() => reset());
   const [installing, setInstalling] = useState(false);
   const [installError, setInstallError] = useState<string | null>(null);
+  const [showSignOut, setShowSignOut] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
 
   const isSignedIn = result?.status === "ok";
   const { data: connectedList } = useConnectedToolkits(isSignedIn);
@@ -39,6 +44,17 @@ export function IntegrationsView({ title }: IntegrationsViewProps) {
   const handleManage = useCallback(() => {
     tauriSystem.openUrl(COMPOSIO_DASHBOARD_URL);
   }, []);
+
+  const handleSignOut = useCallback(async () => {
+    setSigningOut(true);
+    try {
+      await tauriConnections.logout();
+      await reset();
+    } finally {
+      setSigningOut(false);
+      setShowSignOut(false);
+    }
+  }, [reset]);
 
   const handleInstall = useCallback(async () => {
     setInstalling(true);
@@ -88,11 +104,30 @@ export function IntegrationsView({ title }: IntegrationsViewProps) {
 
         {!loading && result?.status === "ok" && (
           <>
+            <div className="flex items-center justify-end mb-4">
+              <button
+                type="button"
+                className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground transition-colors disabled:opacity-50"
+                disabled={signingOut}
+                onClick={() => setShowSignOut(true)}
+              >
+                {signingOut ? t("signOut.loading") : t("signOut.button")}
+              </button>
+            </div>
             <ConnectedAppsSection connectedToolkits={connectedSet} />
             <BrowseAppsSection connectedToolkits={connectedSet} />
           </>
         )}
       </div>
+
+      <ConfirmDialog
+        open={showSignOut}
+        onOpenChange={setShowSignOut}
+        title={t("signOut.confirmTitle")}
+        description={t("signOut.confirmBody")}
+        confirmLabel={t("signOut.confirmAction")}
+        onConfirm={handleSignOut}
+      />
 
       <ComposioAuthDialog
         state={auth.state}

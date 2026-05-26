@@ -43,6 +43,13 @@
     "waiting": "Aguardando sua aprovação no navegador…",
     "openInBrowser": "Abrir link no navegador"
   },
+  "signOut": {
+    "button": "Sair do provedor",
+    "loading": "Saindo…",
+    "confirmTitle": "Sair do provedor de integrações?",
+    "confirmBody": "Isso vai desconectar sua sessão. Você pode entrar de novo a qualquer momento, mas seu agente não vai poder usar os apps conectados até que você faça isso.",
+    "confirmAction": "Sair"
+  },
   "linkCard": {
     "integration": "Integração de app",
     "alreadyConnected": "Já conectado",
