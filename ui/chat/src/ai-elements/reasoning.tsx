@@ -6,7 +6,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@qaio-ai/core";
-import { cn } from "@qaio-ai/core";
+import { cn, ErrorBoundary } from "@qaio-ai/core";
 import { cjk } from "@streamdown/cjk";
 import { code } from "@streamdown/code";
 import { math } from "@streamdown/math";
@@ -216,7 +216,13 @@ export const ReasoningContent = memo(
       )}
       {...props}
     >
-      <Streamdown plugins={streamdownPlugins}>{children}</Streamdown>
+      <ErrorBoundary
+        fallback={
+          <div className="whitespace-pre-wrap break-words">{children}</div>
+        }
+      >
+        <Streamdown plugins={streamdownPlugins}>{children}</Streamdown>
+      </ErrorBoundary>
     </CollapsibleContent>
   )
 );
