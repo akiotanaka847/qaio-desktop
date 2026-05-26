@@ -387,6 +387,7 @@ export const tauriConnections = {
   isCliInstalled: () =>
     call<boolean>("is_composio_cli_installed", () => getEngine().composioCliInstalled()),
   installCli: () => call<void>("install_composio_cli", () => getEngine().composioInstallCli()),
+  logout: () => call<void>("logout_composio", () => getEngine().composioLogout()),
 };
 
 // ─── Project files (browser) ──────────────────────────────────────────

@@ -51,3 +51,8 @@ pub async fn list_composio_apps() -> Vec<crate::apps::ComposioAppEntry> {
 pub async fn list_composio_connected_toolkits() -> Vec<String> {
     normalize_toolkit_slugs(cli::list_connected_toolkits().await)
 }
+
+/// Log out of Composio (clear local session).
+pub async fn logout_composio() -> Result<(), String> {
+    cli::logout().await
+}

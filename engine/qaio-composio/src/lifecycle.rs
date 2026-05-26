@@ -18,7 +18,7 @@
 //! Emits `QaioEvent::ComposioCliReady` on success so the frontend
 //! invalidates the connections query and the integrations tab refreshes.
 
-use crate::install;
+use crate::{cli, install};
 use qaio_db::db::Database;
 use qaio_ui_events::{DynEventSink, QaioEvent};
 
@@ -26,12 +26,44 @@ use qaio_ui_events::{DynEventSink, QaioEvent};
 /// ensured the standalone CLI. Skipped entirely for bundled builds.
 const PREF_CLI_VERSION: &str = "composio_cli_qaio_version";
 
+/// Preferences key for the one-time forced logout migration. Clears
+/// stale Composio state left by older Qaio versions with the buggy
+/// CLI JSON-parsing.
+const PREF_FORCED_LOGOUT_V2: &str = "composio_forced_logout_v2";
+
 /// Current Qaio version (read from Cargo.toml at compile time).
 const APP_VERSION: &str = env!("CARGO_PKG_VERSION");
+
+/// One-time migration: force-logout to clear stale Composio state.
+/// Runs once per install, gated by a preference marker.
+pub async fn forced_logout(db: &Database) {
+    let already_done = db
+        .get_preference(PREF_FORCED_LOGOUT_V2)
+        .await
+        .ok()
+        .flatten()
+        .unwrap_or_default();
+
+    if already_done == "1" {
+        return;
+    }
+
+    tracing::info!("[composio:lifecycle] running one-time forced logout (v2 migration)");
+    if let Err(e) = cli::logout().await {
+        tracing::warn!("[composio:lifecycle] forced logout failed (non-fatal): {e}");
+    }
+
+    if let Err(e) = db.set_preference(PREF_FORCED_LOGOUT_V2, "1").await {
+        tracing::warn!("[composio:lifecycle] failed to persist forced-logout marker: {e}");
+    }
+}
 
 /// Run the full lifecycle check: install if missing, upgrade if Qaio
 /// version changed. Emits events so the frontend reacts.
 pub async fn ensure_and_upgrade(sink: DynEventSink, db: Database) {
+    // Run forced logout migration before anything else.
+    forced_logout(&db).await;
+
     if install::is_bundled() {
         tracing::info!(
             "[composio:lifecycle] bundled CLI detected at {} — skipping install/upgrade",

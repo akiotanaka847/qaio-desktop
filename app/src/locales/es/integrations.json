@@ -43,6 +43,13 @@
     "waiting": "Esperando tu aprobación en el navegador…",
     "openInBrowser": "Abrir enlace en el navegador"
   },
+  "signOut": {
+    "button": "Cerrar sesión del proveedor",
+    "loading": "Cerrando sesión…",
+    "confirmTitle": "¿Cerrar sesión del proveedor de integraciones?",
+    "confirmBody": "Esto desconectará tu sesión. Puedes volver a iniciar sesión en cualquier momento, pero tu agente no podrá usar las apps conectadas hasta que lo hagas.",
+    "confirmAction": "Cerrar sesión"
+  },
   "linkCard": {
     "integration": "Integración de app",
     "alreadyConnected": "Ya está conectado",

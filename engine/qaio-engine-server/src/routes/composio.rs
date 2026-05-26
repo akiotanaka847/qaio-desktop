@@ -32,6 +32,7 @@ pub fn router() -> Router<Arc<ServerState>> {
             get(list_connections).post(connect_app),
         )
         .route("/composio/connections/watch", post(watch_connection))
+        .route("/composio/logout", post(logout))
 }
 
 #[derive(Serialize)]
@@ -104,6 +105,10 @@ async fn connect_app(
         .await
         .map(Json)
         .map_err(lift)
+}
+
+async fn logout(State(_st): State<Arc<ServerState>>) -> Result<(), ApiError> {
+    inner::logout_composio().await.map_err(lift)
 }
 
 /// Start an engine-side watch for `toolkit` to land in the consumer

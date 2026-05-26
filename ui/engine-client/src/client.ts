@@ -667,6 +667,10 @@ export class QaioClient {
     return this.request("POST", "/composio/connections/watch", { toolkit });
   }
 
+  composioLogout(): Promise<void> {
+    return this.request("POST", "/composio/logout");
+  }
+
   // ---------- WebSocket access (see ws.ts) ----------
 
   wsUrl(): string {

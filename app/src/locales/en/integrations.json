@@ -43,6 +43,13 @@
     "waiting": "Waiting for you to approve in the browser…",
     "openInBrowser": "Open link in browser"
   },
+  "signOut": {
+    "button": "Sign out of provider",
+    "loading": "Signing out…",
+    "confirmTitle": "Sign out of integrations provider?",
+    "confirmBody": "This will disconnect your session. You can sign back in at any time, but your agent won't be able to use connected apps until you do.",
+    "confirmAction": "Sign out"
+  },
   "linkCard": {
     "integration": "App integration",
     "alreadyConnected": "Already connected",
