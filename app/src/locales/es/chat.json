@@ -52,7 +52,22 @@
   "modelSelector": {
     "selectModel": "Elige un modelo",
     "model": "Modelo",
-    "notConnected": "Sin conexión"
+    "notConnected": "Sin conexión",
+    "effort": "Esfuerzo",
+    "effortLevels": {
+      "low": "Bajo",
+      "medium": "Medio",
+      "high": "Alto",
+      "xhigh": "Extra alto",
+      "max": "Máximo"
+    },
+    "effortDescriptions": {
+      "low": "Respuestas más rápidas, menos detalladas",
+      "medium": "Equilibrio entre velocidad y calidad",
+      "high": "Respuestas más detalladas, más lentas",
+      "xhigh": "Razonamiento muy detallado",
+      "max": "Máxima profundidad de razonamiento"
+    }
   },
   "reasoning": {
     "thinking": "Pensando...",

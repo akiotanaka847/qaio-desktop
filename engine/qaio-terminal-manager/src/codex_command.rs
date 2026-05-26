@@ -8,6 +8,7 @@ pub(crate) fn build_args(
     resume_session_id: Option<&str>,
     working_dir: Option<&Path>,
     model: Option<&str>,
+    effort: Option<&str>,
     system_prompt: Option<&str>,
 ) -> Vec<OsString> {
     let mut args = vec![
@@ -26,6 +27,12 @@ pub(crate) fn build_args(
     if let Some(m) = model {
         args.push(OsString::from("--model"));
         args.push(OsString::from(m));
+    }
+
+    // Codex uses `--reasoning-effort` (not `--effort` like Claude).
+    if let Some(e) = effort {
+        args.push(OsString::from("--reasoning-effort"));
+        args.push(OsString::from(e));
     }
 
     if let Some(dir) = working_dir {
@@ -67,6 +74,7 @@ mod tests {
             Some("019dd59b-5e8c-7f63-a8c6-18fb825874ad"),
             Some(&dir),
             Some("gpt-5.4"),
+            None,
             Some("system"),
         ));
 
@@ -82,10 +90,27 @@ mod tests {
 
     #[test]
     fn fresh_args_read_prompt_from_stdin() {
-        let args = strings(build_args(None, None, None, None));
+        let args = strings(build_args(None, None, None, None, None));
 
         assert_eq!(args.last().map(String::as_str), Some("-"));
         assert!(!args.iter().any(|arg| arg == "resume"));
+    }
+
+    #[test]
+    fn effort_flag_placed_before_resume() {
+        let dir = PathBuf::from("/tmp/work");
+        let args = strings(build_args(
+            Some("sess-id"),
+            Some(&dir),
+            Some("gpt-5.4"),
+            Some("high"),
+            None,
+        ));
+
+        let effort_pos = args.iter().position(|arg| arg == "--reasoning-effort").unwrap();
+        let resume_pos = args.iter().position(|arg| arg == "resume").unwrap();
+        assert!(effort_pos < resume_pos);
+        assert_eq!(args[effort_pos + 1], "high");
     }
 
     #[test]

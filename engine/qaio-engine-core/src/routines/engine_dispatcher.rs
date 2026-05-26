@@ -60,6 +60,7 @@ impl RoutineDispatcher for EngineRoutineDispatcher {
         };
 
         let resolved = sessions::resolve_provider(&self.paths, ctx.working_dir);
+        let effort = sessions::resolve_effort(ctx.working_dir, resolved.provider);
         let agent_key = format!(
             "{}:{}:{}",
             ctx.working_dir.to_string_lossy(),
@@ -96,6 +97,7 @@ impl RoutineDispatcher for EngineRoutineDispatcher {
             Some(self.rt.pid_map.clone()),
             resolved.provider,
             resolved.model,
+            effort,
         );
 
         match join_handle.await {
