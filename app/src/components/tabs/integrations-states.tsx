@@ -1,9 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { ExternalLink, Download, Loader2 } from "lucide-react";
-import {
-  Empty, EmptyHeader, EmptyTitle, EmptyDescription,
-} from "@qaio-ai/core";
+import { ExternalLink, Download, Loader2, RefreshCw, AlertCircle } from "lucide-react";
 import { QaioLogo } from "../shell/experience-card";
 
 export function LoadingState() {
@@ -11,7 +8,6 @@ export function LoadingState() {
   const barRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Next frame: flip width to 100% so the transition actually animates.
     const raf = requestAnimationFrame(() => {
       if (barRef.current) barRef.current.style.width = "100%";
     });
@@ -19,30 +15,27 @@ export function LoadingState() {
   }, []);
 
   return (
-    <Empty className="border-0">
-      <QaioLogo size={48} className="mb-2 animate-pulse" />
-      <EmptyHeader>
-        <EmptyTitle>{t("loading.title")}</EmptyTitle>
-        <EmptyDescription>
+    <div className="flex flex-col items-center justify-center py-20 gap-5">
+      <QaioLogo size={40} className="animate-pulse" />
+      <div className="space-y-1.5 text-center">
+        <h2 className="text-sm font-semibold text-foreground">
+          {t("loading.title")}
+        </h2>
+        <p className="text-xs text-muted-foreground">
           {t("loading.body")}
-        </EmptyDescription>
-      </EmptyHeader>
-      <div className="w-48 h-[2px] rounded-full bg-black/10 overflow-hidden">
+        </p>
+      </div>
+      <div className="w-40 h-[2px] rounded-full bg-border overflow-hidden">
         <div
           ref={barRef}
-          className="h-full bg-black rounded-full"
+          className="h-full bg-foreground/40 rounded-full"
           style={{ width: "0%", transition: "width 5s linear" }}
         />
       </div>
-    </Empty>
+    </div>
   );
 }
 
-/**
- * Composio CLI is not installed yet. Ask the user to install it.
- * The install step is a one-time ~80 MB download from Composio's
- * official installer, Qaio shells out to it under the hood.
- */
 export function NotInstalledState({
   onInstall,
   installing,
@@ -52,51 +45,65 @@ export function NotInstalledState({
 }) {
   const { t } = useTranslation("integrations");
   return (
-    <Empty className="border-0">
-      <EmptyHeader>
-        <EmptyTitle>{t("notInstalled.title")}</EmptyTitle>
-        <EmptyDescription>
-          {t("notInstalled.body")}
-        </EmptyDescription>
-      </EmptyHeader>
-      <button
-        onClick={onInstall}
-        disabled={installing}
-        className="inline-flex items-center gap-1.5 h-7 px-3 rounded-full bg-primary text-primary-foreground text-xs font-medium hover:bg-primary/90 transition-colors duration-200 disabled:opacity-60"
-      >
-        {installing ? (
-          <>
-            <Loader2 className="size-3 animate-spin" />
-            {t("notInstalled.installing")}
-          </>
-        ) : (
-          <>
-            <Download className="size-3" />
-            {t("notInstalled.install")}
-          </>
-        )}
-      </button>
-    </Empty>
+    <div className="rounded-xl border border-border/60 bg-card p-6">
+      <div className="flex flex-col items-center text-center gap-4 py-6">
+        <div className="size-12 rounded-2xl bg-accent/10 flex items-center justify-center">
+          <Download className="size-5 text-accent" />
+        </div>
+        <div className="space-y-1.5 max-w-md">
+          <h2 className="text-sm font-semibold text-foreground">
+            {t("notInstalled.title")}
+          </h2>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            {t("notInstalled.body")}
+          </p>
+        </div>
+        <button
+          onClick={onInstall}
+          disabled={installing}
+          className="inline-flex items-center gap-1.5 h-8 px-4 rounded-full bg-foreground text-background text-xs font-medium hover:bg-foreground/90 transition-colors duration-200 disabled:opacity-60"
+        >
+          {installing ? (
+            <>
+              <Loader2 className="size-3 animate-spin" />
+              {t("notInstalled.installing")}
+            </>
+          ) : (
+            <>
+              <Download className="size-3" />
+              {t("notInstalled.install")}
+            </>
+          )}
+        </button>
+      </div>
+    </div>
   );
 }
 
 export function NeedsAuthState({ onAuth }: { onAuth: () => void }) {
   const { t } = useTranslation("integrations");
   return (
-    <Empty className="border-0">
-      <EmptyHeader>
-        <EmptyTitle>{t("needsAuth.title")}</EmptyTitle>
-        <EmptyDescription>
-          {t("needsAuth.body")}
-        </EmptyDescription>
-      </EmptyHeader>
-      <button
-        onClick={onAuth}
-        className="inline-flex items-center gap-1 h-7 px-3 rounded-full bg-primary text-primary-foreground text-xs font-medium hover:bg-primary/90 transition-colors duration-200"
-      >
-        {t("needsAuth.signIn")}
-      </button>
-    </Empty>
+    <div className="rounded-xl border border-border/60 bg-card p-6">
+      <div className="flex flex-col items-center text-center gap-4 py-6">
+        <div className="size-12 rounded-2xl bg-accent/10 flex items-center justify-center">
+          <ExternalLink className="size-5 text-accent" />
+        </div>
+        <div className="space-y-1.5 max-w-md">
+          <h2 className="text-sm font-semibold text-foreground">
+            {t("needsAuth.title")}
+          </h2>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            {t("needsAuth.body")}
+          </p>
+        </div>
+        <button
+          onClick={onAuth}
+          className="inline-flex items-center gap-1.5 h-8 px-4 rounded-full bg-foreground text-background text-xs font-medium hover:bg-foreground/90 transition-colors duration-200"
+        >
+          {t("needsAuth.signIn")}
+        </button>
+      </div>
+    </div>
   );
 }
 
@@ -111,27 +118,33 @@ export function ErrorState({
 }) {
   const { t } = useTranslation("integrations");
   return (
-    <div className="flex flex-col items-center justify-center py-24 gap-4">
-      <div className="space-y-2 text-center max-w-md">
-        <h1 className="text-2xl font-semibold text-foreground tracking-tight">
-          {t("error.title")}
-        </h1>
-        <p className="text-sm text-muted-foreground">{message}</p>
-      </div>
-      <div className="flex items-center gap-2">
-        <button
-          onClick={onRetry}
-          className="inline-flex items-center gap-1 h-7 px-3 rounded-full bg-primary text-primary-foreground text-xs font-medium hover:bg-primary/90 transition-colors duration-200"
-        >
-          {t("error.retry")}
-        </button>
-        <button
-          onClick={onReconnect}
-          className="inline-flex items-center gap-1 h-7 px-3 rounded-full border border-border bg-background text-foreground text-xs font-medium hover:bg-secondary transition-colors duration-200"
-        >
-          {t("error.openDashboard")}
-          <ExternalLink className="size-3" />
-        </button>
+    <div className="rounded-xl border border-destructive/20 bg-card p-6">
+      <div className="flex flex-col items-center text-center gap-4 py-6">
+        <div className="size-12 rounded-2xl bg-destructive/10 flex items-center justify-center">
+          <AlertCircle className="size-5 text-destructive" />
+        </div>
+        <div className="space-y-1.5 max-w-md">
+          <h2 className="text-sm font-semibold text-foreground">
+            {t("error.title")}
+          </h2>
+          <p className="text-xs text-muted-foreground">{message}</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={onRetry}
+            className="inline-flex items-center gap-1.5 h-8 px-4 rounded-full bg-foreground text-background text-xs font-medium hover:bg-foreground/90 transition-colors duration-200"
+          >
+            <RefreshCw className="size-3" />
+            {t("error.retry")}
+          </button>
+          <button
+            onClick={onReconnect}
+            className="inline-flex items-center gap-1 h-8 px-4 rounded-full border border-border bg-background text-foreground text-xs font-medium hover:bg-secondary transition-colors duration-200"
+          >
+            {t("error.openDashboard")}
+            <ExternalLink className="size-3" />
+          </button>
+        </div>
       </div>
     </div>
   );

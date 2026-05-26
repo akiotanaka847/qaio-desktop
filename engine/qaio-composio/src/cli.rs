@@ -22,6 +22,20 @@ use tokio::process::Command;
 
 use crate::install;
 
+/// Extract the first JSON object from CLI stdout.
+///
+/// The Composio CLI sometimes prints non-JSON banners before the actual
+/// payload (e.g. "Update available: 0.2.27 → 0.2.30\n  Run composio
+/// upgrade to update\n\n{...}"). This helper finds the first `{` and
+/// returns the slice from there to the end, so `serde_json::from_str`
+/// can parse it without choking on the prefix.
+fn extract_json_object(raw: &str) -> &str {
+    match raw.find('{') {
+        Some(idx) => &raw[idx..],
+        None => raw,
+    }
+}
+
 // -- Public types (shared shape with the legacy `composio.rs` to keep
 //    the frontend types stable while the backend is swapped). --
 
@@ -144,7 +158,8 @@ pub async fn start_login() -> Result<StartLoginResponse, String> {
         cli_key: String,
     }
 
-    let payload: Payload = serde_json::from_str(result.trim()).map_err(|e| {
+    let json_str = extract_json_object(result.trim());
+    let payload: Payload = serde_json::from_str(json_str).map_err(|e| {
         format!(
             "Unexpected composio login --no-wait output: {e}\nstdout: {}",
             result.trim()
@@ -235,7 +250,8 @@ pub async fn start_link(toolkit: &str) -> Result<StartLinkResponse, String> {
         toolkit: String,
     }
 
-    let payload: Payload = serde_json::from_str(stdout_trimmed).map_err(|e| {
+    let json_str = extract_json_object(stdout_trimmed);
+    let payload: Payload = serde_json::from_str(json_str).map_err(|e| {
         format!(
             "Unexpected composio link --no-wait output: {e}\nstdout was: {stdout_trimmed}"
         )
@@ -289,7 +305,8 @@ async fn whoami() -> Result<Option<WhoamiResponse>, String> {
     if stdout.is_empty() {
         return Ok(None);
     }
-    match serde_json::from_str::<WhoamiResponse>(&stdout) {
+    let json_str = extract_json_object(&stdout);
+    match serde_json::from_str::<WhoamiResponse>(json_str) {
         Ok(info) => Ok(Some(info)),
         Err(e) => Err(format!(
             "composio whoami returned unparseable JSON: {e}\nstdout: {stdout}"
@@ -495,4 +512,35 @@ async fn list_connected_toolkits_inner() -> Result<Vec<String>, String> {
         .map_err(|e| format!("Failed to parse connected toolkits: {e}"))?;
 
     Ok(result.toolkits)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn extract_json_object_clean_input() {
+        let raw = r#"{"login_url":"https://example.com","cli_key":"abc"}"#;
+        assert_eq!(extract_json_object(raw), raw);
+    }
+
+    #[test]
+    fn extract_json_object_with_update_banner() {
+        let raw = "Update available: 0.2.27 → 0.2.30\n  Run composio upgrade to update\n\n{\"login_url\":\"https://example.com\",\"cli_key\":\"abc\"}";
+        assert_eq!(
+            extract_json_object(raw),
+            r#"{"login_url":"https://example.com","cli_key":"abc"}"#
+        );
+    }
+
+    #[test]
+    fn extract_json_object_no_brace() {
+        let raw = "No JSON here at all";
+        assert_eq!(extract_json_object(raw), raw);
+    }
+
+    #[test]
+    fn extract_json_object_empty() {
+        assert_eq!(extract_json_object(""), "");
+    }
 }
