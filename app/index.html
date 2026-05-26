@@ -4,6 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Qaio</title>
+    <!-- Classic (non-module) script. `defer` so it runs AFTER #root is parsed,
+         yet before the deferred app bundle. Shows a clear message instead of a
+         white screen when the system WebView is too old. Served verbatim from
+         public/. -->
+    <script defer src="/compat-gate.js"></script>
   </head>
   <body>
     <div id="root"></div>
