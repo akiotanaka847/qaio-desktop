@@ -3,6 +3,8 @@ import { useTranslation } from "react-i18next";
 import { Loader2 } from "lucide-react";
 import { Button } from "@qaio-ai/core";
 import { tauriProvider, type ProviderStatus } from "../../../lib/tauri";
+import { subscribeQaioEvents } from "../../../lib/events";
+import { showErrorToast } from "../../../lib/error-toast";
 import { PROVIDERS } from "../../../lib/providers";
 import { BrainProviderCard } from "./brain-provider-card";
 
@@ -21,6 +23,7 @@ export function BrainMission({
   const [statuses, setStatuses] = useState<Record<string, ProviderStatus>>({});
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [loginPending, setLoginPending] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
     const results = await Promise.all(
@@ -47,6 +50,34 @@ export function BrainMission({
     return () => window.clearInterval(id);
   }, [provider, refresh, statuses]);
 
+  useEffect(() => {
+    return subscribeQaioEvents((ev) => {
+      if (ev.type === "ProviderLoginComplete") {
+        setLoginPending(null);
+        void refresh();
+      }
+    });
+  }, [refresh]);
+
+  const handleLaunchLogin = useCallback(async (providerId: string) => {
+    setLoginPending(providerId);
+    try {
+      await tauriProvider.launchLogin(providerId);
+    } catch (err) {
+      setLoginPending(null);
+      const msg = err instanceof Error ? err.message : String(err);
+      showErrorToast("launch_provider_login", msg);
+    }
+  }, []);
+
+  const handleCancelLogin = useCallback(async (providerId: string) => {
+    try {
+      await tauriProvider.cancelLogin(providerId);
+    } catch {
+      // best-effort
+    }
+  }, []);
+
   const selectedConnected =
     !!provider && !!statuses[provider]?.cli_installed && !!statuses[provider]?.authenticated;
 
@@ -70,8 +101,11 @@ export function BrainMission({
             status={statuses[prov.id]}
             loading={loading}
             selected={provider === prov.id}
+            loginPending={loginPending === prov.id}
             onSelect={(modelId) => onSelect(prov.id, modelId)}
             onRefresh={refresh}
+            onLaunchLogin={() => void handleLaunchLogin(prov.id)}
+            onCancelLogin={() => void handleCancelLogin(prov.id)}
             costLabel={prov.cost}
           />
         ))}

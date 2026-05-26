@@ -11,11 +11,13 @@ use qaio_terminal_manager::provider_auth::{
     ProviderAuthState,
 };
 use qaio_terminal_manager::{claude_path, Provider};
+use qaio_ui_events::DynEventSink;
 use serde::{Deserialize, Serialize};
 use std::ffi::OsString;
 use std::path::PathBuf;
 use std::time::Duration;
 
+mod login_session;
 mod resolve;
 use resolve::{resolve_claude, resolve_codex, resolve_gemini};
 
@@ -72,43 +74,42 @@ pub async fn check_status(provider: Provider) -> CoreResult<ProviderStatus> {
 }
 
 /// Launch the provider's login flow in the background (opens the user's
-/// browser for OAuth). Returns immediately — the frontend polls
-/// `check_status` to observe completion.
-pub fn launch_login(provider: Provider) -> CoreResult<()> {
-    let command = login_command(provider)?;
+/// browser for OAuth). Returns immediately. The spawned watcher emits
+/// `ProviderLoginComplete` when the subprocess exits (naturally or via
+/// cancel), so the frontend no longer needs to poll for completion.
+///
+/// Starting a new login for the same provider auto-cancels the previous.
+pub async fn launch_login(provider: Provider, events: DynEventSink) -> CoreResult<()> {
+    let ProviderCliCommand {
+        cli_name,
+        path,
+        args,
+        shell_path,
+    } = login_command(provider)?;
 
-    tokio::spawn(async move {
-        let ProviderCliCommand {
-            cli_name,
-            path,
-            args,
-            shell_path,
-        } = command;
-        let result = tokio::time::timeout(
-            Duration::from_secs(120),
-            tokio::process::Command::new(&path)
-                .args(&args)
-                .env("PATH", shell_path)
-                .stdin(std::process::Stdio::null())
-                .stdout(std::process::Stdio::null())
-                .stderr(std::process::Stdio::null())
-                .kill_on_drop(true)
-                .status(),
-        )
-        .await;
+    let child = tokio::process::Command::new(&path)
+        .args(&args)
+        .env("PATH", shell_path)
+        .stdin(std::process::Stdio::null())
+        .stdout(std::process::Stdio::null())
+        .stderr(std::process::Stdio::null())
+        .kill_on_drop(true)
+        .spawn()
+        .map_err(|e| {
+            CoreError::Internal(format!("{cli_name} login failed to start: {e}"))
+        })?;
 
-        match result {
-            Ok(Ok(status)) => {
-                tracing::info!("[qaio:provider] {cli_name} login exited: {status}")
-            }
-            Ok(Err(e)) => tracing::warn!(
-                "[qaio:provider] {cli_name} login failed at {}: {e}",
-                path.display()
-            ),
-            Err(_) => tracing::warn!("[qaio:provider] {cli_name} login timed out after 120s"),
-        }
-    });
+    tracing::info!("[qaio:provider] {cli_name} login spawned (pid {:?})", child.id());
+    login_session::register(provider, child, events).await;
+    Ok(())
+}
 
+/// Cancel a pending login for the given provider. No-op if no login is
+/// active. The watcher emits `ProviderLoginComplete { cancelled: true }`.
+pub async fn cancel_login(provider: Provider) -> CoreResult<()> {
+    if !login_session::cancel(provider).await {
+        tracing::debug!("[qaio:provider] cancel_login: no active session for {provider}");
+    }
     Ok(())
 }
 

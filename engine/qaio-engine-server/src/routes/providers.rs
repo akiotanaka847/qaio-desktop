@@ -17,6 +17,7 @@ pub fn router() -> Router<Arc<ServerState>> {
     Router::new()
         .route("/providers/:name/status", get(status))
         .route("/providers/:name/login", post(login))
+        .route("/providers/:name/login/cancel", post(login_cancel))
         .route("/providers/:name/logout", post(logout))
 }
 
@@ -29,11 +30,21 @@ async fn status(
 }
 
 async fn login(
+    State(st): State<Arc<ServerState>>,
+    Path(name): Path<String>,
+) -> Result<(), ApiError> {
+    let p = provider::parse(&name)?;
+    let events = std::sync::Arc::new(st.events.clone()) as qaio_ui_events::DynEventSink;
+    provider::launch_login(p, events).await?;
+    Ok(())
+}
+
+async fn login_cancel(
     State(_st): State<Arc<ServerState>>,
     Path(name): Path<String>,
 ) -> Result<(), ApiError> {
     let p = provider::parse(&name)?;
-    provider::launch_login(p)?;
+    provider::cancel_login(p).await?;
     Ok(())
 }
 
