@@ -31,6 +31,8 @@ struct AgentConfig {
     provider: Option<String>,
     #[serde(default, alias = "claude_model")]
     model: Option<String>,
+    #[serde(default, alias = "claude_effort")]
+    effort: Option<String>,
 }
 
 /// Resolve the provider + model for an agent.
@@ -70,6 +72,32 @@ fn read_agent_config(agent_dir: &Path) -> Option<AgentConfig> {
         return None;
     }
     serde_json::from_str(&raw).ok()
+}
+
+/// Resolve the reasoning-effort level for an agent.
+///
+/// Reads the agent config's `effort` (or `claude_effort`) field, validates it
+/// against the provider's accepted levels, and falls back to the provider's
+/// default effort. Returns `None` for providers that don't support effort
+/// (e.g. Gemini).
+pub fn resolve_effort(agent_dir: &Path, provider: Provider) -> Option<String> {
+    let default = provider.default_effort().map(String::from);
+    let config = match read_agent_config(agent_dir) {
+        Some(c) => c,
+        None => return default,
+    };
+    let raw = match config.effort {
+        Some(e) if !e.is_empty() => e,
+        _ => return default,
+    };
+    if provider.is_valid_effort(&raw) {
+        Some(raw)
+    } else {
+        tracing::warn!(
+            "[sessions] agent effort \"{raw}\" is not valid for {provider}; falling back to default"
+        );
+        default
+    }
 }
 
 fn resolve_workspace(paths: &EnginePaths, agent_dir: &Path) -> ResolvedProvider {
@@ -152,6 +180,100 @@ mod tests {
         let r = resolve_provider(&paths, &agent);
         assert_eq!(r.provider, Provider::OpenAI);
         assert_eq!(r.model.as_deref(), Some("gpt-5"));
+    }
+
+    #[test]
+    fn resolve_effort_from_agent_config() {
+        let d = TempDir::new().unwrap();
+        let agent = d.path().join("ws").join("agent");
+        write_json(
+            &agent.join(".qaio/config/config.json"),
+            r#"{"effort":"high"}"#,
+        );
+        assert_eq!(
+            resolve_effort(&agent, Provider::Anthropic),
+            Some("high".to_string())
+        );
+    }
+
+    #[test]
+    fn resolve_effort_invalid_falls_back_to_default() {
+        let d = TempDir::new().unwrap();
+        let agent = d.path().join("ws").join("agent");
+        // "xhigh" is valid for OpenAI but not for Anthropic
+        write_json(
+            &agent.join(".qaio/config/config.json"),
+            r#"{"effort":"xhigh"}"#,
+        );
+        assert_eq!(
+            resolve_effort(&agent, Provider::Anthropic),
+            Some("medium".to_string())
+        );
+    }
+
+    #[test]
+    fn resolve_effort_codex_xhigh_accepted() {
+        let d = TempDir::new().unwrap();
+        let agent = d.path().join("ws").join("agent");
+        write_json(
+            &agent.join(".qaio/config/config.json"),
+            r#"{"effort":"xhigh"}"#,
+        );
+        assert_eq!(
+            resolve_effort(&agent, Provider::OpenAI),
+            Some("xhigh".to_string())
+        );
+    }
+
+    #[test]
+    fn resolve_effort_gemini_returns_none() {
+        let d = TempDir::new().unwrap();
+        let agent = d.path().join("ws").join("agent");
+        write_json(
+            &agent.join(".qaio/config/config.json"),
+            r#"{"effort":"high"}"#,
+        );
+        assert_eq!(resolve_effort(&agent, Provider::Gemini), None);
+    }
+
+    #[test]
+    fn resolve_effort_no_config_returns_default() {
+        let d = TempDir::new().unwrap();
+        let agent = d.path().join("ws").join("agent");
+        std::fs::create_dir_all(&agent).unwrap();
+        assert_eq!(
+            resolve_effort(&agent, Provider::Anthropic),
+            Some("medium".to_string())
+        );
+    }
+
+    #[test]
+    fn resolve_effort_claude_effort_alias() {
+        let d = TempDir::new().unwrap();
+        let agent = d.path().join("ws").join("agent");
+        write_json(
+            &agent.join(".qaio/config/config.json"),
+            r#"{"claude_effort":"max"}"#,
+        );
+        assert_eq!(
+            resolve_effort(&agent, Provider::Anthropic),
+            Some("max".to_string())
+        );
+    }
+
+    #[test]
+    fn resolve_effort_max_invalid_for_codex() {
+        let d = TempDir::new().unwrap();
+        let agent = d.path().join("ws").join("agent");
+        write_json(
+            &agent.join(".qaio/config/config.json"),
+            r#"{"effort":"max"}"#,
+        );
+        // "max" is not valid for OpenAI, falls back to default
+        assert_eq!(
+            resolve_effort(&agent, Provider::OpenAI),
+            Some("medium".to_string())
+        );
     }
 
     #[test]

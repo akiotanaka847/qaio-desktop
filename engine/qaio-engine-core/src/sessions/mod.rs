@@ -41,7 +41,7 @@ use qaio_ui_events::{DynEventSink, QaioEvent};
 use std::path::{Path, PathBuf};
 use workdir_locks::{WorkdirLocks, WorkdirSessionGuard};
 
-pub use provider::{resolve_provider, ResolvedProvider};
+pub use provider::{resolve_effort, resolve_provider, ResolvedProvider};
 
 /// Engine-owned session state. Cheap to clone.
 #[derive(Default, Clone)]
@@ -93,6 +93,8 @@ pub struct StartParams {
     /// [`resolve_provider`] first).
     pub provider: Provider,
     pub model: Option<String>,
+    /// Reasoning effort level. Validated against the provider's accepted levels.
+    pub effort: Option<String>,
 }
 
 /// Start a session turn. The request is accepted immediately. Turns with the
@@ -161,6 +163,7 @@ async fn run_start(
         source,
         provider,
         model,
+        effort,
     } = params;
 
     if !agent_dir.exists() {
@@ -218,11 +221,13 @@ async fn run_start(
     let resume_id = sid_handle.get().await;
 
     tracing::info!(
-        "[sessions] start agent_dir={} session_key={} resume_id={:?} provider={}",
+        "[sessions] start agent_dir={} session_key={} resume_id={:?} provider={} model={:?} effort={:?}",
         agent_dir.display(),
         session_key,
         resume_id,
         provider,
+        model,
+        effort,
     );
 
     let agent_path = agent_dir.to_string_lossy().to_string();
@@ -271,6 +276,7 @@ async fn run_start(
         Some(rt.pid_map.clone()),
         provider,
         model,
+        effort,
     );
 
     // Own the end-of-session activity flip engine-side. Before this, the
@@ -492,6 +498,7 @@ pub async fn start_onboarding(
     let product_prompt = format!("{app_system_prompt}{app_onboarding_prompt}");
 
     let resolved = resolve_provider(paths, &agent_dir);
+    let effort = resolve_effort(&agent_dir, resolved.provider);
 
     start(
         rt,
@@ -507,6 +514,7 @@ pub async fn start_onboarding(
             source: Some("desktop".into()),
             provider: resolved.provider,
             model: resolved.model,
+            effort,
         },
     )
     .await
@@ -573,6 +581,7 @@ mod tests {
                     source: Some("test".to_string()),
                     provider: Provider::OpenAI,
                     model: None,
+                    effort: None,
                 },
             ),
         )

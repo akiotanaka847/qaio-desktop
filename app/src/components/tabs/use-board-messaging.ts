@@ -27,6 +27,7 @@ interface UseBoardMessagingOptions {
   rawItems: Activity[] | undefined;
   chatProvider: string | null;
   chatModel: string | null;
+  chatEffort: string | null;
   pendingAgentMode: string | null;
   selectedSessionKey: string | null;
   effectiveLoading: Record<string, boolean>;
@@ -41,7 +42,7 @@ interface UseBoardMessagingOptions {
  */
 export function useBoardMessaging({
   path, agentId, agentName, agentColor, agentModes, rawItems,
-  chatProvider, chatModel, pendingAgentMode, selectedSessionKey,
+  chatProvider, chatModel, chatEffort, pendingAgentMode, selectedSessionKey,
   effectiveLoading, pushFeedItem, setLoading, setPendingAgentMode,
 }: UseBoardMessagingOptions) {
   const { t } = useTranslation("chat");
@@ -80,6 +81,7 @@ export function useBoardMessaging({
           promptFile: mode?.promptFile,
           providerOverride: chatProvider ?? undefined,
           modelOverride: chatModel ?? undefined,
+          effortOverride: chatEffort ?? undefined,
           titleText: visible,
           buildPrompt: async (activityId) => {
             const saved = await tauriAttachments.save(`activity-${activityId}`, files);
@@ -95,7 +97,7 @@ export function useBoardMessaging({
       analytics.track("mission_created", { agent_mode: agentMode ?? "default" });
       return conversationId;
     },
-    [path, agentId, agentName, agentColor, pushFeedItem, pendingAgentMode, agentModes, chatProvider, chatModel, queryClient, t, setLoading, setPendingAgentMode],
+    [path, agentId, agentName, agentColor, pushFeedItem, pendingAgentMode, agentModes, chatProvider, chatModel, chatEffort, queryClient, t, setLoading, setPendingAgentMode],
   );
 
   const sendMessageNow = useCallback(
@@ -113,6 +115,7 @@ export function useBoardMessaging({
           workingDirOverride: activity?.worktree_path ?? undefined,
           providerOverride: chatProvider ?? undefined,
           modelOverride: chatModel ?? undefined,
+          effortOverride: chatEffort ?? undefined,
         });
         pushFeedItem(path, sessionKey, { feed_type: "user_message", data: prompt });
         setLoading((prev) => ({ ...prev, [sessionKey]: true }));
@@ -125,7 +128,7 @@ export function useBoardMessaging({
         throw err;
       }
     },
-    [path, pushFeedItem, rawItems, agentModes, chatProvider, chatModel, t, setLoading],
+    [path, pushFeedItem, rawItems, agentModes, chatProvider, chatModel, chatEffort, t, setLoading],
   );
 
   const selectedSessionActive = selectedSessionKey

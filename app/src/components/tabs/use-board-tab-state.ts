@@ -106,7 +106,7 @@ export function useBoardTabState({ agent, agentDef }: TabProps) {
   const feed = useBoardFeed(path, rawItems);
   const messaging = useBoardMessaging({
     path, agentId: agent.id, agentName: agent.name, agentColor: agent.color,
-    agentModes, rawItems, chatProvider: panel.chatProvider, chatModel: panel.chatModel,
+    agentModes, rawItems, chatProvider: panel.chatProvider, chatModel: panel.chatModel, chatEffort: panel.chatEffort,
     pendingAgentMode, selectedSessionKey, effectiveLoading: feed.effectiveLoading,
     pushFeedItem: feed.pushFeedItem, setLoading: feed.setLoading, setPendingAgentMode,
   });

@@ -80,6 +80,7 @@ pub fn spawn_and_monitor(
     pid_map: Option<SessionPidMap>,
     provider: Provider,
     model: Option<String>,
+    effort: Option<String>,
 ) -> tokio::task::JoinHandle<SessionResult> {
     // Ensure the user's shell PATH is resolved before spawning.
     // OnceLock inside init() makes this a no-op after the first call.
@@ -94,7 +95,7 @@ pub fn spawn_and_monitor(
         resume_id,
         Some(working_dir),
         model,
-        None, // effort
+        effort,
         system_prompt,
         None,  // mcp_config
         false, // disable_builtin_tools
