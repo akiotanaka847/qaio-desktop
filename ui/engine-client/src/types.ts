@@ -475,6 +475,7 @@ export interface SessionStartRequest {
   workingDir?: string;
   provider?: string;
   model?: string;
+  effort?: string;
 }
 
 export interface SessionStartResponse {

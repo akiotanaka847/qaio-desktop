@@ -62,6 +62,7 @@ impl SessionManager {
                         resume_session_id,
                         working_dir,
                         model,
+                        effort,
                         system_prompt,
                     )
                     .await;
@@ -92,11 +93,13 @@ async fn spawn_codex(
     resume_session_id: Option<String>,
     working_dir: Option<std::path::PathBuf>,
     model: Option<String>,
+    effort: Option<String>,
     system_prompt: Option<String>,
 ) {
     tracing::info!(
-        "[qaio:session] spawning codex exec --json (resume={:?})",
-        resume_session_id
+        "[qaio:session] spawning codex exec --json (resume={:?} effort={:?})",
+        resume_session_id,
+        effort,
     );
 
     if let Some(ref dir) = working_dir {
@@ -113,6 +116,7 @@ async fn spawn_codex(
         resume_session_id.as_deref(),
         working_dir.as_deref(),
         model.as_deref(),
+        effort.as_deref(),
         system_prompt.as_deref(),
     );
 
@@ -126,6 +130,7 @@ async fn spawn_codex(
             None,
             working_dir.as_deref(),
             model.as_deref(),
+            effort.as_deref(),
             system_prompt.as_deref(),
         );
         run_cli_process(tx, &mut fresh_cmd, &prompt, Provider::OpenAI).await;
@@ -136,6 +141,7 @@ fn build_codex_command(
     resume_session_id: Option<&str>,
     working_dir: Option<&std::path::Path>,
     model: Option<&str>,
+    effort: Option<&str>,
     system_prompt: Option<&str>,
 ) -> Command {
     let mut cmd = Command::new("codex");
@@ -144,6 +150,7 @@ fn build_codex_command(
         resume_session_id,
         working_dir,
         model,
+        effort,
         system_prompt,
     ));
     if let Some(dir) = working_dir {
