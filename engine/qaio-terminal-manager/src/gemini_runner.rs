@@ -41,6 +41,9 @@ pub(crate) async fn spawn_gemini(
 
     let mut cmd = Command::new("gemini");
     cmd.env("PATH", super::claude_path::shell_path());
+    if let Some(shell) = crate::windows_shell::detect() {
+        cmd.env("SHELL", &shell);
+    }
     cmd.args(gemini_command::build_args(
         &full_prompt,
         resume_session_id.as_deref(),

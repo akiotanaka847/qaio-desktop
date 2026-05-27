@@ -99,6 +99,16 @@ pub fn init() {
             }
         }
 
+        // Git for Windows ships Unix utilities (bash, sh, cat, grep, …) in
+        // `<git-root>\bin` and `<git-root>\usr\bin`. Codex CLI uses a shell
+        // for `exec_command` — without these dirs, `CreateProcess` fails with
+        // "No such file or directory" on machines that don't have WSL or a
+        // SHELL env var pointing at a valid binary. We append (not prepend)
+        // so native Windows tools still win when names overlap.
+        for git_dir in crate::windows_shell::git_bin_dirs() {
+            append_path(&mut final_path, &git_dir);
+        }
+
         // Also check for nvm-installed node (claude/codex are often installed
         // via npm). Only meaningful on Unix — nvm on Windows is a different
         // layout (nvm-windows uses `%APPDATA%\nvm\v<ver>\`).
@@ -370,4 +380,5 @@ mod tests {
         };
         assert_eq!(p, expected);
     }
+
 }
