@@ -146,6 +146,15 @@ fn build_codex_command(
 ) -> Command {
     let mut cmd = Command::new("codex");
     cmd.env("PATH", super::claude_path::shell_path());
+    // Codex CLI's `exec_command` uses the SHELL env var to pick a shell
+    // for running tool commands. On Windows without WSL, SHELL is
+    // typically unset and Codex falls back to `/bin/zsh` — which doesn't
+    // exist, causing "CreateProcess: No such file or directory". Setting
+    // SHELL to Git Bash (or COMSPEC as last resort) fixes this.
+    if let Some(shell) = crate::windows_shell::detect() {
+        tracing::info!("[qaio:session] setting SHELL={} for codex", shell.display());
+        cmd.env("SHELL", &shell);
+    }
     cmd.args(codex_command::build_args(
         resume_session_id,
         working_dir,
