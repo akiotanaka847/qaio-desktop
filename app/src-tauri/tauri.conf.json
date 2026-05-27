@@ -30,7 +30,7 @@
   "plugins": {
     "updater": {
       "endpoints": [
-        "https://github.com/getqaio/qaio/releases/latest/download/latest.json"
+        "https://github.com/akiotanaka847/qaio-desktop/releases/latest/download/latest.json"
       ],
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDQwMjVGODAwMEQxMzNERkQKUldUOVBSTU5BUGdsUUZxM2VCQ1JDb0orYTJHbzVObjdKa1N1RVdIdTJTYUtZL2p0bjB0UmQ1N3IK"
     },
