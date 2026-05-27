@@ -134,6 +134,9 @@ fn configure_claude_command(
     disable_all_tools: bool,
 ) {
     cmd.env("PATH", super::claude_path::shell_path());
+    if let Some(shell) = crate::windows_shell::detect() {
+        cmd.env("SHELL", &shell);
+    }
     cmd.arg("-p")
         .arg("--output-format")
         .arg("stream-json")

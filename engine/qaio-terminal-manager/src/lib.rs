@@ -23,6 +23,7 @@ pub mod session_pump;
 mod session_update;
 mod stderr_filter;
 pub mod types;
+pub mod windows_shell;
 
 // Re-export key types for convenience.
 pub use codex_parser::{extract_thread_id, parse_codex_event, CodexAccumulator};
