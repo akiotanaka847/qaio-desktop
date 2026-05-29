@@ -1,5 +1,5 @@
+use super::antigravity_parser;
 use super::codex_parser;
-use super::gemini_parser;
 use super::parser;
 use super::stderr_filter::{stderr_feed_item, StderrState};
 use super::types::{FeedItem, Provider};
@@ -49,7 +49,7 @@ pub async fn read_stdout_events(
             StdoutReadReport::default()
         }
         Provider::Gemini => {
-            read_gemini_stdout(stdout, tx).await;
+            read_antigravity_stdout(stdout, tx).await;
             StdoutReadReport::default()
         }
     }
@@ -112,28 +112,27 @@ async fn read_codex_stdout(
     );
 }
 
-async fn read_gemini_stdout(
+async fn read_antigravity_stdout(
     stdout: tokio::process::ChildStdout,
     tx: mpsc::UnboundedSender<SessionUpdate>,
 ) {
     let reader = BufReader::new(stdout);
     let mut lines = reader.lines();
-    let mut acc = gemini_parser::GeminiAccumulator::new();
+    let mut acc = antigravity_parser::AntigravityAccumulator::new();
     let mut line_count = 0u64;
     let mut item_count = 0u64;
     while let Ok(Some(line)) = lines.next_line().await {
         line_count += 1;
-        let line_type = line.trim().chars().take(80).collect::<String>();
-        tracing::debug!("[qaio:stdout:gemini] line {line_count}: {line_type}");
-
-        if let Some(sid) = gemini_parser::extract_session_id(&line) {
-            let _ = tx.send(SessionUpdate::SessionId(sid));
-        }
-        let items = gemini_parser::parse_gemini_event(&line, &mut acc);
-        item_count += log_and_send(&tx, items);
+        tracing::debug!("[qaio:stdout:agy] line {line_count}: {line}");
+        let item = acc.push_line(&line);
+        let _ = tx.send(SessionUpdate::Feed(item));
+        item_count += 1;
     }
+    // Finalize: flush accumulated text as final AssistantText + FinalResult.
+    let final_items = acc.finalize();
+    item_count += log_and_send(&tx, final_items);
     tracing::debug!(
-        "[qaio:stdout:gemini] stream ended. {line_count} lines, {item_count} feed items"
+        "[qaio:stdout:agy] stream ended. {line_count} lines, {item_count} feed items"
     );
 }
 

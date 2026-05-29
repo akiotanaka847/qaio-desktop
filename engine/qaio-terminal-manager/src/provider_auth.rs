@@ -124,10 +124,11 @@ fn contains_unauthenticated_text(text: &str) -> bool {
         || text.contains("please log in")
 }
 
-/// Gemini auth probe. Checks `GEMINI_API_KEY` env var first, then
-/// falls back to the `~/.gemini/` config directory presence heuristic.
-/// There is no `gemini auth status` subcommand to probe directly.
-pub async fn probe_gemini_auth_status() -> ProviderAuthState {
+/// Antigravity CLI auth probe. Checks `GEMINI_API_KEY` env var first,
+/// then the `~/.gemini/` config directory (Antigravity shares this path
+/// with Gemini CLI), and finally the Antigravity CLI data directory.
+/// There is no `agy auth status` subcommand to probe directly.
+pub async fn probe_antigravity_auth_status() -> ProviderAuthState {
     if std::env::var("GEMINI_API_KEY")
         .ok()
         .is_some_and(|v| !v.is_empty())
@@ -135,20 +136,26 @@ pub async fn probe_gemini_auth_status() -> ProviderAuthState {
         return ProviderAuthState::Authenticated;
     }
     let home = std::env::var("HOME").unwrap_or_default();
-    read_gemini_config_auth(&home)
+    read_antigravity_config_auth(&home)
 }
 
-fn read_gemini_config_auth(home: &str) -> ProviderAuthState {
+fn read_antigravity_config_auth(home: &str) -> ProviderAuthState {
+    // Antigravity CLI stores session data under ~/.gemini/antigravity-cli/
+    let agy_dir = PathBuf::from(home)
+        .join(".gemini")
+        .join("antigravity-cli");
+    if agy_dir.is_dir() {
+        return ProviderAuthState::Authenticated;
+    }
+    // Fall back to checking ~/.gemini/settings.json (shared with Gemini CLI).
     let config_dir = PathBuf::from(home).join(".gemini");
     if !config_dir.is_dir() {
         return ProviderAuthState::Unauthenticated;
     }
-    // If the directory contains a settings file, Google OAuth likely completed.
     let settings = config_dir.join("settings.json");
     if settings.is_file() {
         return ProviderAuthState::Authenticated;
     }
-    // Directory exists but no recognizable credential file.
     ProviderAuthState::Unknown
 }
 
