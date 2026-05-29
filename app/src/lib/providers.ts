@@ -56,17 +56,17 @@ export const PROVIDERS: readonly ProviderInfo[] = [
   {
     id: "gemini",
     name: "Google",
-    subtitle: "Gemini CLI",
-    cliName: "gemini",
-    installUrl: "https://github.com/google-gemini/gemini-cli",
-    loginCommand: "gemini",
-    cost: "Free tier or API key",
+    subtitle: "Antigravity CLI",
+    cliName: "agy",
+    installUrl: "https://github.com/google-antigravity/antigravity-cli",
+    loginCommand: "agy",
+    cost: "Your Google subscription",
     models: [
       { id: "gemini-2.5-pro", label: "Gemini 2.5 Pro", description: "Most capable. Deep reasoning and complex tasks." },
       { id: "gemini-2.5-flash", label: "Gemini 2.5 Flash", description: "Fast and efficient with built-in thinking." },
-      { id: "gemini-2.0-flash", label: "Gemini 2.0 Flash", description: "Lightweight. Fastest responses." },
+      { id: "gemini-3.5-flash", label: "Gemini 3.5 Flash", description: "Latest generation. Fast with medium reasoning." },
     ],
-    defaultModel: "gemini-2.5-flash",
+    defaultModel: "gemini-3.5-flash",
   },
 ] as const;
 

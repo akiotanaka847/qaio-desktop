@@ -7,7 +7,7 @@
 
 use crate::error::{CoreError, CoreResult};
 use qaio_terminal_manager::provider_auth::{
-    probe_claude_auth_status, probe_codex_auth_status, probe_gemini_auth_status,
+    probe_claude_auth_status, probe_codex_auth_status, probe_antigravity_auth_status,
     ProviderAuthState,
 };
 use qaio_terminal_manager::{claude_path, Provider};
@@ -19,7 +19,7 @@ use std::time::Duration;
 
 mod login_session;
 mod resolve;
-use resolve::{resolve_claude, resolve_codex, resolve_gemini};
+use resolve::{resolve_claude, resolve_codex, resolve_antigravity};
 
 pub const DEFAULT_PROVIDER_KEY: &str = "default_provider";
 
@@ -69,7 +69,7 @@ pub async fn check_status(provider: Provider) -> CoreResult<ProviderStatus> {
     Ok(match provider {
         Provider::Anthropic => check_claude_status().await,
         Provider::OpenAI => check_codex_status().await,
-        Provider::Gemini => check_gemini_status().await,
+        Provider::Gemini => check_antigravity_status().await,
     })
 }
 
@@ -184,7 +184,7 @@ fn login_command(provider: Provider) -> CoreResult<ProviderCliCommand> {
     let resolved_path = match provider {
         Provider::Anthropic => resolve_claude().1,
         Provider::OpenAI => resolve_codex().1,
-        Provider::Gemini => resolve_gemini().1,
+        Provider::Gemini => resolve_antigravity().1,
     };
     build_login_command(provider, resolved_path, claude_path::shell_path())
 }
@@ -193,7 +193,7 @@ fn logout_command(provider: Provider) -> CoreResult<ProviderCliCommand> {
     let resolved_path = match provider {
         Provider::Anthropic => resolve_claude().1,
         Provider::OpenAI => resolve_codex().1,
-        Provider::Gemini => resolve_gemini().1,
+        Provider::Gemini => resolve_antigravity().1,
     };
     build_logout_command(provider, resolved_path, claude_path::shell_path())
 }
@@ -207,11 +207,11 @@ fn build_login_command(
         Provider::Anthropic => ("claude", vec!["auth", "login", "--claudeai"]),
         Provider::OpenAI => ("codex", vec!["login"]),
         Provider::Gemini => {
-            // Gemini CLI uses Google OAuth on first interactive run.
+            // Antigravity CLI uses Google OAuth via the system keyring.
             // There is no headless `auth login` subcommand.
             return Err(CoreError::BadRequest(
-                "Gemini uses Google account authentication. \
-                 Run 'gemini' in a terminal to complete sign-in, \
+                "Antigravity uses Google account authentication. \
+                 Run 'agy' in a terminal to complete sign-in, \
                  or set the GEMINI_API_KEY environment variable."
                     .into(),
             ));
@@ -244,8 +244,8 @@ fn build_logout_command(
         Provider::OpenAI => ("codex", vec!["logout"]),
         Provider::Gemini => {
             return Err(CoreError::BadRequest(
-                "Gemini logout is not supported. \
-                 Remove the GEMINI_API_KEY environment variable \
+                "Antigravity logout is not supported. \
+                 Run '/logout' inside the Antigravity CLI, \
                  or delete ~/.gemini/ to revoke credentials."
                     .into(),
             ));
@@ -301,11 +301,11 @@ async fn check_codex_status() -> ProviderStatus {
     }
 }
 
-async fn check_gemini_status() -> ProviderStatus {
-    let (install_source, cli_path) = resolve_gemini();
+async fn check_antigravity_status() -> ProviderStatus {
+    let (install_source, cli_path) = resolve_antigravity();
     let cli_installed = !matches!(install_source, InstallSource::Missing);
     let auth_state = if cli_installed {
-        probe_gemini_auth_status().await
+        probe_antigravity_auth_status().await
     } else {
         ProviderAuthState::Unauthenticated
     };
@@ -313,7 +313,7 @@ async fn check_gemini_status() -> ProviderStatus {
         provider: "gemini".into(),
         cli_installed,
         auth_state,
-        cli_name: "gemini".into(),
+        cli_name: "agy".into(),
         install_source,
         cli_path: cli_path.map(|p| p.to_string_lossy().into_owned()),
     }

@@ -25,10 +25,10 @@ pub(super) fn resolve_codex() -> (InstallSource, Option<PathBuf>) {
     (InstallSource::Missing, None)
 }
 
-/// Gemini CLI is installed globally via npm (`@google/gemini-cli`).
+/// Antigravity CLI is installed via `curl | bash` to `~/.local/bin/agy`.
 /// No bundled or managed variant — PATH lookup only.
-pub(super) fn resolve_gemini() -> (InstallSource, Option<PathBuf>) {
-    if let Some(path) = which_on_path("gemini") {
+pub(super) fn resolve_antigravity() -> (InstallSource, Option<PathBuf>) {
+    if let Some(path) = which_on_path("agy") {
         return (InstallSource::Path, Some(path));
     }
     (InstallSource::Missing, None)

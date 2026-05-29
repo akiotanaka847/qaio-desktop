@@ -4831,6 +4831,7 @@ version = "0.4.10"
 dependencies = [
  "dirs 5.0.1",
  "qaio-cli-bundle",
+ "regex",
  "serde",
  "serde_json",
  "tokio",

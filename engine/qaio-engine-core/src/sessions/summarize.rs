@@ -18,7 +18,6 @@ use tokio::time::timeout;
 const SUMMARY_TIMEOUT: Duration = Duration::from_secs(12);
 const CLAUDE_TITLE_MODEL: &str = "haiku";
 const CODEX_TITLE_MODEL: &str = "gpt-5.4-mini";
-const GEMINI_TITLE_MODEL: &str = "gemini-2.5-flash";
 
 pub use super::summary_text::SummarizeResult;
 
@@ -65,7 +64,7 @@ async fn run_provider_summary(
     match provider {
         Provider::Anthropic => run_claude_summary(&prompt, model).await,
         Provider::OpenAI => run_codex_summary(&prompt, model).await,
-        Provider::Gemini => run_gemini_summary(&prompt, model).await,
+        Provider::Gemini => run_antigravity_summary(&prompt, model).await,
     }
 }
 
@@ -98,15 +97,14 @@ async fn run_codex_summary(prompt: &str, model: Option<&str>) -> Result<String, 
     extract_codex_text(&stdout)
 }
 
-async fn run_gemini_summary(prompt: &str, model: Option<&str>) -> Result<String, String> {
-    let mut cmd = tokio::process::Command::new("gemini");
+async fn run_antigravity_summary(prompt: &str, model: Option<&str>) -> Result<String, String> {
+    let _ = model; // agy does not support --model flag yet
+    let mut cmd = tokio::process::Command::new("agy");
     cmd.env("PATH", claude_path::shell_path());
-    cmd.arg("-p")
+    cmd.arg("--print")
         .arg(prompt)
-        .arg("--yolo")
-        .arg("-m")
-        .arg(model.unwrap_or(GEMINI_TITLE_MODEL));
-    // Prompt passed via -p arg; empty string keeps stdin write harmless.
+        .arg("--dangerously-skip-permissions");
+    // Prompt passed via --print arg; empty string keeps stdin write harmless.
     run_command_with_prompt(cmd, "").await
 }
 
