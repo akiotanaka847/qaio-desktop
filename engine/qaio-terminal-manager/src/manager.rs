@@ -2,7 +2,7 @@ use super::types::{Provider, SessionStatus};
 use crate::claude_runner::spawn_claude;
 use crate::cli_process::{run_cli_process, CliRunOutcome};
 use crate::codex_command;
-use crate::gemini_runner::spawn_gemini;
+use crate::antigravity_runner::spawn_antigravity;
 use crate::session_update::SessionUpdate;
 use tokio::process::Command;
 use tokio::sync::mpsc;
@@ -68,12 +68,11 @@ impl SessionManager {
                     .await;
                 }
                 Provider::Gemini => {
-                    spawn_gemini(
+                    spawn_antigravity(
                         &tx,
                         prompt,
                         resume_session_id,
                         working_dir,
-                        model,
                         system_prompt,
                     )
                     .await;

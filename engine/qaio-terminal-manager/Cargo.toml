@@ -2,7 +2,7 @@
 name = "qaio-terminal-manager"
 version = "0.4.10"
 edition = "2021"
-description = "Terminal/CLI subprocess manager for Claude, Codex, and other CLI-based AI agents"
+description = "Terminal/CLI subprocess manager for Claude, Codex, Antigravity, and other CLI-based AI agents"
 license = "MIT"
 repository = "https://github.com/getqaio/qaio"
 
@@ -15,6 +15,7 @@ tracing = { workspace = true }
 # Windows). Used by `claude_path` to expand `~/...` entries in the common
 # install-dir list.
 dirs = "5"
+regex = "1"
 # Bundled-CLI resolver (codex, composio) for the Qaio `.app`. Lets
 # `claude_path` prepend the bundled-bin directories to the resolved PATH
 # so subprocess spawns of `claude`/`codex`/`composio` find them without
