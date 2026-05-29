@@ -48,16 +48,22 @@ export function mergeFeedItem(items: FeedItem[], item: FeedItem): FeedItem[] {
     }
   }
 
-  // Collapse consecutive identical user_messages. Desktop's send handler
-  // pushes an optimistic user_message the instant the user hits send, and
-  // the engine also persists + broadcasts the same text via a FeedItem
-  // event. Without this, every send from the desktop UI doubles up. The
-  // edge case — a user legitimately sending the same text twice back-to-
-  // back with no agent response between — is rare and visually harmless
-  // (the second appears after the agent replies).
-  if (item.feed_type === "user_message" && last?.feed_type === "user_message") {
-    if (last.data === item.data) {
-      return items;
+  // Deduplicate user_messages. Desktop pushes an optimistic user_message
+  // the instant the user hits send, and the engine also persists +
+  // broadcasts the same text via a FeedItem event. Streaming events
+  // (assistant_text_streaming, thinking_streaming) may arrive between
+  // the two, so we scan backwards (up to 10 items) for a matching
+  // user_message — not just the very last item.
+  if (item.feed_type === "user_message") {
+    const lookback = Math.max(0, items.length - 10);
+    for (let i = items.length - 1; i >= lookback; i--) {
+      const existing = items[i];
+      if (existing.feed_type === "user_message" && existing.data === item.data) {
+        return items;
+      }
+      // Stop scanning once we hit a final assistant_text — any
+      // user_message before that belongs to a previous turn.
+      if (existing.feed_type === "assistant_text") break;
     }
   }
 

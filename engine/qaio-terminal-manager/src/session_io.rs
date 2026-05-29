@@ -116,11 +116,18 @@ async fn read_antigravity_stdout(
     stdout: tokio::process::ChildStdout,
     tx: mpsc::UnboundedSender<SessionUpdate>,
 ) {
+    // Emit an empty streaming event immediately so the frontend shows
+    // a "typing" indicator while agy processes (agy --print outputs
+    // everything at once, so without this the UI looks frozen).
+    let _ = tx.send(SessionUpdate::Feed(FeedItem::AssistantTextStreaming(
+        String::new(),
+    )));
+
     let reader = BufReader::new(stdout);
     let mut lines = reader.lines();
     let mut acc = antigravity_parser::AntigravityAccumulator::new();
     let mut line_count = 0u64;
-    let mut item_count = 0u64;
+    let mut item_count = 1u64; // count the initial empty streaming event
     while let Ok(Some(line)) = lines.next_line().await {
         line_count += 1;
         tracing::debug!("[qaio:stdout:agy] line {line_count}: {line}");
