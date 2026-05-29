@@ -1,6 +1,6 @@
 [package]
 name = "qaio-terminal-manager"
-version = "0.4.10"
+version = "0.4.12"
 edition = "2021"
 description = "Terminal/CLI subprocess manager for Claude, Codex, Antigravity, and other CLI-based AI agents"
 license = "MIT"

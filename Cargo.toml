@@ -32,20 +32,20 @@ async-trait = "0.1"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
 tracing-appender = "0.2"
-qaio-terminal-manager = { version = "0.4.10", path = "engine/qaio-terminal-manager" }
-qaio-db = { version = "0.4.10", path = "engine/qaio-db" }
-qaio-tauri = { version = "0.4.10", path = "app/qaio-tauri" }
-qaio-events = { version = "0.4.10", path = "engine/qaio-events" }
-qaio-scheduler = { version = "0.4.10", path = "engine/qaio-scheduler" }
-qaio-skills = { version = "0.4.10", path = "engine/qaio-skills" }
-qaio-tunnel = { version = "0.4.10", path = "engine/qaio-tunnel" }
-qaio-agent-files = { version = "0.4.10", path = "engine/qaio-agent-files" }
-qaio-ui-events = { version = "0.4.10", path = "engine/qaio-ui-events" }
-qaio-agents-conversations = { version = "0.4.10", path = "engine/qaio-agents-conversations" }
-qaio-file-watcher = { version = "0.4.10", path = "engine/qaio-file-watcher" }
-qaio-composio = { version = "0.4.10", path = "engine/qaio-composio" }
-qaio-cli-bundle = { version = "0.4.10", path = "engine/qaio-cli-bundle" }
-qaio-claude-installer = { version = "0.4.10", path = "engine/qaio-claude-installer" }
-qaio-engine-core = { version = "0.4.10", path = "engine/qaio-engine-core" }
-qaio-engine-protocol = { version = "0.4.10", path = "engine/qaio-engine-protocol" }
-qaio-engine-server = { version = "0.4.10", path = "engine/qaio-engine-server" }
+qaio-terminal-manager = { version = "0.4.12", path = "engine/qaio-terminal-manager" }
+qaio-db = { version = "0.4.12", path = "engine/qaio-db" }
+qaio-tauri = { version = "0.4.12", path = "app/qaio-tauri" }
+qaio-events = { version = "0.4.12", path = "engine/qaio-events" }
+qaio-scheduler = { version = "0.4.12", path = "engine/qaio-scheduler" }
+qaio-skills = { version = "0.4.12", path = "engine/qaio-skills" }
+qaio-tunnel = { version = "0.4.12", path = "engine/qaio-tunnel" }
+qaio-agent-files = { version = "0.4.12", path = "engine/qaio-agent-files" }
+qaio-ui-events = { version = "0.4.12", path = "engine/qaio-ui-events" }
+qaio-agents-conversations = { version = "0.4.12", path = "engine/qaio-agents-conversations" }
+qaio-file-watcher = { version = "0.4.12", path = "engine/qaio-file-watcher" }
+qaio-composio = { version = "0.4.12", path = "engine/qaio-composio" }
+qaio-cli-bundle = { version = "0.4.12", path = "engine/qaio-cli-bundle" }
+qaio-claude-installer = { version = "0.4.12", path = "engine/qaio-claude-installer" }
+qaio-engine-core = { version = "0.4.12", path = "engine/qaio-engine-core" }
+qaio-engine-protocol = { version = "0.4.12", path = "engine/qaio-engine-protocol" }
+qaio-engine-server = { version = "0.4.12", path = "engine/qaio-engine-server" }

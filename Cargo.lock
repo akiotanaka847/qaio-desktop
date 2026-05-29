@@ -4562,7 +4562,7 @@ dependencies = [
 
 [[package]]
 name = "qaio-agent-files"
-version = "0.4.10"
+version = "0.4.12"
 dependencies = [
  "chrono",
  "serde",
@@ -4576,7 +4576,7 @@ dependencies = [
 
 [[package]]
 name = "qaio-agents-conversations"
-version = "0.4.10"
+version = "0.4.12"
 dependencies = [
  "qaio-db",
  "qaio-terminal-manager",
@@ -4590,7 +4590,7 @@ dependencies = [
 
 [[package]]
 name = "qaio-app"
-version = "0.4.10"
+version = "0.4.12"
 dependencies = [
  "chrono",
  "dirs 5.0.1",
@@ -4615,7 +4615,7 @@ dependencies = [
 
 [[package]]
 name = "qaio-claude-installer"
-version = "0.4.10"
+version = "0.4.12"
 dependencies = [
  "futures-util",
  "hex",
@@ -4635,7 +4635,7 @@ dependencies = [
 
 [[package]]
 name = "qaio-cli-bundle"
-version = "0.4.10"
+version = "0.4.12"
 dependencies = [
  "serde",
  "serde_json",
@@ -4645,7 +4645,7 @@ dependencies = [
 
 [[package]]
 name = "qaio-composio"
-version = "0.4.10"
+version = "0.4.12"
 dependencies = [
  "base64 0.22.1",
  "dirs 5.0.1",
@@ -4663,7 +4663,7 @@ dependencies = [
 
 [[package]]
 name = "qaio-db"
-version = "0.4.10"
+version = "0.4.12"
 dependencies = [
  "anyhow",
  "chrono",
@@ -4675,7 +4675,7 @@ dependencies = [
 
 [[package]]
 name = "qaio-engine-core"
-version = "0.4.10"
+version = "0.4.12"
 dependencies = [
  "async-trait",
  "chrono",
@@ -4704,7 +4704,7 @@ dependencies = [
 
 [[package]]
 name = "qaio-engine-protocol"
-version = "0.4.10"
+version = "0.4.12"
 dependencies = [
  "chrono",
  "qaio-terminal-manager",
@@ -4716,7 +4716,7 @@ dependencies = [
 
 [[package]]
 name = "qaio-engine-server"
-version = "0.4.10"
+version = "0.4.12"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -4754,7 +4754,7 @@ dependencies = [
 
 [[package]]
 name = "qaio-events"
-version = "0.4.10"
+version = "0.4.12"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -4768,7 +4768,7 @@ dependencies = [
 
 [[package]]
 name = "qaio-file-watcher"
-version = "0.4.10"
+version = "0.4.12"
 dependencies = [
  "notify",
  "notify-debouncer-mini",
@@ -4779,7 +4779,7 @@ dependencies = [
 
 [[package]]
 name = "qaio-scheduler"
-version = "0.4.10"
+version = "0.4.12"
 dependencies = [
  "anyhow",
  "chrono",
@@ -4793,7 +4793,7 @@ dependencies = [
 
 [[package]]
 name = "qaio-skills"
-version = "0.4.10"
+version = "0.4.12"
 dependencies = [
  "chrono",
  "reqwest 0.12.28",
@@ -4809,7 +4809,7 @@ dependencies = [
 
 [[package]]
 name = "qaio-tauri"
-version = "0.4.10"
+version = "0.4.12"
 dependencies = [
  "qaio-agent-files",
  "qaio-agents-conversations",
@@ -4827,7 +4827,7 @@ dependencies = [
 
 [[package]]
 name = "qaio-terminal-manager"
-version = "0.4.10"
+version = "0.4.12"
 dependencies = [
  "dirs 5.0.1",
  "qaio-cli-bundle",
@@ -4840,7 +4840,7 @@ dependencies = [
 
 [[package]]
 name = "qaio-tunnel"
-version = "0.4.10"
+version = "0.4.12"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -4860,7 +4860,7 @@ dependencies = [
 
 [[package]]
 name = "qaio-ui-events"
-version = "0.4.10"
+version = "0.4.12"
 dependencies = [
  "qaio-terminal-manager",
  "serde",
