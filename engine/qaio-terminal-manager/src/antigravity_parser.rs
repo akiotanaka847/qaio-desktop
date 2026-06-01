@@ -18,35 +18,57 @@ static CONVERSATION_ID_RE: LazyLock<Regex> = LazyLock::new(|| {
 });
 
 /// Accumulates streaming text from Antigravity stdout.
-#[derive(Debug, Default)]
+///
+/// `agy --print --conversation <id>` replays ALL prior assistant
+/// responses before appending the new one. `skip_lines` tells the
+/// accumulator how many lines belong to previous turns so they are
+/// silently consumed without being emitted to the UI.
+#[derive(Debug)]
 pub struct AntigravityAccumulator {
     lines: Vec<String>,
+    skip_lines: usize,
 }
 
 impl AntigravityAccumulator {
-    pub fn new() -> Self {
-        Self::default()
+    pub fn new(skip_lines: usize) -> Self {
+        Self {
+            lines: Vec::new(),
+            skip_lines,
+        }
     }
 
     /// Push a stdout line and return a streaming feed item.
+    ///
+    /// Lines within the `skip_lines` window return an empty streaming
+    /// event (keeps the typing indicator alive without showing stale text).
     pub fn push_line(&mut self, line: &str) -> FeedItem {
         self.lines.push(line.to_string());
-        let full_text = self.lines.join("\n");
-        FeedItem::AssistantTextStreaming(full_text)
+        if self.lines.len() <= self.skip_lines {
+            return FeedItem::AssistantTextStreaming(String::new());
+        }
+        let new_text = self.lines[self.skip_lines..].join("\n");
+        FeedItem::AssistantTextStreaming(new_text)
     }
 
-    /// Finalize — flush accumulated text as a complete response.
+    /// Finalize: emit the final `AssistantText` (only new content)
+    /// and `FinalResult`.
+    ///
+    /// `AssistantText` is always emitted here because the per-line
+    /// `push_line` calls only sent `AssistantTextStreaming` (ephemeral
+    /// display updates). The session runner needs the non-streaming
+    /// variant to persist the response.
     pub fn finalize(&mut self) -> Vec<FeedItem> {
-        if self.lines.is_empty() {
+        let all_lines = std::mem::take(&mut self.lines);
+        if all_lines.len() <= self.skip_lines {
             return vec![FeedItem::FinalResult {
                 result: "Session completed".into(),
                 cost_usd: None,
                 duration_ms: None,
             }];
         }
-        let full_text = std::mem::take(&mut self.lines).join("\n");
+        let new_text = all_lines[self.skip_lines..].join("\n");
         vec![
-            FeedItem::AssistantText(full_text),
+            FeedItem::AssistantText(new_text),
             FeedItem::FinalResult {
                 result: "Session completed".into(),
                 cost_usd: None,
@@ -69,7 +91,7 @@ mod tests {
 
     #[test]
     fn push_line_streams_accumulated_text() {
-        let mut acc = AntigravityAccumulator::new();
+        let mut acc = AntigravityAccumulator::new(0);
         let item = acc.push_line("Hello");
         assert!(matches!(item, FeedItem::AssistantTextStreaming(t) if t == "Hello"));
 
@@ -81,7 +103,7 @@ mod tests {
 
     #[test]
     fn finalize_flushes_text() {
-        let mut acc = AntigravityAccumulator::new();
+        let mut acc = AntigravityAccumulator::new(0);
         acc.push_line("Line 1");
         acc.push_line("Line 2");
         let items = acc.finalize();
@@ -94,7 +116,43 @@ mod tests {
 
     #[test]
     fn finalize_empty_returns_only_result() {
-        let mut acc = AntigravityAccumulator::new();
+        let mut acc = AntigravityAccumulator::new(0);
+        let items = acc.finalize();
+        assert_eq!(items.len(), 1);
+        assert!(matches!(&items[0], FeedItem::FinalResult { .. }));
+    }
+
+    #[test]
+    fn skip_lines_suppresses_replayed_history() {
+        // Simulates: agy --print --conversation replays "r1" then adds "r2"
+        let mut acc = AntigravityAccumulator::new(1); // skip 1 prior line
+        let item = acc.push_line("r1");
+        assert!(matches!(item, FeedItem::AssistantTextStreaming(t) if t.is_empty()));
+
+        let item = acc.push_line("r2");
+        assert!(matches!(item, FeedItem::AssistantTextStreaming(t) if t == "r2"));
+    }
+
+    #[test]
+    fn skip_lines_finalize_only_emits_new_content() {
+        let mut acc = AntigravityAccumulator::new(2); // skip 2 prior lines
+        acc.push_line("old1");
+        acc.push_line("old2");
+        acc.push_line("new1");
+        acc.push_line("new2");
+        let items = acc.finalize();
+        assert_eq!(items.len(), 2);
+        assert!(
+            matches!(&items[0], FeedItem::AssistantText(t) if t == "new1\nnew2")
+        );
+    }
+
+    #[test]
+    fn skip_lines_finalize_all_skipped_returns_only_result() {
+        let mut acc = AntigravityAccumulator::new(3);
+        acc.push_line("old1");
+        acc.push_line("old2");
+        // Only 2 lines arrived but skip=3, nothing new
         let items = acc.finalize();
         assert_eq!(items.len(), 1);
         assert!(matches!(&items[0], FeedItem::FinalResult { .. }));

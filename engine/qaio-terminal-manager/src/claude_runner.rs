@@ -68,7 +68,7 @@ pub(crate) async fn spawn_claude(
         disable_builtin_tools,
         disable_all_tools,
     );
-    let outcome = run_cli_process(tx, &mut cmd, &prompt, Provider::Anthropic).await;
+    let outcome = run_cli_process(tx, &mut cmd, &prompt, Provider::Anthropic, 0).await;
     if should_retry_malformed_provider_json(outcome, resume_session_id.as_deref()) {
         tracing::warn!(
             "[qaio:session] claude resume failed with malformed provider JSON; retrying fresh"
@@ -115,7 +115,7 @@ async fn retry_fresh(
         disable_builtin_tools,
         disable_all_tools,
     );
-    let retry_outcome = run_cli_process(tx, &mut fresh_cmd, prompt, Provider::Anthropic).await;
+    let retry_outcome = run_cli_process(tx, &mut fresh_cmd, prompt, Provider::Anthropic, 0).await;
     if retry_outcome == CliRunOutcome::ProviderRequestMalformedJson {
         send_malformed_provider_json_status(tx);
     }
