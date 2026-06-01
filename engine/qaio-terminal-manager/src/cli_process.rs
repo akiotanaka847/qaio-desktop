@@ -29,6 +29,7 @@ pub(crate) async fn run_cli_process(
     cmd: &mut Command,
     prompt: &str,
     provider: Provider,
+    prior_response_lines: usize,
 ) -> CliRunOutcome {
     let cli_name = match provider {
         Provider::Anthropic => "claude",
@@ -81,7 +82,7 @@ pub(crate) async fn run_cli_process(
     if let Some(stdout) = stdout {
         let tx2 = tx.clone();
         io_set.spawn(async move {
-            CliIoReport::Stdout(session_io::read_stdout_events(stdout, tx2, provider).await)
+            CliIoReport::Stdout(session_io::read_stdout_events(stdout, tx2, provider, prior_response_lines).await)
         });
     }
 

@@ -61,15 +61,30 @@ test("dedup user_message when only streaming separates them", () => {
   assert.deepEqual(merged, feed);
 });
 
-test("does not dedup user_message after assistant_text (different turn)", () => {
+test("dedup user_message even after assistant_text (agy broadcasts post-exit)", () => {
+  // agy extracts conversation ID from log after process exits, so the
+  // engine's user_message broadcast arrives AFTER assistant_text.
   const feed = [
     { feed_type: "user_message", data: "hello" },
     { feed_type: "assistant_text", data: "hi there" },
   ];
   const merged = mergeFeedItem(feed, { feed_type: "user_message", data: "hello" });
-  // Should append — assistant_text boundary means it's a new turn
-  assert.equal(merged.length, 3);
-  assert.deepEqual(merged[2], { feed_type: "user_message", data: "hello" });
+  // Should dedup — same text within the 10-item lookback window
+  assert.deepEqual(merged, feed);
+});
+
+test("does not dedup user_message beyond lookback window", () => {
+  // Pad with enough items to push the original beyond the 10-item window
+  const feed = [
+    { feed_type: "user_message", data: "old" },
+    ...Array.from({ length: 10 }, (_, i) => ({
+      feed_type: "assistant_text",
+      data: `response ${i}`,
+    })),
+  ];
+  const merged = mergeFeedItem(feed, { feed_type: "user_message", data: "old" });
+  // Should append — original is 11 items back, outside the window
+  assert.equal(merged.length, 12);
 });
 
 test("allows different user_messages in same turn", () => {

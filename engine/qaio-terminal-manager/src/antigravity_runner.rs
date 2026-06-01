@@ -22,6 +22,7 @@ pub(crate) async fn spawn_antigravity(
     resume_session_id: Option<String>,
     working_dir: Option<PathBuf>,
     system_prompt: Option<String>,
+    prior_response_lines: usize,
 ) {
     tracing::info!(
         "[qaio:session] spawning agy --print (resume={:?})",
@@ -67,7 +68,7 @@ pub(crate) async fn spawn_antigravity(
 
     // agy --print takes the prompt as a CLI arg; stdin write is a no-op.
     crate::cli_process::run_cli_process(
-        tx, &mut cmd, "", super::types::Provider::Gemini,
+        tx, &mut cmd, "", super::types::Provider::Gemini, prior_response_lines,
     )
     .await;
 

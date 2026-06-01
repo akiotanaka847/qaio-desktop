@@ -33,6 +33,8 @@ impl SessionManager {
         disable_builtin_tools: bool,
         // When true, disables ALL tools (--allowedTools ""). Use for pure conversation.
         disable_all_tools: bool,
+        // Lines of prior assistant responses to skip (agy --print replays history on resume).
+        prior_response_lines: usize,
     ) -> (mpsc::UnboundedReceiver<SessionUpdate>, SessionHandle) {
         let (tx, rx) = mpsc::unbounded_channel();
 
@@ -74,6 +76,7 @@ impl SessionManager {
                         resume_session_id,
                         working_dir,
                         system_prompt,
+                        prior_response_lines,
                     )
                     .await;
                 }
@@ -119,7 +122,7 @@ async fn spawn_codex(
         system_prompt.as_deref(),
     );
 
-    let outcome = run_cli_process(tx, &mut cmd, &prompt, Provider::OpenAI).await;
+    let outcome = run_cli_process(tx, &mut cmd, &prompt, Provider::OpenAI, 0).await;
     if outcome == CliRunOutcome::CodexResumeMissing && resume_session_id.is_some() {
         tracing::warn!(
             "[qaio:session] codex resume rollout missing; retrying with fresh thread"
@@ -132,7 +135,7 @@ async fn spawn_codex(
             effort.as_deref(),
             system_prompt.as_deref(),
         );
-        run_cli_process(tx, &mut fresh_cmd, &prompt, Provider::OpenAI).await;
+        run_cli_process(tx, &mut fresh_cmd, &prompt, Provider::OpenAI, 0).await;
     }
 }
 

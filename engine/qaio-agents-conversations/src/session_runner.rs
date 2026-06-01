@@ -89,25 +89,35 @@ pub fn spawn_and_monitor(
     let provider_kind = provider;
     let provider_str = provider.to_string();
 
-    let (mut rx, _handle) = SessionManager::spawn_session(
-        provider,
-        prompt,
-        resume_id,
-        Some(working_dir),
-        model,
-        effort,
-        system_prompt,
-        None,  // mcp_config
-        false, // disable_builtin_tools
-        false, // disable_all_tools
-    );
-
-    let sink = sink;
-    let key = session_key;
-    let agent_path_for_events = agent_path;
-    let mut persist = persist;
-    let original_user_message = persist.as_ref().and_then(|opts| opts.user_message.clone());
     tokio::spawn(async move {
+        // agy --print --conversation replays ALL prior assistant responses.
+        // Count how many output lines already exist so the parser can skip them.
+        let prior_response_lines = count_prior_response_lines(
+            provider,
+            resume_id.as_deref(),
+            persist.as_ref(),
+        )
+        .await;
+
+        let (mut rx, _handle) = SessionManager::spawn_session(
+            provider,
+            prompt,
+            resume_id,
+            Some(working_dir),
+            model,
+            effort,
+            system_prompt,
+            None,  // mcp_config
+            false, // disable_builtin_tools
+            false, // disable_all_tools
+            prior_response_lines,
+        );
+
+        let sink = sink;
+        let key = session_key;
+        let agent_path_for_events = agent_path;
+        let mut persist = persist;
+        let original_user_message = persist.as_ref().and_then(|opts| opts.user_message.clone());
         let mut response_text: Option<String> = None;
         let mut claude_session_id: Option<String> = None;
         let mut error: Option<String> = None;
@@ -421,6 +431,55 @@ fn is_opaque_claude_auth_error(provider: Provider, message: &str) -> bool {
 fn restore_pending_user_message(current: &mut Option<String>, original: &Option<String>) {
     if current.is_none() {
         *current = original.clone();
+    }
+}
+
+/// Count the total lines of prior `assistant_text` feed items in the DB.
+///
+/// `agy --print --conversation <id>` replays ALL previous assistant
+/// responses before appending the new one. The parser uses this count to
+/// skip replayed lines and only show new content.
+///
+/// Returns 0 for non-Gemini providers or when there's no resume session.
+async fn count_prior_response_lines(
+    provider: Provider,
+    resume_id: Option<&str>,
+    persist: Option<&PersistOptions>,
+) -> usize {
+    if provider != Provider::Gemini {
+        return 0;
+    }
+    let session_id = match resume_id {
+        Some(id) => id,
+        None => return 0,
+    };
+    let db = match persist {
+        Some(opts) => &opts.db,
+        None => return 0,
+    };
+    match db.list_chat_feed_by_session(session_id).await {
+        Ok(rows) => {
+            let line_count: usize = rows
+                .iter()
+                .filter(|r| r.feed_type == "assistant_text")
+                .map(|r| {
+                    // data_json is a JSON-encoded string: "\"actual text\""
+                    serde_json::from_str::<String>(&r.data_json)
+                        .map(|text| text.lines().count())
+                        .unwrap_or(0)
+                })
+                .sum();
+            tracing::info!(
+                "[session_runner] agy resume: {line_count} prior response lines to skip"
+            );
+            line_count
+        }
+        Err(e) => {
+            tracing::warn!(
+                "[session_runner] failed to query prior response lines: {e}"
+            );
+            0
+        }
     }
 }
 
