@@ -41,6 +41,7 @@ pub async fn read_stdout_events(
     stdout: tokio::process::ChildStdout,
     tx: mpsc::UnboundedSender<SessionUpdate>,
     provider: Provider,
+    prior_response_lines: usize,
 ) -> StdoutReadReport {
     match provider {
         Provider::Anthropic => read_claude_stdout(stdout, tx).await,
@@ -49,7 +50,7 @@ pub async fn read_stdout_events(
             StdoutReadReport::default()
         }
         Provider::Gemini => {
-            read_antigravity_stdout(stdout, tx).await;
+            read_antigravity_stdout(stdout, tx, prior_response_lines).await;
             StdoutReadReport::default()
         }
     }
@@ -115,6 +116,7 @@ async fn read_codex_stdout(
 async fn read_antigravity_stdout(
     stdout: tokio::process::ChildStdout,
     tx: mpsc::UnboundedSender<SessionUpdate>,
+    prior_response_lines: usize,
 ) {
     // Emit an empty streaming event immediately so the frontend shows
     // a "typing" indicator while agy processes (agy --print outputs
@@ -123,9 +125,15 @@ async fn read_antigravity_stdout(
         String::new(),
     )));
 
+    if prior_response_lines > 0 {
+        tracing::info!(
+            "[qaio:stdout:agy] resume mode: skipping first {prior_response_lines} replayed lines"
+        );
+    }
+
     let reader = BufReader::new(stdout);
     let mut lines = reader.lines();
-    let mut acc = antigravity_parser::AntigravityAccumulator::new();
+    let mut acc = antigravity_parser::AntigravityAccumulator::new(prior_response_lines);
     let mut line_count = 0u64;
     let mut item_count = 1u64; // count the initial empty streaming event
     while let Ok(Some(line)) = lines.next_line().await {
