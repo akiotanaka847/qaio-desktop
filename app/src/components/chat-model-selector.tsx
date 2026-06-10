@@ -8,7 +8,8 @@ import {
 } from "@qaio-ai/core";
 import { tauriProvider, type ProviderStatus } from "../lib/tauri";
 import { PROVIDERS, getProvider, getModel } from "../lib/providers";
-import { ProviderModelGroup, ProviderIcon } from "./chat-model-selector-parts";
+import { ProviderModelGroup } from "./chat-model-selector-parts";
+import { ProviderLogo } from "./shell/provider-logos";
 
 interface ChatModelSelectorProps {
   /** Current provider id (from workspace/agent config). */
@@ -57,7 +58,7 @@ export function ChatModelSelector({ provider, model, onSelect, lockedProvider }:
             type="button"
             className="flex items-center gap-1.5 h-7 px-2 rounded-lg text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition-colors outline-none focus-visible:ring-1 focus-visible:ring-ring"
           >
-            <ProviderIcon providerId={provider} className="size-3.5" />
+            <ProviderLogo providerId={provider} className="size-3.5" />
             <span>{displayLabel}</span>
             <ChevronDown className="size-3 opacity-60" />
           </button>

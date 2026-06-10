@@ -12,7 +12,7 @@ import {
 } from "@qaio-ai/core";
 import { tauriProvider } from "../../lib/tauri";
 import type { ProviderInfo } from "../../lib/providers";
-import { ClaudeLogo, OpenAILogo, GeminiLogo, KimiLogo } from "./provider-logos";
+import { ProviderLogo } from "./provider-logos";
 
 interface ProviderCardProps {
   provider: ProviderInfo;
@@ -82,7 +82,7 @@ export function ProviderCard({
       )}
 
       <div className="h-10 w-10 flex items-center justify-center">
-        {provider.id === "anthropic" ? <ClaudeLogo /> : provider.id === "gemini" ? <GeminiLogo /> : provider.id === "kimi" ? <KimiLogo /> : <OpenAILogo />}
+        <ProviderLogo providerId={provider.id} />
       </div>
 
       <div className="text-center">

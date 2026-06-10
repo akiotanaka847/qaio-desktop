@@ -14,7 +14,6 @@ struct KimiEvent {
     role: String,
     content: Option<String>,
     tool_calls: Option<Vec<KimiToolCall>>,
-    tool_call_id: Option<String>,
     #[serde(rename = "type")]
     meta_type: Option<String>,
     session_id: Option<String>,
@@ -22,7 +21,6 @@ struct KimiEvent {
 
 #[derive(Debug, Deserialize)]
 struct KimiToolCall {
-    id: Option<String>,
     function: Option<KimiFunction>,
 }
 
