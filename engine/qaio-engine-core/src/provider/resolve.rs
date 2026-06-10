@@ -34,6 +34,22 @@ pub(super) fn resolve_antigravity() -> (InstallSource, Option<PathBuf>) {
     (InstallSource::Missing, None)
 }
 
+/// Kimi Code CLI is installed via `curl | bash` to `~/.kimi-code/bin/kimi`.
+pub(super) fn resolve_kimi() -> (InstallSource, Option<PathBuf>) {
+    let home = std::env::var("HOME").unwrap_or_default();
+    let managed_path = PathBuf::from(&home)
+        .join(".kimi-code")
+        .join("bin")
+        .join("kimi");
+    if managed_path.is_file() {
+        return (InstallSource::Managed, Some(managed_path));
+    }
+    if let Some(path) = which_on_path("kimi") {
+        return (InstallSource::Path, Some(path));
+    }
+    (InstallSource::Missing, None)
+}
+
 fn which_on_path(command: &str) -> Option<PathBuf> {
     let shell_path = claude_path::shell_path();
     for dir in std::env::split_paths(&shell_path) {

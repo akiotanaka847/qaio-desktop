@@ -11,8 +11,10 @@ pub enum Provider {
     Anthropic,
     /// OpenAI Codex (via `codex` CLI)
     OpenAI,
-    /// Google Gemini (via `gemini` CLI)
+    /// Google Gemini (via `agy` CLI)
     Gemini,
+    /// Moonshot Kimi (via `kimi` CLI)
+    Kimi,
 }
 
 impl fmt::Display for Provider {
@@ -21,6 +23,7 @@ impl fmt::Display for Provider {
             Provider::Anthropic => write!(f, "anthropic"),
             Provider::OpenAI => write!(f, "openai"),
             Provider::Gemini => write!(f, "gemini"),
+            Provider::Kimi => write!(f, "kimi"),
         }
     }
 }
@@ -32,6 +35,7 @@ impl FromStr for Provider {
             "anthropic" | "claude" => Ok(Provider::Anthropic),
             "openai" | "codex" => Ok(Provider::OpenAI),
             "gemini" | "google" => Ok(Provider::Gemini),
+            "kimi" | "moonshot" => Ok(Provider::Kimi),
             other => Err(format!("Unknown provider: {other}")),
         }
     }
@@ -53,6 +57,7 @@ impl Provider {
             Provider::Anthropic => &["low", "medium", "high", "max"],
             Provider::OpenAI => &["low", "medium", "high", "xhigh"],
             Provider::Gemini => &[],
+            Provider::Kimi => &[],
         }
     }
 

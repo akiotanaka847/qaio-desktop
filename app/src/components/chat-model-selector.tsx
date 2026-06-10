@@ -30,12 +30,13 @@ export function ChatModelSelector({ provider, model, onSelect, lockedProvider }:
   const [statuses, setStatuses] = useState<Record<string, ProviderStatus>>({});
 
   const loadStatuses = useCallback(async () => {
-    const [openai, anthropic, gemini] = await Promise.all([
+    const [openai, anthropic, gemini, kimi] = await Promise.all([
       tauriProvider.checkStatus("openai"),
       tauriProvider.checkStatus("anthropic"),
       tauriProvider.checkStatus("gemini"),
+      tauriProvider.checkStatus("kimi"),
     ]);
-    setStatuses({ openai, anthropic, gemini });
+    setStatuses({ openai, anthropic, gemini, kimi });
   }, []);
 
   useEffect(() => {
