@@ -8,7 +8,8 @@ use crate::session_pids::SessionPidMap;
 use qaio_db::Database;
 use qaio_terminal_manager::auth_error::{is_auth_error, is_auth_retry_marker};
 use qaio_terminal_manager::provider_auth::{
-    probe_antigravity_auth_status, probe_claude_auth_status, ProviderAuthState,
+    probe_antigravity_auth_status, probe_claude_auth_status, probe_kimi_auth_status,
+    ProviderAuthState,
 };
 use qaio_terminal_manager::{FeedItem, Provider, SessionManager, SessionStatus, SessionUpdate};
 use qaio_ui_events::{DynEventSink, QaioEvent};
@@ -59,6 +60,7 @@ async fn provider_auth_state(provider: Provider) -> ProviderAuthState {
         Provider::Anthropic => probe_claude_auth_status(Path::new("claude")).await,
         Provider::OpenAI => ProviderAuthState::Unknown,
         Provider::Gemini => probe_antigravity_auth_status().await,
+        Provider::Kimi => probe_kimi_auth_status().await,
     }
 }
 

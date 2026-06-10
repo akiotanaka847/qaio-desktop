@@ -29,13 +29,14 @@ export function ProviderPicker({ value, model: controlledModel, onSelect }: Prop
 
   const prevStatuses = useRef<Record<string, ProviderStatus>>({});
   const loadStatuses = useCallback(async () => {
-    const [openai, anthropic, gemini] = await Promise.all([
+    const [openai, anthropic, gemini, kimi] = await Promise.all([
       tauriProvider.checkStatus("openai"),
       tauriProvider.checkStatus("anthropic"),
       tauriProvider.checkStatus("gemini"),
+      tauriProvider.checkStatus("kimi"),
     ]);
-    const next: Record<string, ProviderStatus> = { openai, anthropic, gemini };
-    for (const id of ["openai", "anthropic", "gemini"] as const) {
+    const next: Record<string, ProviderStatus> = { openai, anthropic, gemini, kimi };
+    for (const id of ["openai", "anthropic", "gemini", "kimi"] as const) {
       const wasConnected = prevStatuses.current[id]?.cli_installed && prevStatuses.current[id]?.authenticated;
       const isConnected = next[id]?.cli_installed && next[id]?.authenticated;
       if (!wasConnected && isConnected) {

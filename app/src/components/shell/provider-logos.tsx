@@ -14,6 +14,16 @@ export function OpenAILogo() {
   );
 }
 
+export function KimiLogo() {
+  return (
+    <img
+      src="https://statics.moonshot.cn/kimi-web-seo/assets/kimi-logo-CegIMkbU.png"
+      alt="Kimi"
+      className="h-8 w-8 rounded-md"
+    />
+  );
+}
+
 export function GeminiLogo() {
   return (
     <svg viewBox="0 0 24 24" className="h-8 w-8" fill="currentColor">

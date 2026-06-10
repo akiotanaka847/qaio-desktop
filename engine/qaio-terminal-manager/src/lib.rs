@@ -14,6 +14,8 @@ pub mod concurrency;
 mod antigravity_command;
 pub mod antigravity_parser;
 mod antigravity_runner;
+mod kimi_command;
+pub mod kimi_parser;
 pub mod manager;
 pub mod parser;
 pub mod provider_auth;

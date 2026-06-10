@@ -8,6 +8,7 @@
 use crate::error::{CoreError, CoreResult};
 use qaio_terminal_manager::provider_auth::{
     probe_claude_auth_status, probe_codex_auth_status, probe_antigravity_auth_status,
+    probe_kimi_auth_status,
     ProviderAuthState,
 };
 use qaio_terminal_manager::{claude_path, Provider};
@@ -19,7 +20,7 @@ use std::time::Duration;
 
 mod login_session;
 mod resolve;
-use resolve::{resolve_claude, resolve_codex, resolve_antigravity};
+use resolve::{resolve_claude, resolve_codex, resolve_antigravity, resolve_kimi};
 
 pub const DEFAULT_PROVIDER_KEY: &str = "default_provider";
 
@@ -70,6 +71,7 @@ pub async fn check_status(provider: Provider) -> CoreResult<ProviderStatus> {
         Provider::Anthropic => check_claude_status().await,
         Provider::OpenAI => check_codex_status().await,
         Provider::Gemini => check_antigravity_status().await,
+        Provider::Kimi => check_kimi_status().await,
     })
 }
 
@@ -185,6 +187,7 @@ fn login_command(provider: Provider) -> CoreResult<ProviderCliCommand> {
         Provider::Anthropic => resolve_claude().1,
         Provider::OpenAI => resolve_codex().1,
         Provider::Gemini => resolve_antigravity().1,
+        Provider::Kimi => resolve_kimi().1,
     };
     build_login_command(provider, resolved_path, claude_path::shell_path())
 }
@@ -194,6 +197,7 @@ fn logout_command(provider: Provider) -> CoreResult<ProviderCliCommand> {
         Provider::Anthropic => resolve_claude().1,
         Provider::OpenAI => resolve_codex().1,
         Provider::Gemini => resolve_antigravity().1,
+        Provider::Kimi => resolve_kimi().1,
     };
     build_logout_command(provider, resolved_path, claude_path::shell_path())
 }
@@ -207,12 +211,18 @@ fn build_login_command(
         Provider::Anthropic => ("claude", vec!["auth", "login", "--claudeai"]),
         Provider::OpenAI => ("codex", vec!["login"]),
         Provider::Gemini => {
-            // Antigravity CLI uses Google OAuth via the system keyring.
-            // There is no headless `auth login` subcommand.
             return Err(CoreError::BadRequest(
                 "Antigravity uses Google account authentication. \
                  Run 'agy' in a terminal to complete sign-in, \
                  or set the GEMINI_API_KEY environment variable."
+                    .into(),
+            ));
+        }
+        Provider::Kimi => {
+            return Err(CoreError::BadRequest(
+                "Kimi Code uses API key authentication. \
+                 Configure your API key in ~/.kimi-code/config.toml, \
+                 or run 'kimi' in a terminal and use /login."
                     .into(),
             ));
         }
@@ -247,6 +257,13 @@ fn build_logout_command(
                 "Antigravity logout is not supported. \
                  Run '/logout' inside the Antigravity CLI, \
                  or delete ~/.gemini/ to revoke credentials."
+                    .into(),
+            ));
+        }
+        Provider::Kimi => {
+            return Err(CoreError::BadRequest(
+                "Kimi logout is not supported from Qaio. \
+                 Edit ~/.kimi-code/config.toml to remove your API key."
                     .into(),
             ));
         }
@@ -319,6 +336,24 @@ async fn check_antigravity_status() -> ProviderStatus {
     }
 }
 
+async fn check_kimi_status() -> ProviderStatus {
+    let (install_source, cli_path) = resolve_kimi();
+    let cli_installed = !matches!(install_source, InstallSource::Missing);
+    let auth_state = if cli_installed {
+        probe_kimi_auth_status().await
+    } else {
+        ProviderAuthState::Unauthenticated
+    };
+    ProviderStatus {
+        provider: "kimi".into(),
+        cli_installed,
+        auth_state,
+        cli_name: "kimi".into(),
+        install_source,
+        cli_path: cli_path.map(|p| p.to_string_lossy().into_owned()),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -330,6 +365,8 @@ mod tests {
         assert!(parse("openai").is_ok());
         assert!(parse("gemini").is_ok());
         assert!(parse("google").is_ok());
+        assert!(parse("kimi").is_ok());
+        assert!(parse("moonshot").is_ok());
     }
 
     #[test]

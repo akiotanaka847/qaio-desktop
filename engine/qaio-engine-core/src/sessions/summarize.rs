@@ -65,6 +65,7 @@ async fn run_provider_summary(
         Provider::Anthropic => run_claude_summary(&prompt, model).await,
         Provider::OpenAI => run_codex_summary(&prompt, model).await,
         Provider::Gemini => run_antigravity_summary(&prompt, model).await,
+        Provider::Kimi => run_kimi_summary(&prompt, model).await,
     }
 }
 
@@ -105,6 +106,16 @@ async fn run_antigravity_summary(prompt: &str, model: Option<&str>) -> Result<St
         .arg(prompt)
         .arg("--dangerously-skip-permissions");
     // Prompt passed via --print arg; empty string keeps stdin write harmless.
+    run_command_with_prompt(cmd, "").await
+}
+
+async fn run_kimi_summary(prompt: &str, model: Option<&str>) -> Result<String, String> {
+    let mut cmd = tokio::process::Command::new("kimi");
+    cmd.env("PATH", claude_path::shell_path());
+    cmd.arg("-p").arg(prompt);
+    if let Some(m) = model {
+        cmd.arg("-m").arg(m);
+    }
     run_command_with_prompt(cmd, "").await
 }
 

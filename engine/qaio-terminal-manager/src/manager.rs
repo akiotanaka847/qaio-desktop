@@ -2,6 +2,7 @@ use super::types::{Provider, SessionStatus};
 use crate::claude_runner::spawn_claude;
 use crate::cli_process::{run_cli_process, CliRunOutcome};
 use crate::codex_command;
+use crate::kimi_command;
 use crate::antigravity_runner::spawn_antigravity;
 use crate::session_update::SessionUpdate;
 use tokio::process::Command;
@@ -77,6 +78,17 @@ impl SessionManager {
                         working_dir,
                         system_prompt,
                         prior_response_lines,
+                    )
+                    .await;
+                }
+                Provider::Kimi => {
+                    spawn_kimi(
+                        &tx,
+                        prompt,
+                        resume_session_id,
+                        working_dir,
+                        model,
+                        system_prompt,
                     )
                     .await;
                 }
@@ -168,4 +180,57 @@ fn build_codex_command(
         cmd.current_dir(dir);
     }
     cmd
+}
+
+/// Spawn a Kimi CLI session (`kimi -p <prompt> --output-format stream-json`).
+async fn spawn_kimi(
+    tx: &mpsc::UnboundedSender<SessionUpdate>,
+    prompt: String,
+    resume_session_id: Option<String>,
+    working_dir: Option<std::path::PathBuf>,
+    model: Option<String>,
+    system_prompt: Option<String>,
+) {
+    tracing::info!(
+        "[qaio:session] spawning kimi -p (resume={:?})",
+        resume_session_id,
+    );
+
+    if let Some(ref dir) = working_dir {
+        if !dir.is_dir() {
+            let _ = tx.send(SessionUpdate::Status(SessionStatus::Error(format!(
+                "Working directory not found: {}. Was it deleted?",
+                dir.display()
+            ))));
+            return;
+        }
+    }
+
+    // kimi-code v0.6.0 has no system-prompt flag. When provided, prepend
+    // it to the user prompt in <system> tags (same approach as agy).
+    // On resume, the system prompt was already sent in turn 1, so skip it.
+    let full_prompt = match system_prompt {
+        Some(sp) if !sp.is_empty() && resume_session_id.is_none() => {
+            format!("<system>\n{sp}\n</system>\n\n{prompt}")
+        }
+        _ => prompt,
+    };
+
+    let mut cmd = Command::new("kimi");
+    cmd.env("PATH", super::claude_path::shell_path());
+    if let Some(shell) = crate::windows_shell::detect() {
+        cmd.env("SHELL", &shell);
+    }
+    cmd.args(kimi_command::build_args(
+        &full_prompt,
+        resume_session_id.as_deref(),
+        working_dir.as_deref(),
+        model.as_deref(),
+    ));
+    if let Some(dir) = &working_dir {
+        cmd.current_dir(dir);
+    }
+
+    // Kimi -p passes the prompt as a CLI arg; empty stdin.
+    run_cli_process(tx, &mut cmd, "", Provider::Kimi, 0).await;
 }
