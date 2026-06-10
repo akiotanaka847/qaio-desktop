@@ -34,6 +34,7 @@ const COMMON_CLAUDE_DIRS: &[&str] = &[
     "/usr/local/bin",
     "~/.cargo/bin",
     "~/.composio",
+    "~/.kimi-code/bin",
 ];
 
 #[cfg(windows)]

@@ -35,6 +35,7 @@ pub(crate) async fn run_cli_process(
         Provider::Anthropic => "claude",
         Provider::OpenAI => "codex",
         Provider::Gemini => "agy",
+        Provider::Kimi => "kimi",
     };
 
     cmd.stdout(Stdio::piped());

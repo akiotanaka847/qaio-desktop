@@ -68,6 +68,19 @@ export const PROVIDERS: readonly ProviderInfo[] = [
     ],
     defaultModel: "gemini-3.5-flash",
   },
+  {
+    id: "kimi",
+    name: "Moonshot",
+    subtitle: "Kimi Code",
+    cliName: "kimi",
+    installUrl: "https://github.com/MoonshotAI/kimi-cli",
+    loginCommand: "kimi",
+    cost: "Moonshot API credits",
+    models: [
+      { id: "moonshot-v1-auto", label: "Moonshot V1 Auto", description: "Auto-selects the best model for the task." },
+    ],
+    defaultModel: "moonshot-v1-auto",
+  },
 ] as const;
 
 /** Find a provider by id. */

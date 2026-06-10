@@ -139,6 +139,30 @@ pub async fn probe_antigravity_auth_status() -> ProviderAuthState {
     read_antigravity_config_auth(&home)
 }
 
+/// Kimi auth check: look for `~/.kimi-code/config.toml` with a configured
+/// provider that has an `api_key`, or check if `kimi` is on PATH with a
+/// working config.
+pub async fn probe_kimi_auth_status() -> ProviderAuthState {
+    let home = std::env::var("HOME").unwrap_or_default();
+    read_kimi_config_auth(&home)
+}
+
+fn read_kimi_config_auth(home: &str) -> ProviderAuthState {
+    let config = PathBuf::from(home)
+        .join(".kimi-code")
+        .join("config.toml");
+    match std::fs::read_to_string(&config) {
+        Ok(content) => {
+            if content.contains("api_key") || content.contains("default_model") {
+                ProviderAuthState::Authenticated
+            } else {
+                ProviderAuthState::Unauthenticated
+            }
+        }
+        Err(_) => ProviderAuthState::Unauthenticated,
+    }
+}
+
 fn read_antigravity_config_auth(home: &str) -> ProviderAuthState {
     // Antigravity CLI stores session data under ~/.gemini/antigravity-cli/
     let agy_dir = PathBuf::from(home)

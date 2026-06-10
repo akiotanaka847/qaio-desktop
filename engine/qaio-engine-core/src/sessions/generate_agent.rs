@@ -80,6 +80,7 @@ async fn run_generation(
         Provider::Anthropic => run_claude(&prompt, model).await,
         Provider::OpenAI => run_codex(&prompt, model).await,
         Provider::Gemini => run_antigravity(&prompt, model).await,
+        Provider::Kimi => run_kimi(&prompt, model).await,
     }
 }
 
@@ -120,6 +121,16 @@ async fn run_antigravity(prompt: &str, model: Option<&str>) -> Result<String, St
         .arg(prompt)
         .arg("--dangerously-skip-permissions");
     // Prompt passed via --print arg; empty string keeps stdin write harmless.
+    run_command(cmd, "").await
+}
+
+async fn run_kimi(prompt: &str, model: Option<&str>) -> Result<String, String> {
+    let mut cmd = tokio::process::Command::new("kimi");
+    cmd.env("PATH", claude_path::shell_path());
+    cmd.arg("-p").arg(prompt);
+    if let Some(m) = model {
+        cmd.arg("-m").arg(m);
+    }
     run_command(cmd, "").await
 }
 

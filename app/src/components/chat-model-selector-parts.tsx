@@ -77,6 +77,15 @@ export function ProviderIcon({ providerId, className }: { providerId: string; cl
       </svg>
     );
   }
+  if (providerId === "kimi") {
+    return (
+      <img
+        src="https://statics.moonshot.cn/kimi-web-seo/assets/kimi-logo-CegIMkbU.png"
+        alt="Kimi"
+        className={className}
+      />
+    );
+  }
   // OpenAI fallback
   return (
     <svg viewBox="0 0 24 24" className={className} fill="currentColor">
