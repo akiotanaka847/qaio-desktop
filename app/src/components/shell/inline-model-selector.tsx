@@ -4,7 +4,7 @@ import { Check, ChevronDown } from "lucide-react";
 import { cn } from "@qaio-ai/core";
 import { tauriProvider, type ProviderStatus } from "../../lib/tauri";
 import { PROVIDERS, getProvider, getModel } from "../../lib/providers";
-import { ProviderIcon } from "./provider-icon";
+import { ProviderLogo } from "./provider-logos";
 
 interface InlineModelSelectorProps {
   provider: string;
@@ -19,11 +19,13 @@ export function InlineModelSelector({ provider, model, onSelect }: InlineModelSe
   const [open, setOpen] = useState(false);
 
   const loadStatuses = useCallback(async () => {
-    const [openai, anthropic] = await Promise.all([
+    const [openai, anthropic, gemini, kimi] = await Promise.all([
       tauriProvider.checkStatus("openai"),
       tauriProvider.checkStatus("anthropic"),
+      tauriProvider.checkStatus("gemini"),
+      tauriProvider.checkStatus("kimi"),
     ]);
-    setStatuses({ openai, anthropic });
+    setStatuses({ openai, anthropic, gemini, kimi });
   }, []);
 
   useEffect(() => {
@@ -45,7 +47,7 @@ export function InlineModelSelector({ provider, model, onSelect }: InlineModelSe
             : "border-border hover:border-foreground/15 hover:bg-accent/50",
         )}
       >
-        <ProviderIcon providerId={provider} className="size-5 shrink-0" />
+        <ProviderLogo providerId={provider} className="size-5 shrink-0" />
         <div className="flex-1 min-w-0">
           <div className="text-sm font-medium">{currentModel?.label ?? model}</div>
           <div className="text-xs text-muted-foreground">{currentProvider?.name}</div>
@@ -62,7 +64,7 @@ export function InlineModelSelector({ provider, model, onSelect }: InlineModelSe
             return (
               <div key={prov.id}>
                 <div className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-muted-foreground">
-                  <ProviderIcon providerId={prov.id} className="size-3.5" />
+                  <ProviderLogo providerId={prov.id} className="size-3.5" />
                   {prov.name}
                   {!connected && (
                     <span className="text-[10px] text-muted-foreground/60 ml-auto">{t("card.notConnected")}</span>
