@@ -16,11 +16,11 @@ use axum::{
 };
 use base64::Engine as _;
 use qaio_engine_core::agents::files;
-use qaio_engine_core::paths::expand_tilde;
+use qaio_engine_core::paths::{expand_tilde, EnginePaths};
 use qaio_engine_core::CoreError;
 use qaio_ui_events::QaioEvent;
 use serde::{Deserialize, Serialize};
-use std::path::PathBuf;
+use std::path::{Component, PathBuf};
 use std::sync::Arc;
 
 pub fn router() -> Router<Arc<ServerState>> {
@@ -107,11 +107,31 @@ pub struct CreatedFolder {
 // Helpers
 // ---------------------------------------------------------------------------
 
-fn resolve_root(agent_path: &str) -> Result<PathBuf, CoreError> {
+/// Resolve and **sandbox** a caller-supplied `agent_path`.
+///
+/// The file API accepts the agent directory as a parameter, so without
+/// this check any bearer-token holder (notably a paired mobile device
+/// reaching the engine over the relay tunnel) could set `agent_path` to
+/// an arbitrary location like `~/.ssh` and read or write files outside
+/// Qaio's data. We require the resolved path to live under a known Qaio
+/// root (`~/.qaio` or the legacy `~/Documents/Qaio`) and reject any `..`
+/// traversal. Legitimate agent paths always satisfy both.
+fn resolve_root(paths: &EnginePaths, agent_path: &str) -> Result<PathBuf, CoreError> {
     if agent_path.trim().is_empty() {
         return Err(CoreError::BadRequest("agent_path is required".into()));
     }
-    Ok(expand_tilde(std::path::Path::new(agent_path)))
+    let expanded = expand_tilde(std::path::Path::new(agent_path));
+    if expanded.components().any(|c| matches!(c, Component::ParentDir)) {
+        return Err(CoreError::BadRequest(
+            "agent_path must not contain '..'".into(),
+        ));
+    }
+    if !expanded.starts_with(paths.home()) && !expanded.starts_with(paths.docs()) {
+        return Err(CoreError::BadRequest(
+            "agent_path must be within the Qaio data directory".into(),
+        ));
+    }
+    Ok(expanded)
 }
 
 fn emit(state: &ServerState, event: QaioEvent) {
@@ -123,10 +143,10 @@ fn emit(state: &ServerState, event: QaioEvent) {
 // ---------------------------------------------------------------------------
 
 async fn read(
-    State(_st): State<Arc<ServerState>>,
+    State(st): State<Arc<ServerState>>,
     Json(body): Json<AgentRelBody>,
 ) -> Result<Json<FileContent>, ApiError> {
-    let root = resolve_root(&body.agent_path)?;
+    let root = resolve_root(&st.engine.paths, &body.agent_path)?;
     let content = files::read_agent_file(&root, &body.rel_path)?;
     Ok(Json(FileContent { content }))
 }
@@ -135,7 +155,7 @@ async fn write(
     State(st): State<Arc<ServerState>>,
     Json(body): Json<WriteBody>,
 ) -> Result<(), ApiError> {
-    let root = resolve_root(&body.agent_path)?;
+    let root = resolve_root(&st.engine.paths, &body.agent_path)?;
     if let Some(event) =
         files::write_agent_file(&root, &body.agent_path, &body.rel_path, &body.content)?
     {
@@ -145,19 +165,19 @@ async fn write(
 }
 
 async fn seed_schemas(
-    State(_st): State<Arc<ServerState>>,
+    State(st): State<Arc<ServerState>>,
     Json(body): Json<AgentPathBody>,
 ) -> Result<(), ApiError> {
-    let root = resolve_root(&body.agent_path)?;
+    let root = resolve_root(&st.engine.paths, &body.agent_path)?;
     files::seed_agent_schemas(&root)?;
     Ok(())
 }
 
 async fn migrate(
-    State(_st): State<Arc<ServerState>>,
+    State(st): State<Arc<ServerState>>,
     Json(body): Json<AgentPathBody>,
 ) -> Result<(), ApiError> {
-    let root = resolve_root(&body.agent_path)?;
+    let root = resolve_root(&st.engine.paths, &body.agent_path)?;
     files::migrate_agent_files(&root)?;
     Ok(())
 }
@@ -172,18 +192,18 @@ pub struct AgentPathQuery {
 }
 
 async fn list_project_files(
-    State(_st): State<Arc<ServerState>>,
+    State(st): State<Arc<ServerState>>,
     Query(q): Query<AgentPathQuery>,
 ) -> Result<Json<Vec<files::ProjectFile>>, ApiError> {
-    let root = resolve_root(&q.agent_path)?;
+    let root = resolve_root(&st.engine.paths, &q.agent_path)?;
     Ok(Json(files::list_project_files(&root)?))
 }
 
 async fn read_project(
-    State(_st): State<Arc<ServerState>>,
+    State(st): State<Arc<ServerState>>,
     Json(body): Json<AgentRelBody>,
 ) -> Result<Json<FileContent>, ApiError> {
-    let root = resolve_root(&body.agent_path)?;
+    let root = resolve_root(&st.engine.paths, &body.agent_path)?;
     let content = files::read_project_file(&root, &body.rel_path)?;
     Ok(Json(FileContent { content }))
 }
@@ -192,7 +212,7 @@ async fn rename(
     State(st): State<Arc<ServerState>>,
     Json(body): Json<RenameBody>,
 ) -> Result<(), ApiError> {
-    let root = resolve_root(&body.agent_path)?;
+    let root = resolve_root(&st.engine.paths, &body.agent_path)?;
     files::rename_file(&root, &body.rel_path, &body.new_name)?;
     emit(
         &st,
@@ -207,7 +227,7 @@ async fn delete_file(
     State(st): State<Arc<ServerState>>,
     Query(q): Query<DeleteFileQuery>,
 ) -> Result<(), ApiError> {
-    let root = resolve_root(&q.agent_path)?;
+    let root = resolve_root(&st.engine.paths, &q.agent_path)?;
     files::delete_file(&root, &q.rel_path)?;
     emit(
         &st,
@@ -222,7 +242,7 @@ async fn create_folder(
     State(st): State<Arc<ServerState>>,
     Json(body): Json<CreateFolderBody>,
 ) -> Result<Json<CreatedFolder>, ApiError> {
-    let root = resolve_root(&body.agent_path)?;
+    let root = resolve_root(&st.engine.paths, &body.agent_path)?;
     let created = files::create_folder(&root, &body.folder_name)?;
     emit(
         &st,
@@ -237,7 +257,7 @@ async fn import(
     State(st): State<Arc<ServerState>>,
     Json(body): Json<ImportBody>,
 ) -> Result<Json<Vec<files::ProjectFile>>, ApiError> {
-    let root = resolve_root(&body.agent_path)?;
+    let root = resolve_root(&st.engine.paths, &body.agent_path)?;
     let imported =
         files::import_files(&root, &body.file_paths, body.target_folder.as_deref())?;
     if !imported.is_empty() {
@@ -255,7 +275,7 @@ async fn import_bytes(
     State(st): State<Arc<ServerState>>,
     Json(body): Json<ImportBytesBody>,
 ) -> Result<Json<files::ProjectFile>, ApiError> {
-    let root = resolve_root(&body.agent_path)?;
+    let root = resolve_root(&st.engine.paths, &body.agent_path)?;
     let bytes = base64::engine::general_purpose::STANDARD
         .decode(&body.data_base64)
         .map_err(|e| CoreError::BadRequest(format!("invalid base64: {e}")))?;
@@ -267,4 +287,46 @@ async fn import_bytes(
         },
     );
     Ok(Json(pf))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::path::Path;
+
+    fn paths() -> EnginePaths {
+        EnginePaths::new(
+            PathBuf::from("/home/u/Documents/Qaio"),
+            PathBuf::from("/home/u/.qaio"),
+        )
+    }
+
+    #[test]
+    fn accepts_path_under_qaio_home() {
+        let root = resolve_root(&paths(), "/home/u/.qaio/workspaces/Personal/linkedin").unwrap();
+        assert_eq!(root, Path::new("/home/u/.qaio/workspaces/Personal/linkedin"));
+    }
+
+    #[test]
+    fn accepts_legacy_docs_path() {
+        assert!(resolve_root(&paths(), "/home/u/Documents/Qaio/agent").is_ok());
+    }
+
+    #[test]
+    fn rejects_path_outside_qaio_roots() {
+        let err = resolve_root(&paths(), "/home/u/.ssh").unwrap_err();
+        assert!(matches!(err, CoreError::BadRequest(_)));
+    }
+
+    #[test]
+    fn rejects_parent_dir_traversal() {
+        let err =
+            resolve_root(&paths(), "/home/u/.qaio/workspaces/../../.ssh").unwrap_err();
+        assert!(matches!(err, CoreError::BadRequest(_)));
+    }
+
+    #[test]
+    fn rejects_empty_path() {
+        assert!(resolve_root(&paths(), "   ").is_err());
+    }
 }
