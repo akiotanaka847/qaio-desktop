@@ -103,9 +103,12 @@ watchdog the moment the supervisor tried to reap.
 |---|---|---|---|
 | Local (desktop) | `127.0.0.1:0` | stdout banner | Tauri `setup()` |
 | Always On (VPS) | `0.0.0.0:7777` behind TLS proxy | `.env` file | systemd / docker |
+| Azure (Container Apps) | `0.0.0.0:7777` behind managed ingress | Container App secrets | Container Apps (1 replica) |
 | Teams (multi-tenant) | fronted by proxy | per-tenant secret | k8s / nomad (future) |
 
-See `always-on/README.md` for the VPS path.
+See `always-on/README.md` for the VPS path and `always-on/azure/README.md`
+for the Azure Container Apps path (provider CLIs baked into the image,
+keys injected as secrets, Azure Files for the DB).
 
 ## Health monitoring
 
