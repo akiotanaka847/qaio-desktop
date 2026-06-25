@@ -13,6 +13,8 @@
 #       ANTHROPIC_API_KEY   (optional)  enables Claude
 #       OPENAI_API_KEY      (optional)  enables Codex
 #       KIMI_API_KEY        (optional)  enables Kimi
+#       GEMINI_API_KEY      (optional)  enables Gemini/agy (headless auth
+#                                       via this key is UNCONFIRMED)
 #
 # Usage:  always-on/azure/deploy.sh
 set -euo pipefail
@@ -58,6 +60,7 @@ ENGINE_URL="$(az deployment group create \
     anthropicApiKey="${ANTHROPIC_API_KEY:-}" \
     openaiApiKey="${OPENAI_API_KEY:-}" \
     kimiApiKey="${KIMI_API_KEY:-}" \
+    geminiApiKey="${GEMINI_API_KEY:-}" \
   --query 'properties.outputs.engineUrl.value' -o tsv)"
 
 echo

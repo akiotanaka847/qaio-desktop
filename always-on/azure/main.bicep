@@ -42,6 +42,10 @@ param openaiApiKey string = ''
 @description('Moonshot API key for the Kimi provider. Empty to disable.')
 param kimiApiKey string = ''
 
+@secure()
+@description('Google AI Studio API key for the Gemini provider (agy). Empty to disable. NOTE: headless auth via this key is unconfirmed; agy may still require interactive Google OAuth.')
+param geminiApiKey string = ''
+
 var storageName = toLower(replace('${appName}stg', '-', ''))
 var shareName = 'qaio-data'
 var storageMountName = 'qaio-data-mount'
@@ -132,6 +136,7 @@ resource app 'Microsoft.App/containerApps@2024-03-01' = {
         { name: 'anthropic-api-key', value: anthropicApiKey }
         { name: 'openai-api-key', value: openaiApiKey }
         { name: 'kimi-api-key', value: kimiApiKey }
+        { name: 'gemini-api-key', value: geminiApiKey }
       ]
     }
     template: {
@@ -153,6 +158,7 @@ resource app 'Microsoft.App/containerApps@2024-03-01' = {
             { name: 'ANTHROPIC_API_KEY', secretRef: 'anthropic-api-key' }
             { name: 'OPENAI_API_KEY', secretRef: 'openai-api-key' }
             { name: 'KIMI_API_KEY', secretRef: 'kimi-api-key' }
+            { name: 'GEMINI_API_KEY', secretRef: 'gemini-api-key' }
           ]
           volumeMounts: [
             { volumeName: 'qaio-data', mountPath: '/data' }

@@ -24,7 +24,7 @@ over the same HTTP + WebSocket protocol — only the `baseUrl` changes.
 | **Kimi** (Moonshot) | ✅ Yes | `KIMI_API_KEY` |
 | **Claude** (Anthropic) | ✅ Yes | `ANTHROPIC_API_KEY` (paid API key from console.anthropic.com, **not** a Claude Pro subscription) |
 | **Codex** (OpenAI) | ✅ Yes | `OPENAI_API_KEY` (platform key, **not** a ChatGPT subscription) |
-| **Gemini** (agy) | ❌ No | Google OAuth via system keyring — cannot authenticate in a container. The binary is installed but the provider is effectively unavailable on the server. |
+| **Gemini** (agy) | ⚠️ Maybe | `GEMINI_API_KEY` (Google AI Studio key). The engine forwards it and the binary is installed, but **headless auth via the key is unconfirmed** — in testing, `agy` with only the key (no keyring) produced no output, suggesting it may still fall back to interactive Google OAuth. Wire the key and verify after deploy; if it stalls, Gemini is not usable headless and you fall back to Claude/Codex/Kimi. |
 
 ## Deploy
 
@@ -36,6 +36,7 @@ export QAIO_ENGINE_TOKEN="$(openssl rand -hex 32)"   # required
 export ANTHROPIC_API_KEY="sk-ant-..."                # optional
 export OPENAI_API_KEY="sk-..."                       # optional
 export KIMI_API_KEY="sk-..."                         # optional
+export GEMINI_API_KEY="..."                          # optional (headless unconfirmed)
 
 always-on/azure/deploy.sh
 ```
