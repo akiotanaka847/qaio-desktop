@@ -24,6 +24,13 @@
     "openBrowserAgain": "Abrir el navegador de nuevo",
     "launchErrorTitle": "No se pudo abrir {{cli}}",
     "installedCheckAgain": "Ya la instalé, verificar de nuevo",
-    "canContinueHint": "Puedes continuar sin conectar, pero necesitarás tener la herramienta lista antes de usar agentes."
+    "canContinueHint": "Puedes continuar sin conectar, pero necesitarás tener la herramienta lista antes de usar agentes.",
+    "waitingDeviceCode": "Esperando a que termines de iniciar sesión..."
+  },
+  "deviceCode": {
+    "instruction": "Abre este enlace en cualquier dispositivo e ingresa el código para terminar de iniciar sesión.",
+    "copy": "Copiar",
+    "copied": "Copiado",
+    "expires": "El código expira en 15 minutos."
   }
 }

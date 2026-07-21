@@ -12,12 +12,13 @@ use qaio_terminal_manager::provider_auth::{
     ProviderAuthState,
 };
 use qaio_terminal_manager::{claude_path, Provider};
-use qaio_ui_events::DynEventSink;
+use qaio_ui_events::{DynEventSink, QaioEvent};
 use serde::{Deserialize, Serialize};
 use std::ffi::OsString;
 use std::path::PathBuf;
 use std::time::Duration;
 
+mod device_code;
 mod login_session;
 mod resolve;
 use resolve::{resolve_claude, resolve_codex, resolve_antigravity, resolve_kimi};
@@ -89,11 +90,15 @@ pub async fn launch_login(provider: Provider, events: DynEventSink) -> CoreResul
         shell_path,
     } = login_command(provider)?;
 
-    let child = tokio::process::Command::new(&path)
+    // stdout is piped (not null) so a device-code challenge can be scraped
+    // and surfaced. Whatever we pipe we must also drain, or a chatty CLI
+    // would block once the pipe buffer fills — `watch_for_device_code`
+    // reads to EOF for exactly that reason.
+    let mut child = tokio::process::Command::new(&path)
         .args(&args)
         .env("PATH", shell_path)
         .stdin(std::process::Stdio::null())
-        .stdout(std::process::Stdio::null())
+        .stdout(std::process::Stdio::piped())
         .stderr(std::process::Stdio::null())
         .kill_on_drop(true)
         .spawn()
@@ -101,9 +106,63 @@ pub async fn launch_login(provider: Provider, events: DynEventSink) -> CoreResul
             CoreError::Internal(format!("{cli_name} login failed to start: {e}"))
         })?;
 
+    if let Some(stdout) = child.stdout.take() {
+        watch_for_device_code(provider, stdout, events.clone());
+    }
+
     tracing::info!("[qaio:provider] {cli_name} login spawned (pid {:?})", child.id());
     login_session::register(provider, child, events).await;
     Ok(())
+}
+
+/// Drain a login subprocess's stdout, emitting `ProviderLoginDeviceCode`
+/// the first time a complete challenge (URL + code) appears.
+///
+/// Reads to EOF even after emitting so the child never blocks on a full
+/// pipe. Providers that print no challenge simply produce no event.
+fn watch_for_device_code(
+    provider: Provider,
+    stdout: tokio::process::ChildStdout,
+    events: DynEventSink,
+) {
+    use tokio::io::AsyncReadExt;
+
+    let provider_str = provider.to_string();
+    tokio::spawn(async move {
+        let mut reader = stdout;
+        let mut buf = [0u8; 1024];
+        let mut accumulated = String::new();
+        let mut emitted = false;
+
+        loop {
+            match reader.read(&mut buf).await {
+                Ok(0) => break, // EOF: the CLI exited.
+                Ok(n) => {
+                    accumulated.push_str(&String::from_utf8_lossy(&buf[..n]));
+                    if emitted {
+                        continue;
+                    }
+                    if let Some(challenge) = device_code::parse(&accumulated) {
+                        tracing::info!(
+                            "[qaio:provider] {provider_str} device-code challenge ready"
+                        );
+                        events.emit(QaioEvent::ProviderLoginDeviceCode {
+                            provider: provider_str.clone(),
+                            url: challenge.url,
+                            code: challenge.code,
+                        });
+                        emitted = true;
+                    }
+                }
+                Err(e) => {
+                    tracing::warn!(
+                        "[qaio:provider] {provider_str} login stdout read failed: {e}"
+                    );
+                    break;
+                }
+            }
+        }
+    });
 }
 
 /// Cancel a pending login for the given provider. No-op if no login is
@@ -209,7 +268,11 @@ fn build_login_command(
 ) -> CoreResult<ProviderCliCommand> {
     let (cli_name, args): (&'static str, Vec<&'static str>) = match provider {
         Provider::Anthropic => ("claude", vec!["auth", "login", "--claudeai"]),
-        Provider::OpenAI => ("codex", vec!["login"]),
+        // `--device-auth` prints a URL + one-time code instead of opening a
+        // browser, so sign-in also works when the engine runs headless (a
+        // container, a server, or a remote engine the desktop talks to).
+        // `launch_login` scrapes that output and emits ProviderLoginDeviceCode.
+        Provider::OpenAI => ("codex", vec!["login", "--device-auth"]),
         Provider::Gemini => {
             return Err(CoreError::BadRequest(
                 "Antigravity uses Google account authentication. \

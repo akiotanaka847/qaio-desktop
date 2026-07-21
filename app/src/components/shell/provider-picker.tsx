@@ -26,6 +26,10 @@ export function ProviderPicker({ value, model: controlledModel, onSelect }: Prop
   });
 
   const [loginPending, setLoginPending] = useState<string | null>(null);
+  /** Active device-code challenges, keyed by provider id. */
+  const [deviceCodes, setDeviceCodes] = useState<
+    Record<string, { url: string; code: string }>
+  >({});
 
   const prevStatuses = useRef<Record<string, ProviderStatus>>({});
   const loadStatuses = useCallback(async () => {
@@ -59,10 +63,21 @@ export function ProviderPicker({ value, model: controlledModel, onSelect }: Prop
     return () => { if (pollRef.current) clearInterval(pollRef.current); };
   }, [expanded, statuses, loadStatuses]);
 
-  // React to ProviderLoginComplete — clear pending state + refresh.
+  // React to login lifecycle events: a device-code challenge to display,
+  // and completion to clear both the pending state and any stale code.
   useEffect(() => {
     return subscribeQaioEvents((ev) => {
+      if (ev.type === "ProviderLoginDeviceCode") {
+        const { provider, url, code } = ev.data;
+        setDeviceCodes((prev) => ({ ...prev, [provider]: { url, code } }));
+        return;
+      }
       if (ev.type === "ProviderLoginComplete") {
+        const { provider } = ev.data;
+        setDeviceCodes((prev) => {
+          const { [provider]: _done, ...rest } = prev;
+          return rest;
+        });
         setLoginPending(null);
         void loadStatuses();
       }
@@ -135,6 +150,7 @@ export function ProviderPicker({ value, model: controlledModel, onSelect }: Prop
           status={statuses[expanded]}
           isSelected={value === expanded}
           loginPending={loginPending === expanded}
+          deviceCode={deviceCodes[expanded]}
           onRefresh={handleRefresh}
           onLaunchLogin={() => void handleLaunchLogin(expanded)}
           onCancel={() => void handleCancel(expanded)}

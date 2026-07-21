@@ -127,4 +127,13 @@ export type QaioEvent =
   | {
       type: "ProviderLoginComplete";
       data: { provider: string; cancelled: boolean };
+    }
+  | {
+      /**
+       * The provider's CLI needs the user to finish sign-in in a browser
+       * using a one-time code. Emitted when the engine cannot open a
+       * browser itself (headless host, container, or a remote engine).
+       */
+      type: "ProviderLoginDeviceCode";
+      data: { provider: string; url: string; code: string };
     };

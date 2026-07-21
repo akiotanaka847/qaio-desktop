@@ -24,6 +24,13 @@
     "openBrowserAgain": "Open browser again",
     "launchErrorTitle": "Couldn't launch {{cli}}",
     "installedCheckAgain": "I've installed it, check again",
-    "canContinueHint": "You can continue without connecting, but you'll need the CLI set up before using agents."
+    "canContinueHint": "You can continue without connecting, but you'll need the CLI set up before using agents.",
+    "waitingDeviceCode": "Waiting for you to finish signing in..."
+  },
+  "deviceCode": {
+    "instruction": "Open this link on any device and enter the code to finish signing in.",
+    "copy": "Copy",
+    "copied": "Copied",
+    "expires": "The code expires in 15 minutes."
   }
 }

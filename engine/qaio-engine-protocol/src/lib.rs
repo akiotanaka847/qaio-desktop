@@ -149,7 +149,8 @@ pub fn event_topic(event: &QaioEvent) -> String {
         QaioEvent::ComposioCliReady
         | QaioEvent::ComposioCliFailed { .. }
         | QaioEvent::ComposioConnectionAdded { .. } => "composio".into(),
-        QaioEvent::ProviderLoginComplete { .. } => "providers".into(),
+        QaioEvent::ProviderLoginComplete { .. }
+        | QaioEvent::ProviderLoginDeviceCode { .. } => "providers".into(),
         QaioEvent::ClaudeCliInstalling { .. }
         | QaioEvent::ClaudeCliReady
         | QaioEvent::ClaudeCliFailed { .. } => "claude".into(),

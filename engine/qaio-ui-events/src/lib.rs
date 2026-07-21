@@ -153,6 +153,18 @@ pub enum QaioEvent {
         cancelled: bool,
     },
 
+    /// A provider login needs the user to finish in a browser using a
+    /// device code. Emitted when the CLI prints its verification URL and
+    /// one-time code, which happens when the engine cannot open a browser
+    /// itself: a headless host, a container, or a remote engine the desktop
+    /// talks to over the network. The frontend shows the URL and code so
+    /// the user can complete sign-in on any device.
+    ProviderLoginDeviceCode {
+        provider: String,
+        url: String,
+        code: String,
+    },
+
     // ----- Claude Code CLI lifecycle -----
     //
     // Claude Code can't be bundled (proprietary license) so the engine
