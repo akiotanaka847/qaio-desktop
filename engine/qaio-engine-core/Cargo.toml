@@ -14,6 +14,7 @@ tracing = { workspace = true }
 uuid = { workspace = true }
 chrono = { workspace = true }
 thiserror = "1"
+regex = "1"
 qaio-db = { workspace = true }
 qaio-terminal-manager = { workspace = true }
 qaio-ui-events = { workspace = true }

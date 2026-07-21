@@ -3,19 +3,25 @@ import { Check, CircleDashed, ExternalLink, Terminal, X } from "lucide-react";
 import { Spinner, Button } from "@qaio-ai/core";
 import { tauriSystem, type ProviderStatus } from "../../lib/tauri";
 import type { ProviderInfo } from "../../lib/providers";
+import { DeviceCodePanel } from "./device-code-panel";
 
 interface SetupGuidanceProps {
   provider: ProviderInfo;
   status: ProviderStatus | undefined;
   isSelected: boolean;
   loginPending: boolean;
+  /**
+   * Device-code challenge, when the provider's CLI asked the user to finish
+   * sign-in in a browser instead of opening one. Absent for the normal flow.
+   */
+  deviceCode?: { url: string; code: string };
   onRefresh: () => void;
   onLaunchLogin: () => void;
   onCancel: () => void;
 }
 
 export function SetupGuidance({
-  provider, status, isSelected, loginPending,
+  provider, status, isSelected, loginPending, deviceCode,
   onRefresh, onLaunchLogin, onCancel,
 }: SetupGuidanceProps) {
   const { t } = useTranslation("providers");
@@ -55,7 +61,9 @@ export function SetupGuidance({
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Spinner className="h-3.5 w-3.5" />
-            <span>{t("setup.waiting")}</span>
+            <span>
+              {deviceCode ? t("setup.waitingDeviceCode") : t("setup.waiting")}
+            </span>
             <button
               type="button"
               onClick={onCancel}
@@ -65,10 +73,16 @@ export function SetupGuidance({
               {t("card.cancel")}
             </button>
           </div>
-          <button onClick={onLaunchLogin}
-            className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground transition-colors">
-            {t("setup.openBrowserAgain")}
-          </button>
+          {deviceCode ? (
+            // Device-code flow: nothing opened a browser, so the user needs
+            // the URL and code rather than a "try opening again" affordance.
+            <DeviceCodePanel url={deviceCode.url} code={deviceCode.code} />
+          ) : (
+            <button onClick={onLaunchLogin}
+              className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground transition-colors">
+              {t("setup.openBrowserAgain")}
+            </button>
+          )}
         </div>
       )}
 
