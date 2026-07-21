@@ -32,9 +32,13 @@ export const PROVIDERS: readonly ProviderInfo[] = [
     loginCommand: "codex login",
     cost: "Your ChatGPT subscription",
     models: [
+      { id: "gpt-5.6-sol", label: "GPT-5.6 Sol", description: "Newest frontier model. Deepest reasoning.", effortLevels: ["low", "medium", "high", "xhigh"] },
+      { id: "gpt-5.6-terra", label: "GPT-5.6 Terra", description: "Balanced mid-tier of the newest family.", effortLevels: ["low", "medium", "high", "xhigh"] },
+      { id: "gpt-5.6-luna", label: "GPT-5.6 Luna", description: "Fast and cost-efficient for simpler tasks.", effortLevels: ["low", "medium", "high", "xhigh"] },
       { id: "gpt-5.4", label: "GPT-5.4", description: "Flagship. Best reasoning and tool use.", effortLevels: ["low", "medium", "high", "xhigh"] },
       { id: "gpt-5.4-mini", label: "GPT-5.4 Mini", description: "Faster and cheaper for lighter tasks.", effortLevels: ["low", "medium", "high", "xhigh"] },
       { id: "gpt-5.3-codex", label: "Codex", description: "Purpose-built for coding agents.", effortLevels: ["low", "medium", "high", "xhigh"] },
+      { id: "gpt-5.3-codex-spark", label: "Codex Spark", description: "Ultra-fast coding model.", effortLevels: ["low", "medium", "high", "xhigh"] },
     ],
     defaultModel: "gpt-5.4",
   },
@@ -47,8 +51,15 @@ export const PROVIDERS: readonly ProviderInfo[] = [
     loginCommand: "claude login",
     cost: "Your Claude subscription",
     models: [
+      // Aliases (not pinned ids) so each entry tracks the newest model in its
+      // family as the bundled Claude Code CLI updates. `claude --model` accepts
+      // both; the alias keeps existing agent configs valid across releases.
+      { id: "fable", label: "Fable", description: "Most capable. Best for hard, multi-step work. Uses more credits.", effortLevels: ["low", "medium", "high", "max"] },
       { id: "sonnet", label: "Sonnet", description: "Best balance of speed and quality.", effortLevels: ["low", "medium", "high", "max"] },
-      { id: "opus", label: "Opus", description: "Most capable. Slower, more tokens.", effortLevels: ["low", "medium", "high", "xhigh", "max"] },
+      // No `xhigh` here: the engine's Anthropic effort set is
+      // low/medium/high/max, so offering xhigh produced a value the engine
+      // rejects. `max` is the top tier for Claude.
+      { id: "opus", label: "Opus", description: "Most capable. Slower, more tokens.", effortLevels: ["low", "medium", "high", "max"] },
       { id: "haiku", label: "Haiku", description: "Fastest and cheapest for simple tasks.", effortLevels: ["low", "medium", "high", "max"] },
     ],
     defaultModel: "sonnet",
