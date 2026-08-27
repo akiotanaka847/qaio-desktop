@@ -21,6 +21,7 @@ mod control;
 pub mod file_changes;
 pub mod generate_agent;
 pub mod history;
+mod process_kill;
 pub mod provider;
 pub mod summarize;
 mod summary_text;
@@ -404,24 +405,13 @@ pub async fn cancel(
 
     if let Some(pid) = pid {
         tracing::info!("[sessions] cancel session_key={session_key} pid={pid}");
-        use tokio::time::{timeout, Duration};
-        match timeout(Duration::from_millis(750), terminate_process_tree(pid)).await {
-            Ok(Ok(status)) if status.success() => {}
-            Ok(Ok(status)) => {
-                tracing::warn!(
-                    "[sessions] terminate command exited with {status} for session_key={session_key} pid={pid}"
-                );
-            }
-            Ok(Err(e)) => {
-                tracing::warn!(
-                    "[sessions] failed to run terminate command for session_key={session_key} pid={pid}: {e}"
-                );
-            }
-            Err(_) => {
-                tracing::warn!(
-                    "[sessions] terminate command timed out for session_key={session_key} pid={pid}"
-                );
-            }
+        // Kills the CLI AND every process it spawned (subagents, shell
+        // tools, MCP servers), escalating TERM -> KILL and verifying each
+        // is dead. Manages its own grace/timeout internally.
+        if !process_kill::terminate_process_tree(pid).await {
+            tracing::warn!(
+                "[sessions] process tree for session_key={session_key} pid={pid} did not fully terminate"
+            );
         }
     } else if !had_queued {
         return false;
@@ -439,40 +429,6 @@ pub async fn cancel(
         error: None,
     });
     true
-}
-
-#[cfg(unix)]
-async fn terminate_process_tree(pid: u32) -> std::io::Result<std::process::ExitStatus> {
-    let group_status = tokio::process::Command::new("kill")
-        .arg("-TERM")
-        .arg(format!("-{pid}"))
-        .stderr(std::process::Stdio::null())
-        .kill_on_drop(true)
-        .status()
-        .await?;
-    if group_status.success() {
-        return Ok(group_status);
-    }
-    tokio::process::Command::new("kill")
-        .arg("-TERM")
-        .arg(pid.to_string())
-        .stderr(std::process::Stdio::null())
-        .kill_on_drop(true)
-        .status()
-        .await
-}
-
-#[cfg(windows)]
-async fn terminate_process_tree(pid: u32) -> std::io::Result<std::process::ExitStatus> {
-    tokio::process::Command::new("taskkill")
-        .arg("/PID")
-        .arg(pid.to_string())
-        .arg("/T")
-        .arg("/F")
-        .stderr(std::process::Stdio::null())
-        .kill_on_drop(true)
-        .status()
-        .await
 }
 
 /// Start an onboarding session: seeds the agent and runs the first turn with
