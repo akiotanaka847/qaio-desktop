@@ -1,6 +1,6 @@
 [package]
 name = "qaio-tunnel"
-version = "0.4.12"
+version = "0.4.13"
 edition = "2021"
 description = "Outbound reverse tunnel client — engine dials Qaio relay, multiplexes mobile HTTP+WS"
 license = "MIT"
