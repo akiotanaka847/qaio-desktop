@@ -49,8 +49,11 @@ jobs:
       # artifact creation so the build does not require a signing key
       # (this workflow intentionally runs with an empty key). Signed
       # release builds with real updater artifacts live in release.yml.
+      # `shell: bash` keeps the single-quoted JSON intact on Windows too —
+      # the runner's default PowerShell strips the inner double quotes.
       - name: Build Qaio
         working-directory: app
+        shell: bash
         run: pnpm tauri build --target ${{ matrix.target }} -c '{"bundle":{"createUpdaterArtifacts":false}}'
 
       - name: Upload artifacts (Windows)
