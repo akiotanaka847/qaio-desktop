@@ -45,11 +45,13 @@ jobs:
       - name: Build engine
         run: cargo build --release -p qaio-engine-server --target ${{ matrix.target }}
 
+      # Unsigned test/CI installers. The `-c` override disables updater
+      # artifact creation so the build does not require a signing key
+      # (this workflow intentionally runs with an empty key). Signed
+      # release builds with real updater artifacts live in release.yml.
       - name: Build Qaio
         working-directory: app
-        run: pnpm tauri build --target ${{ matrix.target }}
-        env:
-          TAURI_SIGNING_PRIVATE_KEY: ""
+        run: pnpm tauri build --target ${{ matrix.target }} -c '{"bundle":{"createUpdaterArtifacts":false}}'
 
       - name: Upload artifacts (Windows)
         if: matrix.label == 'windows'
