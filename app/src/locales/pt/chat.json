@@ -90,6 +90,12 @@
     "skillsUpdated": "Skills atualizados",
     "learningsUpdated": "Aprendizados atualizados"
   },
+  "copy": {
+    "action": "Copiar mensagem",
+    "copied": "Copiado",
+    "failed": "Não foi possível copiar",
+    "errorToast": "Não foi possível copiar a mensagem. Seu sistema bloqueou o acesso à área de transferência."
+  },
   "filesUpdated_one": "1 arquivo atualizado",
   "filesUpdated_other": "{{count}} arquivos atualizados"
 }

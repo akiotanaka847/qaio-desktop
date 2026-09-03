@@ -44,7 +44,8 @@ export function useTryMission({ agent, provider, model }: UseTryMissionArgs) {
   const pushFeedItem = useFeedStore((s) => s.pushFeedItem);
   const sessionStatus = useSessionStatus(agentPath, sessionKeyForHooks);
   const isActive = isActiveSessionStatus(sessionStatus);
-  const { processLabels, getThinkingMessage } = useChatDisplayLabels();
+  const { processLabels, getThinkingMessage, copyLabels, onCopyError } =
+    useChatDisplayLabels();
 
   const [composerText, setComposerText] = useState("");
   const [composerFiles, setComposerFiles] = useState<File[]>([]);
@@ -163,7 +164,7 @@ export function useTryMission({ agent, provider, model }: UseTryMissionArgs) {
   const visibleFeed = (feedItems ?? []) as FeedItem[];
 
   return {
-    t, missionSessionKey, isActive, processLabels, getThinkingMessage,
+    t, missionSessionKey, isActive, processLabels, getThinkingMessage, copyLabels, onCopyError,
     composerText, setComposerText, composerFiles, setComposerFiles,
     pickedAny, error, tutorialDone, visibleFeed,
     handleOpenLink, renderLink, transformContent, handleSend, handleStop, handlePick,

@@ -30,7 +30,8 @@ export function useChatTabState({ agent }: TabProps) {
     () => ({ attachmentCount: (count: number) => t("attachmentMessage.count", { count }) }),
     [t],
   );
-  const { processLabels, getThinkingMessage } = useChatDisplayLabels();
+  const { processLabels, getThinkingMessage, copyLabels, onCopyError } =
+    useChatDisplayLabels();
   const attachmentValidation = useAttachmentRejectionDialog();
   const { isSpecialTool, renderToolResult, renderTurnSummary } = useFileToolRenderer(agent.folderPath);
 
@@ -133,7 +134,7 @@ export function useChatTabState({ agent }: TabProps) {
   });
 
   return {
-    t, sessionKey, agentPath, model, attachmentLabels, processLabels, getThinkingMessage,
+    t, sessionKey, agentPath, model, attachmentLabels, processLabels, getThinkingMessage, copyLabels, onCopyError,
     attachmentValidation, isSpecialTool, renderToolResult, renderTurnSummary,
     visibleFeedItems, isLoading, isSessionActive, authSignalKey,
     composerText, setComposerText, composerFiles, setComposerFiles,

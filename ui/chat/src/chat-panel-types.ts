@@ -58,5 +58,7 @@ export interface ChatPanelProps {
   renderTurnSummary?: ChatMessagesProps["renderTurnSummary"];
   onOpenLink?: (url: string) => void;
   renderLink?: ChatMessagesProps["renderLink"];
+  copyLabels?: ChatMessagesProps["copyLabels"];
+  onCopyError?: ChatMessagesProps["onCopyError"];
   composerOverride?: ReactNode;
 }

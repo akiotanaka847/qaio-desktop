@@ -79,6 +79,8 @@ export function TryMission({ meta, frame, agent, assistantColor, provider, model
                 isLoading={s.isActive}
                 placeholder={s.t("setup:tutorial.missions.try.placeholder")}
                 processLabels={s.processLabels}
+                copyLabels={s.copyLabels}
+                onCopyError={s.onCopyError}
                 getThinkingMessage={s.getThinkingMessage}
                 renderLink={s.renderLink}
                 onOpenLink={s.handleOpenLink}

@@ -14,9 +14,13 @@ import {
 } from "./ai-elements/conversation";
 import {
   Message,
+  MessageActions,
   MessageContent,
   MessageResponse,
 } from "./ai-elements/message";
+import { MessageCopyButton } from "./message-copy-button";
+import type { MessageCopyLabels } from "./message-copy-button";
+import { messageCopyText } from "./message-copy";
 import type { RenderLinkProps } from "./ai-elements/message";
 import type { ReasoningTriggerProps } from "./ai-elements/reasoning";
 import type { ToolsAndCardsProps } from "./chat-helpers";
@@ -59,6 +63,10 @@ export interface ChatMessagesProps {
   onOpenLink?: (url: string) => void;
   /** Custom renderer for markdown links. See `RenderLinkProps`. */
   renderLink?: (props: RenderLinkProps) => ReactNode;
+  /** Copy-action wording. English defaults; the app passes translations. */
+  copyLabels?: Partial<MessageCopyLabels>;
+  /** Surface a denied clipboard, e.g. as a toast. */
+  onCopyError?: (error: unknown) => void;
 }
 
 export function ChatMessages({
@@ -78,6 +86,8 @@ export function ChatMessages({
   afterMessages,
   onOpenLink,
   renderLink,
+  copyLabels,
+  onCopyError,
 }: ChatMessagesProps) {
   const turnEndSummaries = useMemo(
     () => computeTurnEndSummary(messages, status),
@@ -166,6 +176,22 @@ export function ChatMessages({
                   const summary = turnEndSummaries.get(idx);
                   if (!summary) return null;
                   return renderTurnSummary(summary);
+                })()}
+                {(() => {
+                  // Nothing to copy while the answer is still arriving, and
+                  // nothing to copy from an empty bubble.
+                  if (streaming || !msg.content) return null;
+                  const text = messageCopyText(msg.content);
+                  if (!text) return null;
+                  return (
+                    <MessageActions>
+                      <MessageCopyButton
+                        text={text}
+                        labels={copyLabels}
+                        onError={onCopyError}
+                      />
+                    </MessageActions>
+                  );
                 })()}
               </div>
             </Message>

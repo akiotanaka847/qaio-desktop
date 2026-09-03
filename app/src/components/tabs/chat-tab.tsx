@@ -57,6 +57,8 @@ export default function ChatTab(props: TabProps) {
         renderToolResult={s.renderToolResult}
         processLabels={s.processLabels}
         getThinkingMessage={s.getThinkingMessage}
+        copyLabels={s.copyLabels}
+        onCopyError={s.onCopyError}
         renderTurnSummary={s.renderTurnSummary}
         renderSystemMessage={(msg) => {
           if (isToolRuntimeErrorMessage(msg)) {
