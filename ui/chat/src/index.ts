@@ -196,6 +196,9 @@ export type { ProgressPanelProps } from "./progress-panel";
 // (desktop, mobile) can render the same card.
 export { decodeSkillMessage, resolveSkillImage } from "./skill-message";
 export type { SkillInvocation, SkillInvocationField } from "./skill-message";
+export { messageCopyText } from "./message-copy";
+export { MessageCopyButton } from "./message-copy-button";
+export type { MessageCopyLabels } from "./message-copy-button";
 export { decodeAttachmentMessage, normalizeAttachmentReferences } from "./attachment-message";
 export type { AttachmentInvocation, AttachmentReference } from "./attachment-message";
 export {

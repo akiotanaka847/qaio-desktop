@@ -48,7 +48,8 @@ export function useAgentChatPanel({
   agent, agentDef, selectedSessionKey, onSelectSession,
 }: UseAgentChatPanelArgs) {
   const { t } = useTranslation(["board", "chat"]);
-  const { processLabels, getThinkingMessage } = useChatDisplayLabels();
+  const { processLabels, getThinkingMessage, copyLabels, onCopyError } =
+    useChatDisplayLabels();
   const path = agent?.folderPath ?? null;
 
   const model = useChatModelResolution(path);
@@ -185,6 +186,8 @@ export function useAgentChatPanel({
     renderToolResult,
     processLabels,
     getThinkingMessage,
+    copyLabels,
+    onCopyError,
     renderTurnSummary,
     renderSystemMessage,
     mapFeedItems,

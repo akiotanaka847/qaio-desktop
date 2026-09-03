@@ -44,6 +44,8 @@ export function ChatPanel({
   renderTurnSummary,
   onOpenLink,
   renderLink,
+  copyLabels,
+  onCopyError,
   value,
   onValueChange,
   composerFocusToken,
@@ -144,6 +146,8 @@ export function ChatPanel({
           renderTurnSummary={renderTurnSummary}
           onOpenLink={onOpenLink}
           renderLink={renderLink}
+          copyLabels={copyLabels}
+          onCopyError={onCopyError}
         />
       ) : (
         <div className="flex-1 min-h-0 flex items-center justify-center">

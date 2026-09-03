@@ -90,6 +90,12 @@
     "skillsUpdated": "Skills actualizados",
     "learningsUpdated": "Aprendizajes actualizados"
   },
+  "copy": {
+    "action": "Copiar mensaje",
+    "copied": "Copiado",
+    "failed": "No se pudo copiar",
+    "errorToast": "No se pudo copiar el mensaje. Tu sistema bloqueó el acceso al portapapeles."
+  },
   "filesUpdated_one": "1 archivo actualizado",
   "filesUpdated_other": "{{count}} archivos actualizados"
 }

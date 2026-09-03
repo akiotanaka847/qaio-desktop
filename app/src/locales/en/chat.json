@@ -90,6 +90,12 @@
     "skillsUpdated": "Skills updated",
     "learningsUpdated": "Learnings updated"
   },
+  "copy": {
+    "action": "Copy message",
+    "copied": "Copied",
+    "failed": "Copy failed",
+    "errorToast": "Could not copy the message. Your system blocked access to the clipboard."
+  },
   "filesUpdated_one": "1 file updated",
   "filesUpdated_other": "{{count}} files updated"
 }
