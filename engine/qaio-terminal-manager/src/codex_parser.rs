@@ -49,6 +49,19 @@ pub struct CodexItem {
     pub query: Option<String>,
     /// Error message (error items).
     pub message: Option<String>,
+    /// Task list (todo_list items).
+    pub items: Option<Vec<CodexTodoItem>>,
+    /// Prompt handed to a spawned agent (collab_tool_call items).
+    pub prompt: Option<String>,
+    /// Threads a collab call targets (collab_tool_call items).
+    pub receiver_thread_ids: Option<Vec<String>>,
+}
+
+/// One entry of a codex `todo_list` item.
+#[derive(Debug, Clone, Deserialize)]
+pub struct CodexTodoItem {
+    pub text: Option<String>,
+    pub completed: Option<bool>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -220,7 +233,13 @@ fn parse_item_streaming(event: &CodexEvent, acc: &mut CodexAccumulator) -> Vec<F
                 input: serde_json::json!({ "query": query }),
             }]
         }
-        _ => vec![],
+        // Codex adds item types over time. Dropping one silently is how
+        // todo_list and collab_tool_call stayed invisible for so long,
+        // so say which type went unrendered.
+        other => {
+            tracing::debug!("[codex] unhandled item type: {other}");
+            vec![]
+        }
     }
 }
 
@@ -280,6 +299,48 @@ fn parse_item_completed(event: &CodexEvent, acc: &mut CodexAccumulator) -> Vec<F
                 is_error,
             }]
         }
+        // Codex plans its work as a `todo_list` item and orchestrates
+        // sub-agents as `collab_tool_call`. Both were dropped by the
+        // catch-all below, so the user watched Codex plan and delegate
+        // and saw nothing. Only the completed item is emitted: an
+        // in-flight list re-sends on every `item.updated`, and the feed
+        // merges consecutive tool calls only when their input is null,
+        // so streaming them would stack a card per keystroke.
+        "todo_list" => {
+            let todos: Vec<serde_json::Value> = item
+                .items
+                .iter()
+                .flatten()
+                .map(|t| {
+                    serde_json::json!({
+                        "text": t.text.as_deref().unwrap_or(""),
+                        "completed": t.completed.unwrap_or(false),
+                    })
+                })
+                .collect();
+            if todos.is_empty() {
+                vec![]
+            } else {
+                vec![FeedItem::ToolCall {
+                    name: "TodoList".into(),
+                    input: serde_json::json!({ "todos": todos }),
+                }]
+            }
+        }
+        "collab_tool_call" => {
+            let tool = item.tool.as_deref().unwrap_or("collab");
+            let mut input = serde_json::json!({ "tool": tool });
+            if let Some(prompt) = item.prompt.as_deref() {
+                input["prompt"] = serde_json::Value::String(prompt.to_string());
+            }
+            if let Some(ids) = &item.receiver_thread_ids {
+                input["agents"] = serde_json::json!(ids.len());
+            }
+            vec![FeedItem::ToolCall {
+                name: "Collab".into(),
+                input,
+            }]
+        }
         "error" => {
             let msg = item
                 .message
@@ -296,7 +357,13 @@ fn parse_item_completed(event: &CodexEvent, acc: &mut CodexAccumulator) -> Vec<F
                 vec![FeedItem::SystemMessage(msg.to_string())]
             }
         }
-        _ => vec![],
+        // Codex adds item types over time. Dropping one silently is how
+        // todo_list and collab_tool_call stayed invisible for so long,
+        // so say which type went unrendered.
+        other => {
+            tracing::debug!("[codex] unhandled item type: {other}");
+            vec![]
+        }
     }
 }
 
@@ -321,6 +388,54 @@ mod tests {
 
     fn acc() -> CodexAccumulator {
         CodexAccumulator::new()
+    }
+
+    #[test]
+    fn parse_todo_list() {
+        // Shape from codex `TodoListItem` / `TodoItem` (exec_events.rs).
+        let line = r#"{"type":"item.completed","item":{"id":"i1","type":"todo_list","items":[{"text":"Read the config","completed":true},{"text":"Patch the parser","completed":false}]}}"#;
+        let items = parse_codex_event(line, &mut acc());
+        match items.as_slice() {
+            [FeedItem::ToolCall { name, input }] => {
+                assert_eq!(name, "TodoList");
+                let todos = input["todos"].as_array().expect("todos array");
+                assert_eq!(todos.len(), 2);
+                assert_eq!(todos[0]["text"], "Read the config");
+                assert_eq!(todos[0]["completed"], true);
+                assert_eq!(todos[1]["completed"], false);
+            }
+            other => panic!("expected one ToolCall, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn parse_empty_todo_list_renders_nothing() {
+        let line =
+            r#"{"type":"item.completed","item":{"id":"i1","type":"todo_list","items":[]}}"#;
+        assert!(parse_codex_event(line, &mut acc()).is_empty());
+    }
+
+    #[test]
+    fn parse_collab_tool_call() {
+        // Shape from codex `CollabToolCallItem`; `tool` is a snake_case enum.
+        let line = r#"{"type":"item.completed","item":{"id":"i2","type":"collab_tool_call","tool":"spawn_agent","sender_thread_id":"t1","receiver_thread_ids":["t2","t3"],"prompt":"Audit the routes","status":"completed"}}"#;
+        let items = parse_codex_event(line, &mut acc());
+        match items.as_slice() {
+            [FeedItem::ToolCall { name, input }] => {
+                assert_eq!(name, "Collab");
+                assert_eq!(input["tool"], "spawn_agent");
+                assert_eq!(input["prompt"], "Audit the routes");
+                assert_eq!(input["agents"], 2);
+            }
+            other => panic!("expected one ToolCall, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn parse_unknown_item_type_is_dropped() {
+        // A future codex item type must not break the turn.
+        let line = r#"{"type":"item.completed","item":{"id":"i3","type":"some_future_item","text":"x"}}"#;
+        assert!(parse_codex_event(line, &mut acc()).is_empty());
     }
 
     #[test]
