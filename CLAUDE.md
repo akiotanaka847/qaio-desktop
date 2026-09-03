@@ -250,7 +250,25 @@ End-to-end flow (run without asking, unless a step is destructive and not pre-au
 6. Merge the PR yourself: `gh pr merge --squash --delete-branch`. User does NOT review — they rely on the phase protocol + tests + typecheck to catch issues before commit.
 7. Cleanup (from the main repo checkout, not the worktree): `git worktree remove <path>` is handled by the harness on exit; just ensure the remote branch is deleted by `--delete-branch`.
 
+**After step 6 you are standing on `main`.** `--delete-branch` removes the branch you were on, so the worktree falls back to `main` and the next commit lands there unless you branch again. Starting more work? Go back to step 1 and branch FIRST — that is the step that gets skipped.
+
 Never `git reset --hard` on `main`, never force-push to `main`, never merge without the PR step (even for trivial changes — PR is the audit trail).
+
+### Enforcement
+
+The rule above is enforced, not just documented — it was broken once by
+exactly the step-6 fallback described above.
+
+- `.githooks/pre-commit` refuses a commit made while standing on `main`.
+- `.githooks/pre-push` refuses a push to `refs/heads/main`. Tag pushes pass
+  through, so `git push --tags` still triggers the release workflow.
+- `pnpm install` wires them up (`prepare` → `git config core.hooksPath
+  .githooks`), so a fresh clone and every new worktree get them with no
+  setup step to remember.
+
+Both hooks are local, so `--no-verify` bypasses them. That escape hatch is
+deliberate, but reach for it only when the alternative is worse — the
+server-side branch protection is what makes the rule unbypassable.
 
 ---
 

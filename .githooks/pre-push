@@ -1,0 +1,35 @@
+#!/bin/sh
+# Qaio's `main` is updated by merging a pull request, never by a direct
+# push. The pre-commit hook stops the commit; this stops the push, which
+# is the one that actually reaches other people.
+#
+# Only `refs/heads/main` is refused. Tag pushes pass through untouched:
+# the release workflow is triggered by `git push --tags`, and those
+# arrive here as `refs/tags/*`.
+#
+# git feeds one line per ref being pushed on stdin:
+#   <local ref> <local sha> <remote ref> <remote sha>
+#
+# Deliberate exception: `git push --no-verify`.
+
+while read -r _local_ref _local_sha remote_ref _remote_sha; do
+    case "$remote_ref" in
+    refs/heads/main)
+        printf '%s\n' \
+            "" \
+            "  BLOCKED: direct push to 'main'." \
+            "" \
+            "  Open a pull request instead:" \
+            "" \
+            "      git checkout -b fix/<slug>" \
+            "      git push -u origin HEAD" \
+            "      gh pr create --base main" \
+            "" \
+            "  Deliberate exception: git push --no-verify" \
+            "" >&2
+        exit 1
+        ;;
+    esac
+done
+
+exit 0

@@ -1,0 +1,29 @@
+#!/bin/sh
+# Qaio's `main` is merge-only: work goes through a branch and a PR, which
+# is where the audit trail lives.
+#
+# This guards the exact sequence that breaks it: `gh pr merge
+# --delete-branch` deletes the branch you were on and leaves the worktree
+# standing on `main`, so the next commit lands there unless something
+# stops it. Checking the branch by eye is the step that gets skipped.
+#
+# A detached HEAD reports an empty branch name and is left alone.
+#
+# Deliberate exception: `git commit --no-verify`.
+
+branch=$(git branch --show-current)
+
+if [ "$branch" = "main" ]; then
+    printf '%s\n' \
+        "" \
+        "  BLOCKED: commit on 'main'." \
+        "" \
+        "  main is updated by merging a PR, never by committing to it." \
+        "  Move to a branch first; staged changes come with you:" \
+        "" \
+        "      git checkout -b fix/<slug>" \
+        "" \
+        "  Deliberate exception: git commit --no-verify" \
+        "" >&2
+    exit 1
+fi

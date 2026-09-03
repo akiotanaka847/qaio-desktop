@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "prepare": "git config core.hooksPath .githooks",
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck"
   },
