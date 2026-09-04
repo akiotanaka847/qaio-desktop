@@ -13,6 +13,10 @@ use std::path::Path;
 #[derive(Debug, Serialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub struct ChatHistoryEntry {
+    /// Row identity, so a client can name a point in the conversation
+    /// (to edit from it, for instance) without counting positions that
+    /// shift as the feed grows.
+    pub id: i64,
     pub feed_type: String,
     pub data: serde_json::Value,
 }
@@ -36,7 +40,12 @@ pub async fn load(
         );
     }
 
-    rows.sort_by(|a, b| a.timestamp.cmp(&b.timestamp));
+    // Ordered by rowid, not timestamp. Both are written at insert, but
+    // the rowid is a counter: it cannot tie between two rows saved in the
+    // same instant, and it cannot go backwards if the wall clock does.
+    // Truncation addresses rows by the same key, so what a client sees as
+    // "after this message" and what the delete removes cannot disagree.
+    rows.sort_by_key(|row| row.id);
 
     Ok(rows
         .into_iter()
@@ -44,6 +53,7 @@ pub async fn load(
             let data = serde_json::from_str::<serde_json::Value>(&row.data_json)
                 .unwrap_or(serde_json::Value::String(row.data_json));
             ChatHistoryEntry {
+                id: row.id,
                 feed_type: row.feed_type,
                 data,
             }

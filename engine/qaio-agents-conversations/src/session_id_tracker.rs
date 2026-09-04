@@ -107,6 +107,36 @@ impl SessionIdHandle {
         *self.id.lock().await = None;
     }
 
+    /// Drop the current resume ID so the next turn opens a fresh provider
+    /// session, keeping it in history so the rows it already wrote stay
+    /// visible.
+    ///
+    /// This is the deliberate sibling of
+    /// [`clear_current_preserving_history`]: same mechanics, but the old
+    /// session is NOT recorded as invalid, because nothing is wrong with
+    /// it. It is the branch point of an edit, and the provider CLIs offer
+    /// no way to rewind a session in place, so branching away is the only
+    /// way to change what was said.
+    pub async fn fork(&self) {
+        let current = self.id.lock().await.take();
+        let current = current.or_else(|| read_trimmed_file(&self.sid_path));
+        if let Some(id) = current {
+            append_history_id(&self.history_path, &id);
+        }
+
+        match fs::remove_file(&self.sid_path) {
+            Ok(()) => {}
+            Err(e) if e.kind() == io::ErrorKind::NotFound => {}
+            Err(e) => {
+                tracing::warn!(
+                    path = %self.sid_path.display(),
+                    error = %e,
+                    "failed to remove session id while forking"
+                );
+            }
+        }
+    }
+
     /// Clear the current provider-scoped resume ID after the CLI rejects it,
     /// while keeping it in history so already-persisted chat rows remain visible.
     pub async fn clear_current_preserving_history(&self) {
@@ -319,6 +349,61 @@ mod tests {
             .await;
 
         assert_eq!(handle.get().await, Some("legacy-id".to_string()));
+    }
+
+    #[tokio::test]
+    async fn fork_drops_the_resume_id_but_keeps_it_readable() {
+        let dir = TempDir::new().unwrap();
+        let tracker = SessionIdTracker::default();
+        let handle = tracker
+            .get_for_session("agent:openai:fork", dir.path(), "fork", Provider::OpenAI)
+            .await;
+        handle.set("before-edit".to_string()).await;
+
+        handle.fork().await;
+
+        assert!(handle.get().await.is_none(), "next turn must start fresh");
+        assert!(
+            !session_id_path(dir.path(), Provider::OpenAI, "fork").exists(),
+            "the resume file is gone, so a restart cannot resurrect it",
+        );
+        assert!(
+            session_ids_for_history(dir.path(), "fork").contains(&"before-edit".to_string()),
+            "rows written before the edit must still render",
+        );
+    }
+
+    #[tokio::test]
+    async fn fork_does_not_brand_a_healthy_session_invalid() {
+        // The difference from clear_current_preserving_history: an edit
+        // branches away from a session that works. Recording it as
+        // invalid would be a lie the file keeps forever.
+        let dir = TempDir::new().unwrap();
+        let tracker = SessionIdTracker::default();
+        let handle = tracker
+            .get_for_session("agent:openai:clean", dir.path(), "clean", Provider::OpenAI)
+            .await;
+        handle.set("healthy".to_string()).await;
+
+        handle.fork().await;
+
+        assert!(
+            !session_invalid_path(dir.path(), Provider::OpenAI, "clean").exists(),
+            "forking must not write the invalid marker",
+        );
+    }
+
+    #[tokio::test]
+    async fn fork_with_no_session_is_harmless() {
+        let dir = TempDir::new().unwrap();
+        let tracker = SessionIdTracker::default();
+        let handle = tracker
+            .get_for_session("agent:openai:empty", dir.path(), "empty", Provider::OpenAI)
+            .await;
+
+        handle.fork().await;
+
+        assert!(handle.get().await.is_none());
     }
 
     #[tokio::test]
