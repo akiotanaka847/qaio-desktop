@@ -38,10 +38,20 @@ impl Database {
                     VALUES (new.id, new.data_json);
                 END;
 
-                CREATE TRIGGER IF NOT EXISTS chat_feed_fts_delete
+                -- Dropped and recreated rather than CREATE IF NOT EXISTS:
+                -- the first version of this trigger used the
+                -- `INSERT INTO fts(fts, rowid, ...) VALUES('delete', ...)`
+                -- form, which belongs to external-content and contentless
+                -- FTS5 tables. This one is neither, so that statement is a
+                -- SQL logic error and EVERY delete from chat_feed failed.
+                -- Nothing deleted rows yet, so no user ever saw it, but the
+                -- broken trigger is already on disk for existing installs
+                -- and IF NOT EXISTS would leave it there.
+                DROP TRIGGER IF EXISTS chat_feed_fts_delete;
+
+                CREATE TRIGGER chat_feed_fts_delete
                 AFTER DELETE ON chat_feed BEGIN
-                    INSERT INTO chat_feed_fts(chat_feed_fts, rowid, content)
-                    VALUES('delete', old.id, old.data_json);
+                    DELETE FROM chat_feed_fts WHERE rowid = old.id;
                 END;",
             )
             .await
